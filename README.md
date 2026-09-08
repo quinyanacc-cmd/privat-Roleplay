@@ -1,8 +1,16 @@
-# ROLEPLAY App 6.2.0
+# ROLEPLAY App 6.2.1
 
 Lokale iPhone-PWA für Tagesreflexion, Routinen und adaptive Rollenmodi.
 Alle Daten bleiben im Browser des Geräts (`localStorage`), keine Serververbindung,
 kein Framework, keine externen Bibliotheken.
+
+## Version 6.2.1 – kleiner UI-Aufschlag
+
+- Kopfbereich rollenorientiert neu gestaltet: Datum oben als klar anklickbares, gepunktet unterstrichenes Kalenderelement; Tagesrolle deutlich größer mit rollenabhängigem Kurzsatz. Vor-/Zurück-Navigation und bestehender Kalenderdialog bleiben erhalten.
+- Tagesphasen bleiben verbindlich in der Reihenfolge Morgen → Mittag → Nachmittag → Abend → Nacht.
+- Schlafqualität, Traumkategorie und Traumnotiz liegen nun im Morgen-Check-in. Vorhandene Schlaf-/Traumdaten aus Nacht-Check-ins bzw. älteren Top-Level-Feldern werden beim Laden verlustfrei in den Morgen übernommen; Nacht-Zustandswerte bleiben erhalten.
+- Wochenliniengraph auf der Hauptseite deutlich höher (4:3), Linien und Punkte kräftiger und damit auf dem iPhone besser lesbar.
+- Version/Cache auf 6.2.1 aktualisiert; Speicher-Namespace bleibt unverändert.
 
 ## Version 6.2.0 – Änderungsprotokoll
 
@@ -167,7 +175,7 @@ aktuellen Bestands heruntergeladen.
 
 ## Tests
 
-`node tests/run-tests.mjs` prüft die Berechnungen und die Migration ohne
+`node run-tests.mjs` prüft die Berechnungen und die Migration ohne
 Browser: Gewichtungen mit und ohne Taqwa, Schutzgrenzen, die finalen
 Aktivitätsvorlagen und ihre Tagesbegrenzungen (SMA 0,2 · Moschee 1,0 ·
 Jumʿa 2,0), exakte und ausdrücklich nicht unscharfe Alias-Zuordnung,
@@ -178,7 +186,7 @@ Liniengraphen ohne Gebetsserie bei erhaltener Gebets-Wochenübersicht,
 Zeiträume beider Rückblicksmodi, Rollenfokus, Streak-Umrechnung und die
 Normalisierung alter Backups.
 
-Stand 6.2.0: **162 von 162 Prüfungen bestanden.**
+Stand 6.2.1: **168 von 168 Prüfungen bestanden.**
 
 ## Visueller Relaunch (6.0.0-Design)
 

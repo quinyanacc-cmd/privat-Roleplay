@@ -309,6 +309,16 @@ const ROLE_CONFIG = {
   familienmensch: { label: "Familienmensch", roleName: "Familienmensch" }
 };
 
+const ROLE_TAGLINES = {
+  "Ich-Person": "Heute bewusst bei dir selbst bleiben.",
+  "Vitalist": "Heute in deinen Körper investieren.",
+  "Absolvent": "Heute in Wissen und Abschluss investieren.",
+  "Unternehmer": "Heute an deinen Vorhaben und deiner Zukunft bauen.",
+  "Muslim": "Heute deine Verbindung zu Allah stärken.",
+  "Wirt": "Heute Ordnung und Verantwortung zuhause tragen.",
+  "Familienmensch": "Heute deiner Familie bewusst Zeit und Nähe geben."
+};
+
 /* --------------------------------------------------------------------------
    Berechnung
    -------------------------------------------------------------------------- */
@@ -877,7 +887,7 @@ function dayPointTotal(data, date) {
 }
 
 const ROUTINE_MINUTE_CHOICES = Array.from({ length: 180 }, (_, index) => index + 1);
-const APP_VERSION = "6.2.0";
+const APP_VERSION = "6.2.1";
 const SCHEMA_VERSION = 7;
 const STORAGE_NAMESPACE = "roleplay-v25";
 const ROUTINES_STORAGE_KEY = `${STORAGE_NAMESPACE}-routines`;
@@ -1137,26 +1147,66 @@ function normalizeReview(raw, date, hasStoredValue) {
       createdAt: entry.createdAt || `${date}T${time}:00`
     };
   }).sort((a, b) => slotIndex(a.slot) - slotIndex(b.slot) || a.time.localeCompare(b.time)) : [];
-  // Migration: früher lag der Schlafbereich außerhalb der Check-ins. Vorhandene alte
-  // Schlafdaten werden einmalig in einen Nacht-Check-in überführt, sofern noch keiner existiert.
-  if (hasStoredValue && !merged.stateCheckins.some(entry => entry.slot === "night")) {
+  // 6.2.1: Schlaf- und Trauminformationen gehören zum Morgen-Check-in.
+  // Bestehende Nachtwerte bleiben als Zustandsaufnahme erhalten; Schlafdaten
+  // werden verlustfrei in einen vorhandenen Morgen kopiert oder als separater
+  // Morgen-Check-in angelegt. Die alten Top-Level-Felder bleiben kompatibel.
+  if (hasStoredValue) {
+    const hasSleepData = entry => entry && (entry.sleepQualityScore !== "" || entry.dreamCategory || entry.dreamNote);
+    let morning = merged.stateCheckins.find(entry => entry.slot === "morning") || null;
+    const night = merged.stateCheckins.find(entry => entry.slot === "night") || null;
+
+    if (hasSleepData(night)) {
+      if (!morning) {
+        morning = {
+          ...night,
+          id: `state-${date}-morning-sleep-migrated`,
+          slot: "morning",
+          time: "08:00",
+          energy: null, mood: null, taqwa: null,
+          createdAt: `${date}T08:00:00`
+        };
+        merged.stateCheckins.push(morning);
+      } else {
+        if (morning.sleepQualityScore === "") morning.sleepQualityScore = night.sleepQualityScore;
+        if (!morning.dreamCategory) morning.dreamCategory = night.dreamCategory;
+        if (!morning.dreamNote) morning.dreamNote = night.dreamNote;
+      }
+      night.sleepQualityScore = "";
+      night.dreamCategory = "";
+      night.dreamNote = "";
+    }
+
     const legacySleep = merged.sleepQualityScore;
     const legacyDream = merged.dreamCategory || "";
     const legacyDreamNote = String(raw?.dreams || "");
     if (legacySleep !== "" || legacyDream || legacyDreamNote) {
-      merged.stateCheckins = [{
-        id: `state-${date}-night-migrated`,
-        slot: "night", time: "07:00",
-        energy: null, mood: null, taqwa: null, load: "normal", body: "stable", mind: "normal", motivation: "available",
-        context: "normal", support: "available", emotion: "",
-        primaryRole: merged.role, responsibilitySource: "role", responsibility: "",
-        urgency: "medium", impact: "medium", flexibility: "medium", conflict: "no",
-        hydrationMl: Math.max(0, Number(raw?.water || 0)), nutritionScore: null,
-        sleepQualityScore: legacySleep, dreamCategory: legacyDream, dreamNote: legacyDreamNote,
-        selectedFrameworkKey: "", recommendedFrameworkKey: "", frameworkOverrideReason: "",
-        note: "", createdAt: `${date}T07:00:00`
-      }, ...merged.stateCheckins];
+      if (!morning) {
+        morning = {
+          id: `state-${date}-morning-migrated`,
+          slot: "morning", time: "08:00",
+          energy: null, mood: null, taqwa: null, load: "normal", body: "stable", mind: "normal", motivation: "available",
+          context: "normal", support: "available", emotion: "",
+          primaryRole: merged.role, responsibilitySource: "role", responsibility: "",
+          urgency: "medium", impact: "medium", flexibility: "medium", conflict: "no",
+          hydrationMl: Math.max(0, Number(raw?.water || 0)), nutritionScore: null,
+          sleepQualityScore: legacySleep, dreamCategory: legacyDream, dreamNote: legacyDreamNote,
+          selectedFrameworkKey: "", recommendedFrameworkKey: "", frameworkOverrideReason: "",
+          note: "", createdAt: `${date}T08:00:00`
+        };
+        merged.stateCheckins.push(morning);
+      } else {
+        if (morning.sleepQualityScore === "" && legacySleep !== "") morning.sleepQualityScore = legacySleep;
+        if (!morning.dreamCategory && legacyDream) morning.dreamCategory = legacyDream;
+        if (!morning.dreamNote && legacyDreamNote) morning.dreamNote = legacyDreamNote;
+      }
     }
+    if (morning) {
+      merged.sleepQualityScore = morning.sleepQualityScore;
+      merged.dreamCategory = morning.dreamCategory || "";
+      merged.dreams = morning.dreamNote || "";
+    }
+    merged.stateCheckins.sort((a, b) => slotIndex(a.slot) - slotIndex(b.slot) || a.time.localeCompare(b.time));
   }
 
   const legacyResponsibility = raw?.responsibility || {};
@@ -1364,15 +1414,12 @@ function mealCategoryLabel(value) {
   return mealCategoryMeta(value)?.label || "Noch offen";
 }
 
-function latestNightCheckin(data = currentData) {
-  return (data?.stateCheckins || []).find(entry => entry.slot === "night") || null;
+function morningSleepCheckin(data = currentData) {
+  return (data?.stateCheckins || []).find(entry => entry.slot === "morning") || null;
 }
 
 function innerStateCapacity(checkin) {
   if (!checkin) return null;
-  if (checkin.slot === "night") {
-    return sleepCapacityScore(checkin.sleepQualityScore) ?? 62;
-  }
   const energy = checkin.energy === null || checkin.energy === undefined ? 60 : clamp(Number(checkin.energy), 0, 100);
   const mood = checkin.mood === null || checkin.mood === undefined ? emotionStateScore(checkin.emotion) : clamp(Number(checkin.mood), 0, 100);
   const emotion = emotionStateScore(checkin.emotion);
@@ -1390,9 +1437,8 @@ function hydrationContextScore(slot, ml) {
 function stateCapacity(checkin, data = currentData) {
   const inner = innerStateCapacity(checkin);
   if (inner === null) return null;
-  if (checkin.slot === "night") return inner;
-  const night = latestNightCheckin(data);
-  const sleep = sleepCapacityScore(night?.sleepQualityScore);
+  const morning = morningSleepCheckin(data);
+  const sleep = sleepCapacityScore(morning?.sleepQualityScore);
   const hydration = hydrationContextScore(checkin.slot, checkin.hydrationMl);
   const nutrition = checkin.nutritionScore;
   const weighted = [{ value: inner, weight: .78 }];
@@ -1451,18 +1497,14 @@ function currentDayMode(data = currentData) {
 function checkinReasonFactors(checkin, data = currentData) {
   if (!checkin) return [];
   const factors = [];
-  if (checkin.slot === "night") {
-    if (checkin.sleepQualityScore !== "" && checkin.sleepQualityScore !== undefined) factors.push(`Schlaf: ${SLEEP_LABELS[Number(checkin.sleepQualityScore)] || "erfasst"}`);
-    if (checkin.dreamCategory) factors.push(`Traum: ${dreamCategoryLabel(checkin.dreamCategory)}`);
-    return factors;
-  }
   factors.push(`Energie: ${checkin.energy ?? "–"} %`);
   factors.push(`Laune: ${checkin.mood ?? "–"} %`);
   if (checkin.taqwa !== null && checkin.taqwa !== undefined && checkin.taqwa !== "") factors.push(`Gottesfurcht: ${checkin.taqwa} %`);
   if (checkin.emotion) factors.push(`Gefühl: ${checkin.emotion}`);
   factors.push(`Belastung: ${LOAD_OPTIONS[checkin.load]?.label || "Normal"}`);
-  const night = latestNightCheckin(data);
-  if (night?.sleepQualityScore !== "" && night?.sleepQualityScore !== undefined) factors.push(`Schlaf: ${SLEEP_LABELS[Number(night.sleepQualityScore)] || "erfasst"}`);
+  const morning = morningSleepCheckin(data);
+  if (morning?.sleepQualityScore !== "" && morning?.sleepQualityScore !== undefined) factors.push(`Schlaf: ${SLEEP_LABELS[Number(morning.sleepQualityScore)] || "erfasst"}`);
+  if (checkin.slot === "morning" && checkin.dreamCategory) factors.push(`Traum: ${dreamCategoryLabel(checkin.dreamCategory)}`);
   const water = Number(checkin.hydrationMl || 0);
   if (water > 0) factors.push(`Getrunken: ${(water / 1000).toFixed(1).replace(".", ",")} L`);
   const meals = mealKeysForSlot(checkin.slot).map(key => data?.mealCategories?.[key]).filter(Boolean);
@@ -1765,7 +1807,7 @@ function renderStateOverview() {
   timeline.innerHTML = checkins.length ? [...checkins].reverse().map(entry => {
     const entryMode = modeForCheckin(entry);
     const slot = checkinSlot(entry.slot);
-    const sleep = entry.slot === "night" && entry.sleepQualityScore !== "" && entry.sleepQualityScore !== undefined
+    const sleep = entry.slot === "morning" && entry.sleepQualityScore !== "" && entry.sleepQualityScore !== undefined
       ? ` · ${SLEEP_LABELS[Number(entry.sleepQualityScore)] || "Schlaf erfasst"}` : "";
     const taqwaPart = entry.taqwa === null || entry.taqwa === undefined || entry.taqwa === ""
       ? "" : ` · ${entry.taqwa} % Gottesfurcht`;
@@ -1781,7 +1823,13 @@ function renderStateOverview() {
   }).join("") : `<p class="state-timeline-empty">Noch keine Momentaufnahme gespeichert.</p>`;
 
   timeline.querySelectorAll("[data-delete-state-checkin]").forEach(button => button.addEventListener("click", () => {
+    const deleted = (currentData.stateCheckins || []).find(entry => entry.id === button.dataset.deleteStateCheckin);
     currentData.stateCheckins = (currentData.stateCheckins || []).filter(entry => entry.id !== button.dataset.deleteStateCheckin);
+    if (deleted?.slot === "morning") {
+      currentData.sleepQualityScore = "";
+      currentData.dreamCategory = "";
+      currentData.dreams = "";
+    }
     saveReview(true);
     renderStateOverview();
   }));
@@ -1797,10 +1845,11 @@ function dreamCategoryLabel(value) {
 }
 
 
-function toggleNightCheckinFields(slotKey) {
-  const isNight = slotKey === "night";
-  // Die Nacht zeigt zusätzlich Schlaf und Traum – Energie und Laune bleiben sichtbar.
-  if ($("nightCheckinSection")) $("nightCheckinSection").hidden = !isNight;
+function toggleMorningSleepFields(slotKey) {
+  const isMorning = slotKey === "morning";
+  // Der Morgen enthält zusätzlich den Rückblick auf Schlaf und Traum;
+  // Energie, Laune und Gottesfurcht bleiben wie bei allen Check-ins sichtbar.
+  if ($("sleepCheckinSection")) $("sleepCheckinSection").hidden = !isMorning;
   if ($("dayCheckinSection")) $("dayCheckinSection").hidden = false;
 }
 
@@ -1829,8 +1878,8 @@ function fillStateCheckinForm(slotKey) {
   $("stateSlotDisplay").style.setProperty("--slot-soft", rgbWithAlpha(phaseMid, .16));
   $("stateSlotDisplay").style.setProperty("--slot-glow", rgbWithAlpha(phaseEnd, .28));
   $("stateSlotDisplay").innerHTML = `<span class="phase-mark" aria-hidden="true"><svg viewBox="0 0 40 30">${phaseGlyph(requestedSlot, 20, 15)}</svg></span>`
-    + `<strong>${escapeHTML(phase.short)}</strong><small>${requestedSlot === "night" ? "Schlaf und Zustand" : "Zustandsaufnahme"}</small>`;
-  // Energie und Laune gelten für alle vier Check-ins, auch für die Nacht.
+    + `<strong>${escapeHTML(phase.short)}</strong><small>${requestedSlot === "morning" ? "Schlaf und Zustand" : "Zustandsaufnahme"}</small>`;
+  // Energie, Laune und Gottesfurcht gelten für alle fünf Check-ins.
   $("stateEnergy").value = existing?.energy ?? latest?.energy ?? 60;
   $("stateMood").value = existing?.mood ?? latest?.mood ?? 60;
   if ($("stateTaqwa")) $("stateTaqwa").value = existing?.taqwa ?? latest?.taqwa ?? 60;
@@ -1839,7 +1888,7 @@ function fillStateCheckinForm(slotKey) {
   $("stateSleepQuality").value = sleepValue;
   $("stateDreamCategory").value = existing?.dreamCategory || currentData.dreamCategory || "";
   $("stateDreamNote").value = existing?.dreamNote || currentData.dreams || "";
-  toggleNightCheckinFields(requestedSlot);
+  toggleMorningSleepFields(requestedSlot);
   // Zurücksetzen nur anbieten, wenn für diese Tagesphase etwas gespeichert ist.
   const resetButton = $("resetStateCheckin");
   if (resetButton) resetButton.hidden = !existing;
@@ -1859,6 +1908,11 @@ function resetStateCheckin(slotKey) {
   const before = (currentData.stateCheckins || []).length;
   currentData.stateCheckins = (currentData.stateCheckins || []).filter(entry => entry.slot !== slotKey);
   if (currentData.stateCheckins.length === before) return;
+  if (slotKey === "morning") {
+    currentData.sleepQualityScore = "";
+    currentData.dreamCategory = "";
+    currentData.dreams = "";
+  }
   saveReview(true);
   renderStateOverview();
   renderStats();
@@ -1866,7 +1920,7 @@ function resetStateCheckin(slotKey) {
 
 function stateCheckinFromForm() {
   const slot = $("stateSlot").value;
-  const nightSleep = $("stateSleepQuality").value;
+  const morningSleep = $("stateSleepQuality").value;
   const energyRaw = $("stateEnergy").value;
   const moodRaw = $("stateMood").value;
   const taqwaRaw = $("stateTaqwa") ? $("stateTaqwa").value : "";
@@ -1878,9 +1932,9 @@ function stateCheckinFromForm() {
     taqwa: Number(taqwaRaw === "" ? 60 : taqwaRaw),
     primaryRole: currentData.role,
     hydrationMl: Math.max(0, Number(currentData.water || 0)),
-    sleepQualityScore: slot === "night" ? (nightSleep === "" ? "" : Number(nightSleep)) : "",
-    dreamCategory: slot === "night" ? $("stateDreamCategory").value : "",
-    dreamNote: slot === "night" ? $("stateDreamNote").value.trim() : "",
+    sleepQualityScore: slot === "morning" ? (morningSleep === "" ? "" : Number(morningSleep)) : "",
+    dreamCategory: slot === "morning" ? $("stateDreamCategory").value : "",
+    dreamNote: slot === "morning" ? $("stateDreamNote").value.trim() : "",
     time: $("stateTime").value || currentClockTime(),
     // Frühere Felder bleiben erhalten, damit alte Tage unverändert bestehen –
     // für die Modusberechnung werden sie nicht mehr gelesen.
@@ -1930,7 +1984,7 @@ function saveStateCheckin(event) {
   entry.createdAt = existing?.createdAt || `${selectedDate}T${entry.time}:00`;
   currentData.stateCheckins = [...(currentData.stateCheckins || []).filter(item => item.slot !== entry.slot), entry]
     .sort((a, b) => slotIndex(a.slot) - slotIndex(b.slot) || a.time.localeCompare(b.time));
-  if (entry.slot === "night") {
+  if (entry.slot === "morning") {
     currentData.sleepQualityScore = entry.sleepQualityScore;
     currentData.dreamCategory = entry.dreamCategory;
     currentData.dreams = entry.dreamNote;
@@ -1965,7 +2019,7 @@ function renderRolePickerOptions() {
   const focusRole = roleFocusIsActive() ? roleFocus.role : "";
   const options = ROLES.map(role => {
     const marker = role.name === focusRole ? " · Fokus" : "";
-    return `<option value="${escapeHTML(role.name)}">${escapeHTML(role.emoji)} ${escapeHTML(role.name)}${marker}</option>`;
+    return `<option value="${escapeHTML(role.name)}">${escapeHTML(role.name)}${marker}</option>`;
   }).join("");
   picker.innerHTML = `${options}<option value="${ROLE_FOCUS_OPTION}">◎ Rollenfokus ${focusRole ? "ändern" : "setzen"} …</option>`;
   picker.dataset.focusActive = focusRole ? "true" : "false";
@@ -2036,6 +2090,7 @@ function applyRolePickerStyle() {
   picker.style.setProperty("--role-color", role.color);
   picker.style.setProperty("--role-soft", hexToRgba(role.color, .18));
   picker.style.setProperty("--role-text", role.text);
+  if ($("roleTagline")) $("roleTagline").textContent = ROLE_TAGLINES[role.name] || "Heute deine Rolle bewusst gestalten.";
   applyHeaderTheme(role);
 }
 
@@ -2056,12 +2111,9 @@ function applyHeaderTheme(role = getRole($("dayRole")?.value || currentData?.rol
   const header = $("appHeader");
   if (!header) return;
   header.style.setProperty("--header-role", role.color);
-  header.style.setProperty("--header-role-soft", hexToRgba(role.color, .88));
-  header.style.setProperty("--header-role-fade", hexToRgba(role.color, .16));
-  header.style.setProperty("--header-role-veil", hexToRgba(role.color, .17));
-  header.style.setProperty("--header-role-line", hexToRgba(role.color, .34));
-  header.style.setProperty("--header-role-ink-light", mixHex(role.color, "#0d1017", .58));
-  header.style.setProperty("--header-role-ink-dark", mixHex(role.color, "#ffffff", .62));
+  header.style.setProperty("--header-role-deep", mixHex(role.color, "#0b1734", .46));
+  header.style.setProperty("--header-role-bright", mixHex(role.color, "#8fe3ff", .28));
+  header.style.setProperty("--header-role-ink", role.text);
 }
 
 function statusCircle(icon, variant = "neutral", size = "medium") {
@@ -2498,7 +2550,7 @@ function dailyPrayerProgress(data) {
 
 function buildWeeklyTrendChart(labels, series, options = {}) {
   const width = 440;
-  const height = 250;
+  const height = 330;
   const padLeft = 30;
   const padRight = 12;
   const padTop = 14;
@@ -2547,7 +2599,7 @@ function buildWeeklyTrendChart(labels, series, options = {}) {
 
   const dots = series.map(item => item.values.map((value, index) => value === null || value === undefined
     ? ""
-    : `<circle class="wellbeing-dot ${item.className} ${index === todayIndex ? "today" : ""}" cx="${xFor(index).toFixed(1)}" cy="${yFor(value).toFixed(1)}" r="${index === todayIndex ? 4.6 : 3.4}"></circle>`).join("")).join("");
+    : `<circle class="wellbeing-dot ${item.className} ${index === todayIndex ? "today" : ""}" cx="${xFor(index).toFixed(1)}" cy="${yFor(value).toFixed(1)}" r="${index === todayIndex ? 5.4 : 4.0}"></circle>`).join("")).join("");
 
   // Ruhige Markierung des heutigen Tages – ohne Wertung, nur zur Orientierung.
   const bandWidth = labels.length > 1 ? plotWidth / (labels.length - 1) * 0.64 : 40;

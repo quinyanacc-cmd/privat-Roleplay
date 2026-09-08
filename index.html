@@ -16,22 +16,20 @@
 <body>
   <div class="app-shell">
     <header class="app-header" id="appHeader">
+      <div class="date-nav" id="dateNavigation">
+        <button id="prevDay" class="icon-button" type="button" aria-label="Vorheriger Tag">‹</button>
+        <button id="dateButton" class="date-button hero-date-button" type="button" aria-haspopup="dialog" aria-label="Datum auswählen und Kalender öffnen"></button>
+        <button id="nextDay" class="icon-button" type="button" aria-label="Nächster Tag">›</button>
+      </div>
+
       <div class="header-title-row" id="headerTitleRow">
-        <div class="header-identity">
-          <p class="eyebrow">ROLEPLAY</p>
-          <h1 id="pageTitle">Tagesreflexion</h1>
-        </div>
+        <h1 id="pageTitle" class="sr-only">Tagesreflexion</h1>
         <label class="role-picker-wrap" id="rolePickerWrap">
           <span class="sr-only">Tagesrolle auswählen</span>
           <select id="dayRole" class="role-picker" aria-label="Tagesrolle auswählen"></select>
         </label>
       </div>
-
-      <div class="date-nav" id="dateNavigation">
-        <button id="prevDay" class="icon-button" type="button" aria-label="Vorheriger Tag">‹</button>
-        <button id="dateButton" class="date-button" type="button" aria-haspopup="dialog"></button>
-        <button id="nextDay" class="icon-button" type="button" aria-label="Nächster Tag">›</button>
-      </div>
+      <p id="roleTagline" class="role-tagline"></p>
     </header>
 
     <main>
@@ -285,7 +283,7 @@
       <select id="stateSlot" hidden aria-hidden="true" tabindex="-1"></select>
       <input id="stateTime" type="hidden">
 
-      <section id="nightCheckinSection" class="checkin-form-section night-checkin-section" hidden>
+      <section id="sleepCheckinSection" class="checkin-form-section sleep-checkin-section" hidden>
         <div class="field-group">
           <label for="stateSleepQuality">Schlafqualität</label>
           <select id="stateSleepQuality"></select>
