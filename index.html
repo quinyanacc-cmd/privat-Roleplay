@@ -16,66 +16,45 @@
 <body>
   <div class="app-shell">
     <header class="app-header" id="appHeader">
-      <div class="date-nav" id="dateNavigation">
-        <button id="prevDay" class="icon-button" type="button" aria-label="Vorheriger Tag">‹</button>
-        <button id="dateButton" class="date-button hero-date-button" type="button" aria-haspopup="dialog" aria-label="Datum auswählen und Kalender öffnen"></button>
-        <button id="nextDay" class="icon-button" type="button" aria-label="Nächster Tag">›</button>
-      </div>
-
       <h1 id="pageTitle" class="sr-only">Tagesreflexion</h1>
-      <div class="header-hero-grid" id="headerTitleRow">
-        <div class="role-hero-card" id="roleHeroCard">
-          <p class="role-hero-overline">Aktive Rolle heute</p>
-          <div class="role-hero-main">
-            <div class="role-hero-icon" id="roleHeroIcon" aria-hidden="true">🎓</div>
-            <div class="role-hero-copy">
-              <strong id="roleHeroName">Absolvent</strong>
-              <span id="roleHeroMeta">Rolle wechseln</span>
+      <div class="hero-layout">
+        <div class="hero-left">
+          <div class="date-nav" id="dateNavigation">
+            <button id="prevDay" class="icon-button hero-arrow" type="button" aria-label="Vorheriger Tag">‹</button>
+            <button id="dateButton" class="date-button hero-date-button" type="button" aria-haspopup="dialog" aria-label="Datum auswählen und Kalender öffnen"></button>
+            <button id="nextDay" class="icon-button hero-arrow" type="button" aria-label="Nächster Tag">›</button>
+          </div>
+
+          <div class="role-switch-card" id="roleSwitchCard">
+            <span class="role-switch-overline">Aktive Rolle heute</span>
+            <div class="role-switch-row">
+              <span id="roleHeroIcon" class="role-switch-emoji" aria-hidden="true">🎓</span>
+              <span class="role-switch-copy">
+                <strong id="roleHeroName">Absolvent</strong>
+                <small>Rolle wechseln</small>
+              </span>
+              <span class="role-switch-chevron" aria-hidden="true">›</span>
             </div>
-            <span class="role-hero-chevron" aria-hidden="true">›</span>
+            <label class="role-picker-wrap role-picker-overlay" id="rolePickerWrap">
+              <span class="sr-only">Tagesrolle auswählen</span>
+              <select id="dayRole" class="role-picker" aria-label="Tagesrolle auswählen"></select>
+            </label>
           </div>
-          <label class="role-picker-wrap role-picker-overlay" id="rolePickerWrap">
-            <span class="sr-only">Tagesrolle auswählen</span>
-            <select id="dayRole" class="role-picker" aria-label="Tagesrolle auswählen"></select>
-          </label>
+          <p id="roleTagline" class="sr-only"></p>
         </div>
 
-        <div class="role-mascot" id="roleMascot" aria-hidden="true" data-role="Absolvent">
-          <div class="mascot-speech"><span id="mascotQuote">Arabisch Schritt für Schritt erschließen …<br>Inshallah</span></div>
-          <div class="mascot-scene">
-            <span class="mascot-accent accent-a"></span>
-            <span class="mascot-accent accent-b"></span>
-            <div class="mascot-halo"></div>
-            <div class="mascot-shadow"></div>
-            <div class="mascot-briefcase"></div>
-            <div class="mascot-book"></div>
-            <div class="mascot-bottle"></div>
-            <div class="mascot-beads"></div>
-            <div class="mascot-hammer"></div>
-            <div class="mascot-spoon"></div>
-            <div class="mascot-mini"></div>
-            <span class="mascot-heart heart-a">❤</span>
-            <span class="mascot-heart heart-b">❤</span>
-            <div class="mascot-hat mascot-grad-cap"><i></i></div>
-            <div class="mascot-hat mascot-kufi"></div>
-            <div class="mascot-hat mascot-chefhat"><i></i><i></i><i></i></div>
-            <div class="mascot-body"><span class="mascot-eye left"></span><span class="mascot-eye right"></span></div>
-            <div class="mascot-arms"><i class="arm-left"></i><i class="arm-right"></i></div>
-            <div class="mascot-sprout"><i></i><i></i></div>
-          </div>
+        <div class="hero-mascot-area">
+          <div class="mascot-speech"><span id="mascotQuote">Arabisch Schritt für Schritt erschließen … Inshallah</span></div>
+          <img id="roleMascotImage" class="role-mascot-image" src="assets/mascots/mascot-absolvent.png" alt="" aria-hidden="true">
         </div>
-      </div>
-      <p id="roleTagline" class="sr-only"></p>
-
-      <div class="header-checkin-shelf" hidden>
-        <div id="checkinSlots" class="checkin-slots" aria-label="Fünf Tages-Check-ins"></div>
       </div>
     </header>
 
     <main>
       <section id="reviewPage" class="app-page active" aria-label="Tagesreview">
         <section class="card state-overview-card" aria-labelledby="stateOverviewTitle">
-          <h2 id="stateOverviewTitle" class="sr-only">Zustand &amp; Rollenmodus</h2>
+          <h2 id="stateOverviewTitle">Zustand &amp; Rollenmodus</h2>
+          <div id="checkinSlots" class="checkin-slots" aria-label="Fünf Tages-Check-ins"></div>
           <div id="currentStateSummary" class="current-state-summary empty-state-summary"></div>
           <details class="state-history-details">
             <summary><strong>Verlauf &amp; Details</strong></summary>

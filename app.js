@@ -969,79 +969,84 @@ function roleDisplayName(name) {
   return role.name === "Ich-Person" ? "Ich" : role.name;
 }
 
-function hashString(value = "") {
-  return [...String(value)].reduce((sum, char, index) => sum + char.charCodeAt(0) * (index + 1), 0);
-}
+const ROLE_MASCOT_IMAGES = {
+  "Ich-Person": "assets/mascots/mascot-ich.png",
+  "Vitalist": "assets/mascots/mascot-vitalist.png",
+  "Absolvent": "assets/mascots/mascot-absolvent.png",
+  "Unternehmer": "assets/mascots/mascot-unternehmer.png",
+  "Muslim": "assets/mascots/mascot-muslim.png",
+  "Wirt": "assets/mascots/mascot-wirt.png",
+  "Familienmensch": "assets/mascots/mascot-familienmensch.png"
+};
 
 const ROLE_SPEECHES = {
   "Ich-Person": [
-    "Routinen tragen meinen neuen Weg … Inshallah",
-    "Heute bewusst weitergehen … Inshallah",
-    "Schritt für Schritt zu mehr Klarheit … Inshallah",
-    "Mich neu ausrichten und dranbleiben … Inshallah",
-    "Struktur schafft Halt und Richtung … Inshallah"
+    "Ich lebe meinen neuen Lebensweg bewusst … Inshallah",
+    "Routinen und Gebete werden mein Fundament … Inshallah",
+    "Ich kehre verlässlich in meine Struktur zurück … Inshallah",
+    "Mein Alltag wird stabiler und geordneter … Inshallah",
+    "Meinen neuen Lebensweg festigen … Inshallah"
   ],
   "Vitalist": [
-    "Meine Gesundheit schützen und stärken … Inshallah",
-    "Zweimal pro Woche ins Gym kommen … Inshallah",
-    "Körper und Psyche bewusst pflegen … Inshallah",
-    "Dranbleiben statt übertreiben … Inshallah",
-    "Bewegung, Therapie, Stabilität … Inshallah"
+    "Ich schütze meine körperliche und psychische Gesundheit … Inshallah",
+    "Ich werde körperlich wieder regelmäßiger aktiv … Inshallah",
+    "Training, Abstinenz und Therapie tragen mein System … Inshallah",
+    "Meine Gesundheit entwickelt sich Schritt für Schritt … Inshallah",
+    "Meine Gesundheit schützen und stärken … Inshallah"
   ],
   "Absolvent": [
-    "Arabisch Schritt für Schritt erschließen … Inshallah",
-    "Wöchentlich Arabisch lernen … Inshallah",
-    "Lernen, wachsen, dranbleiben … Inshallah",
-    "Wissen mit Beständigkeit aufbauen … Inshallah",
-    "Heute in Bildung investieren … Inshallah"
+    "Ich bin ein Lernender, der kontinuierlich wächst … Inshallah",
+    "Ich baue 2026 eine verlässliche Arabisch-Grundlage auf … Inshallah",
+    "Ich lerne jede Woche Arabisch und bleibe dran … Inshallah",
+    "Mein Verständnis und Wortschatz wachsen sichtbar … Inshallah",
+    "Arabisch Schritt für Schritt erschließen … Inshallah"
   ],
   "Unternehmer": [
-    "Roleplay konsequent voranbringen … Inshallah",
-    "Mein Buch veröffentlichen … Inshallah",
-    "Meine App stetig ausbauen … Inshallah",
-    "Ideen in echte Wirkung bringen … Inshallah",
-    "Ein Projekt nach dem anderen … Inshallah"
+    "Ich verwandle Ideen Schritt für Schritt in reale Produkte … Inshallah",
+    "ROLEPLAY wird 2026 veröffentlichungsreif … Inshallah",
+    "Ich arbeite kontinuierlich an Buch und App … Inshallah",
+    "Buch und App werden sichtbar weiterentwickelt … Inshallah",
+    "ROLEPLAY Wirklichkeit werden lassen … Inshallah"
   ],
   "Muslim": [
-    "Meine Verpflichtungen erfüllen … Inshallah",
-    "Zu Allah zurückkehren und standhaft bleiben … Inshallah",
-    "Verpasste Fastentage nachholen … Inshallah",
-    "Mit Tawbah neu beginnen … Inshallah",
-    "Heute Iman und Taqwa stärken … Inshallah"
+    "Ich nehme meine Verpflichtungen ernst und kehre zurück … Inshallah",
+    "Ich hole meine offenen Fastentage vollständig nach … Inshallah",
+    "Ich faste regelmäßig, solange noch Tage offen sind … Inshallah",
+    "Die offenen Fastentage sinken bis auf null … Inshallah",
+    "Meine Verpflichtungen erfüllen und zurückkehren … Inshallah"
   ],
   "Wirt": [
-    "Mein Zuhause ordnen und erhalten … Inshallah",
-    "Den Keller Schritt für Schritt klären … Inshallah",
-    "Ordnung schaffen und bewahren … Inshallah",
-    "Mein Zuhause verantwortungsvoll tragen … Inshallah",
-    "Heute praktisch anpacken … Inshallah"
+    "Ich übernehme Verantwortung für mein Zuhause … Inshallah",
+    "Mein Keller wird wieder geordnet und nutzbar … Inshallah",
+    "Ich sortiere, entsorge und räume Schritt für Schritt … Inshallah",
+    "Ordnung und Nutzbarkeit werden sichtbar besser … Inshallah",
+    "Mein Zuhause ordnen und erhalten … Inshallah"
   ],
   "Familienmensch": [
-    "Nähe pflegen und verbunden bleiben … Inshallah",
-    "Familie bewusster im Blick behalten … Inshallah",
-    "Zeit, Liebe und Herkunft ehren … Inshallah",
-    "Verbindungen sammeln und bewahren … Inshallah",
-    "Das Wichtigste nicht aus dem Blick verlieren … Inshallah"
+    "Ich bin für meine Familie präsent und verlässlich … Inshallah",
+    "Familie soll bewusst Raum in meinem Jahr haben … Inshallah",
+    "Ich halte Kontakt und nehme mir bewusst Zeit … Inshallah",
+    "Nähe und Verbundenheit werden im Alltag sichtbar … Inshallah",
+    "Für meine Familie präsent sein … Inshallah"
   ]
 };
 
-function roleSpeechText(roleName, seed = `${selectedDate}|${roleName}`) {
+function roleSpeechText(roleName, date = selectedDate) {
   const lines = ROLE_SPEECHES[roleName] || ROLE_SPEECHES["Ich-Person"];
-  return lines[hashString(seed) % lines.length];
+  const seed = `${date}|${roleName}`;
+  let hash = 0;
+  for (let i = 0; i < seed.length; i += 1) hash = (hash + seed.charCodeAt(i) * (i + 1)) >>> 0;
+  return lines[hash % lines.length];
 }
 
-function updateRoleHeroUI(role = getRole($('dayRole')?.value || currentData?.role || ROLES[0].name)) {
-  const heroIcon = $("roleHeroIcon");
-  const heroName = $("roleHeroName");
-  const heroMeta = $("roleHeroMeta");
-  const quote = $("mascotQuote");
-  const mascot = $("roleMascot");
-  const displayName = roleDisplayName(role.name);
-  if (heroIcon) heroIcon.textContent = role.emoji || "✨";
-  if (heroName) heroName.textContent = displayName;
-  if (heroMeta) heroMeta.textContent = "Rolle wechseln";
-  if (quote) quote.innerHTML = escapeHTML(roleSpeechText(role.name)).replace(/\n/g, "<br>");
-  if (mascot) mascot.dataset.role = role.name;
+function updateHeaderRoleUI(role = getRole($("dayRole")?.value || currentData?.role || ROLES[0].name)) {
+  if ($("roleHeroIcon")) $("roleHeroIcon").textContent = role.emoji;
+  if ($("roleHeroName")) $("roleHeroName").textContent = roleDisplayName(role.name);
+  if ($("mascotQuote")) $("mascotQuote").textContent = roleSpeechText(role.name);
+  if ($("roleMascotImage")) {
+    $("roleMascotImage").src = ROLE_MASCOT_IMAGES[role.name] || ROLE_MASCOT_IMAGES["Ich-Person"];
+    $("roleMascotImage").alt = `${roleDisplayName(role.name)}-Maskottchen`;
+  }
 }
 
 /* ==========================================================================
@@ -2109,7 +2114,7 @@ function renderRolePickerOptions() {
 function fillRoleFocusForm() {
   const active = roleFocusIsActive();
   $("roleFocusRole").innerHTML = ROLES
-    .map(role => `<option value="${escapeHTML(role.name)}">${escapeHTML(role.emoji)} ${escapeHTML(roleDisplayName(role.name))}</option>`).join("");
+    .map(role => `<option value="${escapeHTML(role.name)}">${escapeHTML(role.emoji)} ${escapeHTML(role.name)}</option>`).join("");
   $("roleFocusRole").value = active ? roleFocus.role : getRole(currentData?.role || ROLES[0].name).name;
   $("roleFocusDuration").value = active ? roleFocus.mode : "today";
   $("roleFocusDate").value = active && roleFocus.endDate ? roleFocus.endDate : addDays(todayISO(), 7);
@@ -2171,7 +2176,7 @@ function applyRolePickerStyle() {
   picker.style.setProperty("--role-soft", hexToRgba(role.color, .18));
   picker.style.setProperty("--role-text", role.text);
   if ($("roleTagline")) $("roleTagline").textContent = ROLE_TAGLINES[role.name] || "Heute deine Rolle bewusst gestalten.";
-  updateRoleHeroUI(role);
+  updateHeaderRoleUI(role);
   applyHeaderTheme(role);
 }
 
@@ -2193,12 +2198,12 @@ function applyHeaderTheme(role = getRole($("dayRole")?.value || currentData?.rol
   if (!header) return;
   header.dataset.role = role.name;
   header.style.setProperty("--header-role", role.color);
-  header.style.setProperty("--header-role-deep", mixHex(role.color, "#0b1734", .46));
-  header.style.setProperty("--header-role-bright", mixHex(role.color, "#8fe3ff", .28));
-  header.style.setProperty("--header-role-soft", hexToRgba(role.color, .16));
-  header.style.setProperty("--header-role-softer", hexToRgba(role.color, .08));
-  header.style.setProperty("--header-role-line", hexToRgba(role.color, .28));
+  header.style.setProperty("--header-role-deep", mixHex(role.color, "#0b1734", .32));
+  header.style.setProperty("--header-role-bright", mixHex(role.color, "#ffffff", .36));
   header.style.setProperty("--header-role-ink", role.text);
+  document.documentElement.style.setProperty("--active-role", role.color);
+  document.documentElement.style.setProperty("--active-role-soft", hexToRgba(role.color, .15));
+  document.documentElement.style.setProperty("--active-role-softer", hexToRgba(role.color, .075));
 }
 
 function statusCircle(icon, variant = "neutral", size = "medium") {
