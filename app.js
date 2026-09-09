@@ -887,7 +887,7 @@ function dayPointTotal(data, date) {
 }
 
 const ROUTINE_MINUTE_CHOICES = Array.from({ length: 180 }, (_, index) => index + 1);
-const APP_VERSION = "6.3.0";
+const APP_VERSION = "6.3.1";
 const SCHEMA_VERSION = 7;
 const STORAGE_NAMESPACE = "roleplay-v25";
 const ROUTINES_STORAGE_KEY = `${STORAGE_NAMESPACE}-routines`;
@@ -2205,6 +2205,7 @@ function applyHeaderTheme(role = getRole($("dayRole")?.value || currentData?.rol
   header.style.setProperty("--header-role-ink", role.text);
   header.style.setProperty("--header-wash-top", mixHex(role.color, "#ffffff", .48));
   header.style.setProperty("--header-wash-mid", mixHex(role.color, "#ffffff", .88));
+  header.style.setProperty("--speech-tint", mixHex(role.color, "#ffffff", .92));
   document.documentElement.style.setProperty("--active-role", role.color);
   document.documentElement.style.setProperty("--active-role-soft", hexToRgba(role.color, .18));
   document.documentElement.style.setProperty("--active-role-softer", hexToRgba(role.color, .09));
@@ -4038,8 +4039,7 @@ function switchPage(page, options = {}) {
   $("analysisPage").classList.toggle("active", page === "analysis");
   $("streaksPage").classList.toggle("active", page === "streaks");
   $("pageTitle").textContent = titles[page] || "Roleplay";
-  $("rolePickerWrap").hidden = false;
-  $("dateNavigation").hidden = false;
+  $("appHeader").hidden = page !== "review";
   document.querySelectorAll(".nav-button").forEach(button => button.classList.toggle("active", button.dataset.page === page));
   if (page === "routines") renderRoutineCards();
   if (page === "analysis") renderAnalysis();

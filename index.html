@@ -15,9 +15,8 @@
 </head>
 <body>
   <div class="app-shell">
+    <h1 id="pageTitle" class="sr-only">Tagesreflexion</h1>
     <header class="app-header" id="appHeader">
-      <h1 id="pageTitle" class="sr-only">Tagesreflexion</h1>
-
       <div class="date-nav" id="dateNavigation">
         <button id="prevDay" class="icon-button" type="button" aria-label="Vorheriger Tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
         <button id="dateButton" class="date-button" type="button" aria-haspopup="dialog" aria-label="Datum auswählen und Kalender öffnen"></button>
@@ -25,21 +24,19 @@
       </div>
 
       <div class="header-hero">
-        <div class="header-hero-copy">
-          <label class="header-role-selector" id="rolePickerWrap">
-            <span class="header-role-label">Aktive Rolle</span>
-            <span class="header-role-value" aria-hidden="true">
-              <span id="roleHeroIcon" class="header-role-icon">🎓</span>
-              <strong id="roleHeroName">Absolvent</strong>
-              <svg viewBox="0 0 20 20"><path d="m6 8 4 4 4-4"/></svg>
-            </span>
-            <select id="dayRole" class="header-role-input" aria-label="Aktive Tagesrolle wechseln"></select>
-          </label>
-          <p class="header-impulse" aria-live="polite"><span id="mascotQuote">Arabisch Schritt für Schritt erschließen … Inshallah</span></p>
-          <p id="roleTagline" class="sr-only"></p>
-        </div>
+        <label class="header-role-selector" id="rolePickerWrap">
+          <span class="header-role-label">Aktive Rolle</span>
+          <span class="header-role-value" aria-hidden="true">
+            <span id="roleHeroIcon" class="header-role-icon">🎓</span>
+            <strong id="roleHeroName">Absolvent</strong>
+            <svg viewBox="0 0 20 20"><path d="m6 8 4 4 4-4"/></svg>
+          </span>
+          <select id="dayRole" class="header-role-input" aria-label="Aktive Tagesrolle wechseln"></select>
+        </label>
+        <p class="header-impulse" aria-live="polite"><span id="mascotQuote">Arabisch Schritt für Schritt erschließen … Inshallah</span></p>
         <img id="roleMascotImage" class="role-mascot-image" src="mascot-ich.jpeg" width="1254" height="1254" decoding="async" fetchpriority="high" alt="" aria-hidden="true">
       </div>
+      <p id="roleTagline" class="sr-only"></p>
     </header>
 
     <main>

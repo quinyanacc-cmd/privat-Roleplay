@@ -1,4 +1,4 @@
-const CACHE = "roleplay-v6-3-0";
+const CACHE = "roleplay-v6-3-1";
 const ASSETS = [
   "./",
   "./index.html",

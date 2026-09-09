@@ -1,8 +1,21 @@
-# ROLEPLAY App 6.3.0
+# ROLEPLAY App 6.3.1
 
 Lokale iPhone-PWA für Tagesreflexion, Routinen und adaptive Rollenmodi.
 Alle Daten bleiben im Browser des Geräts (`localStorage`), keine Serververbindung,
 kein Framework, keine externen Bibliotheken.
+
+## Version 6.3.1 – Futura und sprechendes Maskottchen
+
+- Futura ist wieder die erste Schriftwahl in der gesamten App. Wenn sie auf
+  dem Gerät nicht vorhanden ist, greift die bisherige lokale Ersatzschrift.
+- Die aktive Rolle steht näher am Datum. Die Kopfzeile benötigt keine feste
+  Mindesthöhe mehr und passt sich an den Inhalt an.
+- Der Rollenimpuls erscheint in einer Sprechblase mit einem dezenten Verlauf
+  in der Rollenfarbe. Ihre seitliche Spitze zeigt direkt zur Figur.
+- Die komplette Kopfzeile einschließlich Datum, Rollenwahl, Figur und Verlauf
+  erscheint nur auf der Eintragungsseite. Routinen, Auswertung und Streaks
+  beginnen direkt mit ihrem Inhalt und beachten den oberen iPhone-Sicherheitsabstand.
+- Version und Offline-Cache sind auf 6.3.1 aktualisiert.
 
 ## Version 6.3.0 – Offene Oberfläche und Originalfiguren
 
