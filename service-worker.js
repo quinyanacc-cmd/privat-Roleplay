@@ -1,4 +1,4 @@
-const CACHE = "roleplay-v6-2-5";
+const CACHE = "roleplay-v6-2-6";
 const ASSETS = [
   "./",
   "./index.html",
@@ -10,15 +10,7 @@ const ASSETS = [
   "./evening-header.jpg",
   "./header-tag.jpg",
   "./header-daemmerung.jpg",
-  "./header-zuhause.jpg",
-  "./mascot-ich.png",
-  "./mascot-vitalist.png",
-  "./mascot-absolvent.png",
-  "./mascot-unternehmer.png",
-  "./mascot-muslim.png",
-  "./mascot-wirt.png",
-  "./mascot-familienmensch.png",
-  "./speech-bubble.svg",
+  "./header-zuhause.jpg"
 ];
 
 self.addEventListener("install", event => {

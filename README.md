@@ -1,11 +1,11 @@
-# ROLEPLAY App 6.2.4
+# ROLEPLAY App 6.2.2
 
 Lokale iPhone-PWA für Tagesreflexion, Routinen und adaptive Rollenmodi.
 Alle Daten bleiben im Browser des Geräts (`localStorage`), keine Serververbindung,
 kein Framework, keine externen Bibliotheken.
 
 
-## Version 6.2.4 – Hero-Redesign näher an der Referenz
+## Version 6.2.2 – Hero-Redesign näher an der Referenz
 
 - Tages-Check-ins aus der großen Zustandskarte in den Hero-Kopf verschoben.
 - Hero deutlich näher an der Referenz: kräftiger Rollenverlauf, weiße Typografie, Glas-Dropdown, dekoratives Rollen-Maskottchen und helle geschwungene Check-in-Fläche.
@@ -13,7 +13,7 @@ kein Framework, keine externen Bibliotheken.
 - Tagesphasen bleiben Morgen → Mittag → Nachmittag → Abend → Nacht; Schlaf- und Traumtracking bleibt beim Morgen.
 - Große Kartenhülle um Zustand/Rollenmodus entfernt; dadurch weniger „Kasten in Kasten“.
 - Wochen-Graph nochmals höher, Kurven und Punkte kräftiger.
-- Version/Cache auf 6.2.4 aktualisiert; Speicher-Namespace bleibt unverändert.
+- Version/Cache auf 6.2.2 aktualisiert; Speicher-Namespace bleibt unverändert.
 
 ## Version 6.2.1 – kleiner UI-Aufschlag
 
