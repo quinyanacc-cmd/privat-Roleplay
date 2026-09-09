@@ -1,9 +1,50 @@
-# ROLEPLAY App 6.2.2
+# ROLEPLAY App 6.3.0
 
 Lokale iPhone-PWA für Tagesreflexion, Routinen und adaptive Rollenmodi.
 Alle Daten bleiben im Browser des Geräts (`localStorage`), keine Serververbindung,
 kein Framework, keine externen Bibliotheken.
 
+## Version 6.3.0 – Offene Oberfläche und Originalfiguren
+
+- Durchgängig weißer Hintergrund, auch bei dunkler iOS-Systemeinstellung.
+- Kompakter Kopf mit Datum über die gesamte Breite, kleiner Rollenauswahl
+  und gut lesbarem Rollenimpuls neben der passenden Figur.
+- Die Rollenfarbe läuft weich hinter den Anfang von Zustand & Rollenmodus
+  und geht ohne Absatz in die weiße Seite über.
+- Äußere Kartenhüllen, Schatten und Umrandungen der Seitenabschnitte entfernt.
+  Abstände und feine Trennlinien ordnen die Inhalte. Eingabefelder, Gebetsstatus
+  und die bebilderten Routinen bleiben klar als Bedienelemente erkennbar.
+- Die sieben beigefügten Figuren sind unverändert in voller Auflösung
+  (1.254 × 1.254 Pixel) eingebaut. Schwarze Augen und Details entsprechen den
+  Originalen. Die JPEG-Dateien wurden weder skaliert noch erneut komprimiert.
+  Ihr weißer Hintergrund wird in der Kopfzeile per CSS mit dem Verlauf
+  verrechnet; es handelt sich nicht um transparente PNG-Dateien.
+- Der Kopf scrollt mit der Seite. Er verkleinert sich nicht mehr sprunghaft
+  zu einem weiterhin großen, feststehenden Block.
+- Speicherformat und Namespace bleiben unverändert. App-Version und
+  Offline-Cache sind auf 6.3.0 aktualisiert; alle sieben Figuren werden offline
+  mitgespeichert.
+
+### Auf GitHub aktualisieren
+
+1. ZIP entpacken. Alle Dateien liegen direkt auf einer Ebene.
+2. Im bisherigen Repository die gleichnamigen Dateien ersetzen und alle
+   sieben Dateien `mascot-*.jpeg` ebenfalls hochladen. `index.html` und Bilder
+   müssen im selben Verzeichnis liegen.
+3. Die bisherige App-Adresse einmal online neu laden.
+
+Die bestehenden Einträge bleiben unter derselben App-Adresse erhalten.
+Ein neues Repository oder eine andere Adresse hat einen eigenen lokalen
+Datenspeicher. Für einen solchen Umzug vorher in der App ein Backup speichern
+und anschließend importieren.
+
+### Prüfung dieser Ausgabe
+
+- Vorhandene Testreihe: 168 Prüfungen bestanden, keine fehlgeschlagen.
+- JavaScript-Syntax, lokale Dateien, Bildzuordnung und Offline-Assetliste geprüft.
+- Kein Browser- oder iPhone-Gerätetest in dieser Bearbeitung durchgeführt.
+
+Die nachfolgenden Einträge dokumentieren frühere Versionen.
 
 ## Version 6.2.2 – Hero-Redesign näher an der Referenz
 
