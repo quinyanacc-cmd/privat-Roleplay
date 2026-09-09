@@ -466,7 +466,7 @@ group("Höherer Wochenliniengraph", () => {
   const svg = app.buildWeeklyTrendChart(["Mo", "Di"], [
     { label: "Energie", className: "energy", values: [60, 70] }
   ]);
-  equal("SVG nutzt die neue Höhe von 330", svg.includes('viewBox="0 0 440 330"'), true);
+  equal("SVG nutzt die neue Höhe von 380", svg.includes('viewBox="0 0 440 380"'), true);
 });
 
 group("Wochenrückblick ohne Gebetslinie", () => {

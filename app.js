@@ -887,7 +887,7 @@ function dayPointTotal(data, date) {
 }
 
 const ROUTINE_MINUTE_CHOICES = Array.from({ length: 180 }, (_, index) => index + 1);
-const APP_VERSION = "6.2.1";
+const APP_VERSION = "6.2.2";
 const SCHEMA_VERSION = 7;
 const STORAGE_NAMESPACE = "roleplay-v25";
 const ROUTINES_STORAGE_KEY = `${STORAGE_NAMESPACE}-routines`;
@@ -962,6 +962,86 @@ function linkifyText(value = "") {
 function getRole(name) {
   const normalized = ["Yannick", "Ich"].includes(name) ? "Ich-Person" : name;
   return ROLES.find(role => role.name === normalized) || ROLES[0];
+}
+
+function roleDisplayName(name) {
+  const role = getRole(name);
+  return role.name === "Ich-Person" ? "Ich" : role.name;
+}
+
+function hashString(value = "") {
+  return [...String(value)].reduce((sum, char, index) => sum + char.charCodeAt(0) * (index + 1), 0);
+}
+
+const ROLE_SPEECHES = {
+  "Ich-Person": [
+    "Routinen tragen meinen neuen Weg … Inshallah",
+    "Heute bewusst weitergehen … Inshallah",
+    "Schritt für Schritt zu mehr Klarheit … Inshallah",
+    "Mich neu ausrichten und dranbleiben … Inshallah",
+    "Struktur schafft Halt und Richtung … Inshallah"
+  ],
+  "Vitalist": [
+    "Meine Gesundheit schützen und stärken … Inshallah",
+    "Zweimal pro Woche ins Gym kommen … Inshallah",
+    "Körper und Psyche bewusst pflegen … Inshallah",
+    "Dranbleiben statt übertreiben … Inshallah",
+    "Bewegung, Therapie, Stabilität … Inshallah"
+  ],
+  "Absolvent": [
+    "Arabisch Schritt für Schritt erschließen … Inshallah",
+    "Wöchentlich Arabisch lernen … Inshallah",
+    "Lernen, wachsen, dranbleiben … Inshallah",
+    "Wissen mit Beständigkeit aufbauen … Inshallah",
+    "Heute in Bildung investieren … Inshallah"
+  ],
+  "Unternehmer": [
+    "Roleplay konsequent voranbringen … Inshallah",
+    "Mein Buch veröffentlichen … Inshallah",
+    "Meine App stetig ausbauen … Inshallah",
+    "Ideen in echte Wirkung bringen … Inshallah",
+    "Ein Projekt nach dem anderen … Inshallah"
+  ],
+  "Muslim": [
+    "Meine Verpflichtungen erfüllen … Inshallah",
+    "Zu Allah zurückkehren und standhaft bleiben … Inshallah",
+    "Verpasste Fastentage nachholen … Inshallah",
+    "Mit Tawbah neu beginnen … Inshallah",
+    "Heute Iman und Taqwa stärken … Inshallah"
+  ],
+  "Wirt": [
+    "Mein Zuhause ordnen und erhalten … Inshallah",
+    "Den Keller Schritt für Schritt klären … Inshallah",
+    "Ordnung schaffen und bewahren … Inshallah",
+    "Mein Zuhause verantwortungsvoll tragen … Inshallah",
+    "Heute praktisch anpacken … Inshallah"
+  ],
+  "Familienmensch": [
+    "Nähe pflegen und verbunden bleiben … Inshallah",
+    "Familie bewusster im Blick behalten … Inshallah",
+    "Zeit, Liebe und Herkunft ehren … Inshallah",
+    "Verbindungen sammeln und bewahren … Inshallah",
+    "Das Wichtigste nicht aus dem Blick verlieren … Inshallah"
+  ]
+};
+
+function roleSpeechText(roleName, seed = `${selectedDate}|${roleName}`) {
+  const lines = ROLE_SPEECHES[roleName] || ROLE_SPEECHES["Ich-Person"];
+  return lines[hashString(seed) % lines.length];
+}
+
+function updateRoleHeroUI(role = getRole($('dayRole')?.value || currentData?.role || ROLES[0].name)) {
+  const heroIcon = $("roleHeroIcon");
+  const heroName = $("roleHeroName");
+  const heroMeta = $("roleHeroMeta");
+  const quote = $("mascotQuote");
+  const mascot = $("roleMascot");
+  const displayName = roleDisplayName(role.name);
+  if (heroIcon) heroIcon.textContent = role.emoji || "✨";
+  if (heroName) heroName.textContent = displayName;
+  if (heroMeta) heroMeta.textContent = "Rolle wechseln";
+  if (quote) quote.innerHTML = escapeHTML(roleSpeechText(role.name)).replace(/\n/g, "<br>");
+  if (mascot) mascot.dataset.role = role.name;
 }
 
 /* ==========================================================================
@@ -2019,7 +2099,7 @@ function renderRolePickerOptions() {
   const focusRole = roleFocusIsActive() ? roleFocus.role : "";
   const options = ROLES.map(role => {
     const marker = role.name === focusRole ? " · Fokus" : "";
-    return `<option value="${escapeHTML(role.name)}">${escapeHTML(role.name)}${marker}</option>`;
+    return `<option value="${escapeHTML(role.name)}">${escapeHTML(role.emoji)} ${escapeHTML(roleDisplayName(role.name))}${marker}</option>`;
   }).join("");
   picker.innerHTML = `${options}<option value="${ROLE_FOCUS_OPTION}">◎ Rollenfokus ${focusRole ? "ändern" : "setzen"} …</option>`;
   picker.dataset.focusActive = focusRole ? "true" : "false";
@@ -2029,7 +2109,7 @@ function renderRolePickerOptions() {
 function fillRoleFocusForm() {
   const active = roleFocusIsActive();
   $("roleFocusRole").innerHTML = ROLES
-    .map(role => `<option value="${escapeHTML(role.name)}">${escapeHTML(role.emoji)} ${escapeHTML(role.name)}</option>`).join("");
+    .map(role => `<option value="${escapeHTML(role.name)}">${escapeHTML(role.emoji)} ${escapeHTML(roleDisplayName(role.name))}</option>`).join("");
   $("roleFocusRole").value = active ? roleFocus.role : getRole(currentData?.role || ROLES[0].name).name;
   $("roleFocusDuration").value = active ? roleFocus.mode : "today";
   $("roleFocusDate").value = active && roleFocus.endDate ? roleFocus.endDate : addDays(todayISO(), 7);
@@ -2091,6 +2171,7 @@ function applyRolePickerStyle() {
   picker.style.setProperty("--role-soft", hexToRgba(role.color, .18));
   picker.style.setProperty("--role-text", role.text);
   if ($("roleTagline")) $("roleTagline").textContent = ROLE_TAGLINES[role.name] || "Heute deine Rolle bewusst gestalten.";
+  updateRoleHeroUI(role);
   applyHeaderTheme(role);
 }
 
@@ -2110,9 +2191,13 @@ function mixHex(hex, target, amount) {
 function applyHeaderTheme(role = getRole($("dayRole")?.value || currentData?.role || ROLES[0].name)) {
   const header = $("appHeader");
   if (!header) return;
+  header.dataset.role = role.name;
   header.style.setProperty("--header-role", role.color);
   header.style.setProperty("--header-role-deep", mixHex(role.color, "#0b1734", .46));
   header.style.setProperty("--header-role-bright", mixHex(role.color, "#8fe3ff", .28));
+  header.style.setProperty("--header-role-soft", hexToRgba(role.color, .16));
+  header.style.setProperty("--header-role-softer", hexToRgba(role.color, .08));
+  header.style.setProperty("--header-role-line", hexToRgba(role.color, .28));
   header.style.setProperty("--header-role-ink", role.text);
 }
 
@@ -2550,7 +2635,7 @@ function dailyPrayerProgress(data) {
 
 function buildWeeklyTrendChart(labels, series, options = {}) {
   const width = 440;
-  const height = 330;
+  const height = 380;
   const padLeft = 30;
   const padRight = 12;
   const padTop = 14;
@@ -2599,7 +2684,7 @@ function buildWeeklyTrendChart(labels, series, options = {}) {
 
   const dots = series.map(item => item.values.map((value, index) => value === null || value === undefined
     ? ""
-    : `<circle class="wellbeing-dot ${item.className} ${index === todayIndex ? "today" : ""}" cx="${xFor(index).toFixed(1)}" cy="${yFor(value).toFixed(1)}" r="${index === todayIndex ? 5.4 : 4.0}"></circle>`).join("")).join("");
+    : `<circle class="wellbeing-dot ${item.className} ${index === todayIndex ? "today" : ""}" cx="${xFor(index).toFixed(1)}" cy="${yFor(value).toFixed(1)}" r="${index === todayIndex ? 6.5 : 5.0}"></circle>`).join("")).join("");
 
   // Ruhige Markierung des heutigen Tages – ohne Wertung, nur zur Orientierung.
   const bandWidth = labels.length > 1 ? plotWidth / (labels.length - 1) * 0.64 : 40;
