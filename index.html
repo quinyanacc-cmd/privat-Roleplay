@@ -17,37 +17,42 @@
   <div class="app-shell">
     <header class="app-header" id="appHeader">
       <h1 id="pageTitle" class="sr-only">Tagesreflexion</h1>
-      <div class="hero-layout">
-        <div class="hero-left">
-          <div class="date-nav" id="dateNavigation">
-            <button id="prevDay" class="icon-button hero-arrow" type="button" aria-label="Vorheriger Tag">‹</button>
-            <button id="dateButton" class="date-button hero-date-button" type="button" aria-haspopup="dialog" aria-label="Datum auswählen und Kalender öffnen"></button>
-            <button id="nextDay" class="icon-button hero-arrow" type="button" aria-label="Nächster Tag">›</button>
-          </div>
+      <div class="hero-top-row">
+        <div class="date-nav hero-date-group" id="dateNavigation">
+          <button id="prevDay" class="icon-button hero-arrow" type="button" aria-label="Vorheriger Tag">‹</button>
+          <button id="dateButton" class="date-button hero-date-button" type="button" aria-haspopup="dialog" aria-label="Datum auswählen und Kalender öffnen"></button>
+          <button id="nextDay" class="icon-button hero-arrow" type="button" aria-label="Nächster Tag">›</button>
+        </div>
 
-          <div class="role-switch-card" id="roleSwitchCard">
-            <span class="role-switch-overline">Aktive Rolle heute</span>
-            <div class="role-switch-row">
-              <span id="roleHeroIcon" class="role-switch-emoji" aria-hidden="true">🎓</span>
-              <span class="role-switch-copy">
-                <strong id="roleHeroName">Absolvent</strong>
-                <small>Rolle wechseln</small>
-              </span>
-              <span class="role-switch-chevron" aria-hidden="true">›</span>
-            </div>
-            <label class="role-picker-wrap role-picker-overlay" id="rolePickerWrap">
-              <span class="sr-only">Tagesrolle auswählen</span>
-              <select id="dayRole" class="role-picker" aria-label="Tagesrolle auswählen"></select>
-            </label>
-          </div>
-          <p id="roleTagline" class="sr-only"></p>
+        <div class="hero-role-pill" id="roleSwitchCard">
+          <span id="roleHeroIcon" class="hero-role-emoji" aria-hidden="true">🎓</span>
+          <strong id="roleHeroName">Absolvent</strong>
+          <span class="hero-role-chevron" aria-hidden="true">▾</span>
+          <label class="role-picker-wrap role-picker-overlay" id="rolePickerWrap">
+            <span class="sr-only">Tagesrolle auswählen</span>
+            <select id="dayRole" class="role-picker" aria-label="Tagesrolle auswählen"></select>
+          </label>
+        </div>
+      </div>
+
+      <div class="hero-copy">
+        <p class="hero-kicker">Heute bewusst einchecken</p>
+        <p class="hero-title">Tagesreflexion</p>
+        <p class="hero-subtitle">Kleine Schritte. Große Wirkung.</p>
+      </div>
+
+      <div class="hero-bottom-row">
+        <div class="hero-speech-bubble">
+          <img src="speech-bubble.svg" class="hero-speech-image" alt="" aria-hidden="true">
+          <div class="hero-speech-content"><span id="mascotQuote">Arabisch Schritt für Schritt erschließen … Inshallah</span></div>
         </div>
 
         <div class="hero-mascot-area">
-          <div class="mascot-speech"><span id="mascotQuote">Arabisch Schritt für Schritt erschließen … Inshallah</span></div>
-          <img id="roleMascotImage" class="role-mascot-image" src="assets/mascots/mascot-absolvent.png" alt="" aria-hidden="true">
+          <img id="roleMascotImage" class="role-mascot-image" src="mascot-absolvent.png" alt="" aria-hidden="true">
         </div>
       </div>
+
+      <p id="roleTagline" class="sr-only"></p>
     </header>
 
     <main>

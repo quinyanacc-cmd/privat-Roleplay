@@ -970,64 +970,64 @@ function roleDisplayName(name) {
 }
 
 const ROLE_MASCOT_IMAGES = {
-  "Ich-Person": "assets/mascots/mascot-ich.png",
-  "Vitalist": "assets/mascots/mascot-vitalist.png",
-  "Absolvent": "assets/mascots/mascot-absolvent.png",
-  "Unternehmer": "assets/mascots/mascot-unternehmer.png",
-  "Muslim": "assets/mascots/mascot-muslim.png",
-  "Wirt": "assets/mascots/mascot-wirt.png",
-  "Familienmensch": "assets/mascots/mascot-familienmensch.png"
+  "Ich-Person": "mascot-ich.png",
+  "Vitalist": "mascot-vitalist.png",
+  "Absolvent": "mascot-absolvent.png",
+  "Unternehmer": "mascot-unternehmer.png",
+  "Muslim": "mascot-muslim.png",
+  "Wirt": "mascot-wirt.png",
+  "Familienmensch": "mascot-familienmensch.png"
 };
 
 const ROLE_SPEECHES = {
   "Ich-Person": [
-    "Ich lebe meinen neuen Lebensweg bewusst … Inshallah",
-    "Routinen und Gebete werden mein Fundament … Inshallah",
-    "Ich kehre verlässlich in meine Struktur zurück … Inshallah",
-    "Mein Alltag wird stabiler und geordneter … Inshallah",
-    "Meinen neuen Lebensweg festigen … Inshallah"
+    "Neuen Lebensweg bewusst gehen … Inshallah",
+    "Routinen wieder festigen … Inshallah",
+    "Gebete und Alltag ordnen … Inshallah",
+    "Struktur Schritt für Schritt leben … Inshallah",
+    "Heute bewusst bei mir bleiben … Inshallah"
   ],
   "Vitalist": [
-    "Ich schütze meine körperliche und psychische Gesundheit … Inshallah",
-    "Ich werde körperlich wieder regelmäßiger aktiv … Inshallah",
-    "Training, Abstinenz und Therapie tragen mein System … Inshallah",
-    "Meine Gesundheit entwickelt sich Schritt für Schritt … Inshallah",
-    "Meine Gesundheit schützen und stärken … Inshallah"
+    "Meine Gesundheit schützen und stärken … Inshallah",
+    "Zweimal pro Woche ins Gym … Inshallah",
+    "Training und Abstinenz bewahren … Inshallah",
+    "Körper und Psyche pflegen … Inshallah",
+    "Bewegung wieder zur Gewohnheit machen … Inshallah"
   ],
   "Absolvent": [
-    "Ich bin ein Lernender, der kontinuierlich wächst … Inshallah",
-    "Ich baue 2026 eine verlässliche Arabisch-Grundlage auf … Inshallah",
-    "Ich lerne jede Woche Arabisch und bleibe dran … Inshallah",
-    "Mein Verständnis und Wortschatz wachsen sichtbar … Inshallah",
-    "Arabisch Schritt für Schritt erschließen … Inshallah"
+    "Arabisch Schritt für Schritt erschließen … Inshallah",
+    "Wöchentlich Arabisch lernen … Inshallah",
+    "Meine Grundlagen 2026 ausbauen … Inshallah",
+    "Dranbleiben und Wissen vertiefen … Inshallah",
+    "Heute in Bildung investieren … Inshallah"
   ],
   "Unternehmer": [
-    "Ich verwandle Ideen Schritt für Schritt in reale Produkte … Inshallah",
-    "ROLEPLAY wird 2026 veröffentlichungsreif … Inshallah",
-    "Ich arbeite kontinuierlich an Buch und App … Inshallah",
-    "Buch und App werden sichtbar weiterentwickelt … Inshallah",
-    "ROLEPLAY Wirklichkeit werden lassen … Inshallah"
+    "ROLEPLAY Wirklichkeit werden lassen … Inshallah",
+    "Mein Buch veröffentlichen … Inshallah",
+    "Meine App stetig ausbauen … Inshallah",
+    "Ideen in echte Wirkung verwandeln … Inshallah",
+    "Kontinuierlich am Projekt arbeiten … Inshallah"
   ],
   "Muslim": [
-    "Ich nehme meine Verpflichtungen ernst und kehre zurück … Inshallah",
-    "Ich hole meine offenen Fastentage vollständig nach … Inshallah",
-    "Ich faste regelmäßig, solange noch Tage offen sind … Inshallah",
-    "Die offenen Fastentage sinken bis auf null … Inshallah",
-    "Meine Verpflichtungen erfüllen und zurückkehren … Inshallah"
+    "Meine Verpflichtungen erfüllen … Inshallah",
+    "Offene Fastentage nachholen … Inshallah",
+    "Standhaft zurückkehren … Inshallah",
+    "Iman und Taqwa stärken … Inshallah",
+    "Mit Tawbah neu beginnen … Inshallah"
   ],
   "Wirt": [
-    "Ich übernehme Verantwortung für mein Zuhause … Inshallah",
-    "Mein Keller wird wieder geordnet und nutzbar … Inshallah",
-    "Ich sortiere, entsorge und räume Schritt für Schritt … Inshallah",
-    "Ordnung und Nutzbarkeit werden sichtbar besser … Inshallah",
-    "Mein Zuhause ordnen und erhalten … Inshallah"
+    "Mein Zuhause ordnen und erhalten … Inshallah",
+    "Den Keller Schritt für Schritt klären … Inshallah",
+    "Praktisch anpacken und sortieren … Inshallah",
+    "Ordnung sichtbar verbessern … Inshallah",
+    "Verantwortung fürs Zuhause tragen … Inshallah"
   ],
   "Familienmensch": [
-    "Ich bin für meine Familie präsent und verlässlich … Inshallah",
-    "Familie soll bewusst Raum in meinem Jahr haben … Inshallah",
-    "Ich halte Kontakt und nehme mir bewusst Zeit … Inshallah",
-    "Nähe und Verbundenheit werden im Alltag sichtbar … Inshallah",
-    "Für meine Familie präsent sein … Inshallah"
+    "Für meine Familie präsent sein … Inshallah",
+    "Zeit und Nähe bewusst pflegen … Inshallah",
+    "Verbunden bleiben … Inshallah",
+    "Familie im Alltag Raum geben … Inshallah",
+    "Beziehungen liebevoll stärken … Inshallah"
   ]
 };
 
