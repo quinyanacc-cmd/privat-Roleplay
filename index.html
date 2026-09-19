@@ -487,6 +487,7 @@ Anziehen"></textarea>
       </div>
       <div id="sessionContext" class="session-context" hidden></div>
       <div id="sessionMicroSteps" class="session-microsteps" hidden></div>
+      <section id="sessionGuidedExperience" class="session-guided-experience" hidden aria-live="polite"></section>
       <div class="session-controls">
         <button id="sessionPause" class="session-secondary-control" type="button" aria-label="Pause">Ⅱ</button>
         <button id="sessionComplete" class="session-complete-control" type="button" aria-label="Schritt erledigt">✓</button>
@@ -512,6 +513,15 @@ Anziehen"></textarea>
         </div>
       </section>
     </div>
+  </dialog>
+
+  <dialog id="routineCompletionDialog" class="form-dialog routine-completion-dialog">
+    <div class="routine-completion-mark" aria-hidden="true">✓</div>
+    <h3 id="routineCompletionTitle">Bereit für den Tag.</h3>
+    <p id="routineCompletionMeta" class="routine-completion-meta"></p>
+    <div id="routineCompletionRole" class="routine-completion-role"></div>
+    <div id="routineCompletionAction" class="routine-completion-action"></div>
+    <button id="routineCompletionClose" class="primary-button compact" type="button">Tag beginnen</button>
   </dialog>
 
 

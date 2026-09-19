@@ -1,0 +1,29 @@
+{
+  "format": "ROLEPLAY_ROUTINE",
+  "version": 2,
+  "routine": {
+    "key": "morning",
+    "title": "Morgenroutine",
+    "description": "Zwei Stunden, die Körper, Glaube, Kopf und Richtung auf denselben Tag ausrichten.",
+    "theme": "morning",
+    "guidedBlocksVersion": 2,
+    "defaultMode": "full",
+    "modes": [
+      { "key": "full", "label": "Voll", "description": "Der komplette Morgen", "accent": "120 Min." },
+      { "key": "standard", "label": "Standard", "description": "Alles Wesentliche", "accent": "90 Min." },
+      { "key": "short", "label": "Kurz", "description": "Die gleiche Choreografie", "accent": "45 Min." }
+    ],
+    "autoNext": false,
+    "items": [
+      { "id": "m-ready", "emoji": "🧼", "title": "Bereit werden", "minutes": 10, "modeMinutes": { "full": 10, "standard": 10, "short": 5 }, "context": "Der erste Sieg ist banal: aufstehen, fertig werden, nichts verhandeln.", "steps": ["Duschen / waschen", "Zähne & Bad", "Bett machen", "Anziehen"] },
+      { "id": "m-supply", "emoji": "🐈", "title": "Versorgung", "minutes": 5, "modeMinutes": { "full": 5, "standard": 5, "short": 5 }, "context": "Versorge zuerst das Notwendige. Danach ist der Kopf frei.", "steps": ["Tabletten + Wasser", "Katze füttern", "Smoothie / Getränk vorbereiten"] },
+      { "id": "m-prayer", "emoji": "🤲", "title": "Gebet & Ibāda", "minutes": 25, "modeMinutes": { "full": 25, "standard": 20, "short": 10 }, "context": "Ankommen, beten, gedenken. Kein Multitasking und kein Produktivitätsdruck.", "steps": ["Gebet", "Dhikr / Qurʾān / Besinnung", "Duʿā"] },
+      { "id": "m-move", "emoji": "💪", "title": "Aktivieren", "minutes": 20, "modeMinutes": { "full": 20, "standard": 10, "short": 5 }, "kind": "exercise", "context": "Nicht nur abhaken: Körpertemperatur hoch, Kreislauf an, einmal echte Belastung.", "steps": ["2 Min. Mobilität", "Kraft: Liegestütze / Kniebeugen / Zugbewegung", "Core oder kurze Kondition", "1 Min. ruhig auslaufen"] },
+      { "id": "m-align", "emoji": "🧭", "title": "Ausrichtung", "minutes": 15, "modeMinutes": { "full": 15, "standard": 10, "short": 5 }, "kind": "alignment", "context": "Rolle, Commitment, Visualisierung, Hindernis und eine konkrete Tageshandlung.", "steps": [] },
+      { "id": "m-read", "emoji": "📖", "title": "Lesen", "minutes": 20, "modeMinutes": { "full": 20, "standard": 15, "short": 5 }, "context": "Ein zusammenhängender Leseblock. Nicht scrollen, nicht nebenbei wechseln.", "steps": ["Buch öffnen", "Fokussiert lesen", "Eine Stelle markieren oder einen Gedanken behalten"] },
+      { "id": "m-english", "emoji": "🇬🇧", "title": "Englisch", "minutes": 15, "modeMinutes": { "full": 15, "standard": 15, "short": 5 }, "context": "Duolingo fokussiert. Kontinuität vor Perfektion.", "steps": ["Duolingo öffnen", "Konzentriert lernen", "Ein neues Muster bewusst mitnehmen"] },
+      { "id": "m-peak", "emoji": "🧠", "title": "Peak", "minutes": 5, "modeMinutes": { "full": 5, "standard": 0, "short": 0 }, "context": "Kurzer Bonusblock für Gehirntraining. Er darf entfallen, ohne den Morgen zu entwerten.", "steps": ["Peak öffnen", "Tagestraining abschließen"] },
+      { "id": "m-close", "emoji": "🎒", "title": "Aufbrechen", "minutes": 5, "modeMinutes": { "full": 5, "standard": 5, "short": 5 }, "context": "Schließe den Morgen sauber ab und gehe mit einer klaren Handlung in den Tag.", "steps": ["Tasche / Dinge prüfen", "Lichter & Raumcheck", "Duʿā", "Losgehen / Tag beginnen"] }
+    ]
+  }
+}

@@ -719,19 +719,26 @@ const DEFAULT_ROUTINES = {
   morning: {
     key: "morning",
     title: "Morgenroutine",
-    description: "Ein Block nach dem anderen. Ruhig starten, klar in den Tag.",
+    description: "Zwei Stunden, die Körper, Glaube, Kopf und Richtung auf denselben Tag ausrichten.",
     theme: "morning",
-    guidedBlocksVersion: 1,
+    guidedBlocksVersion: 2,
+    defaultMode: "full",
+    modes: [
+      { key: "full", label: "Voll", description: "Der komplette Morgen", accent: "120 Min." },
+      { key: "standard", label: "Standard", description: "Alles Wesentliche", accent: "90 Min." },
+      { key: "short", label: "Kurz", description: "Die gleiche Choreografie", accent: "45 Min." }
+    ],
     autoNext: false,
     items: [
-      { id: "m-ready", emoji: "🧼", title: "Fertigmachen", minutes: 15, context: "Nicht nachdenken, einfach den Körper und den Raum startklar machen.", steps: ["Duschen / waschen", "Zähne & Bad", "Bett machen", "Anziehen"] },
-      { id: "m-supply", emoji: "🐈", title: "Versorgung", minutes: 5, context: "Alles versorgen, was du für einen stabilen Start brauchst.", steps: ["Tabletten + Wasser", "Katze füttern", "Smoothie / Getränk einpacken"] },
-      { id: "m-prayer", emoji: "🤲", title: "Gebet & Ibāda", minutes: 25, context: "Gebet, Dhikr und bewusste Hinwendung zu Allah. Kein Multitasking.", steps: ["Gebet", "Dhikr / kurze Besinnung"] },
-      { id: "m-move", emoji: "💪", title: "Mobilisieren", minutes: 5, context: "Kurz den Kreislauf anschalten. Es geht um Aktivierung, nicht um ein volles Workout.", steps: ["Liegestütze", "Kurze Mobilisation"] },
-      { id: "m-read", emoji: "📖", title: "Lesen", minutes: 20, context: "Ein zusammenhängender Leseblock ohne Nebenbei-Appwechsel.", steps: ["Buch öffnen", "20 Minuten lesen", "Stelle markieren und Buch schließen"] },
-      { id: "m-english", emoji: "🇬🇧", title: "Englisch", minutes: 15, context: "Duolingo fokussiert erledigen. Kontinuität vor Perfektion.", steps: ["Duolingo öffnen", "15 Minuten konzentriert lernen"] },
-      { id: "m-peak", emoji: "🧠", title: "Peak", minutes: 10, context: "Kurzer, klar begrenzter Gehirntraining-Block.", steps: ["Peak öffnen", "Tagestraining abschließen"] },
-      { id: "m-close", emoji: "🎒", title: "Abschluss + Duʿā", minutes: 5, context: "Den Morgen sauber abschließen und bewusst in den nächsten Abschnitt wechseln.", steps: ["Tasche / Dinge prüfen", "Lichter & Raumcheck", "Duʿā", "Losgehen / in den Tag wechseln"] }
+      { id: "m-ready", emoji: "🧼", title: "Bereit werden", minutes: 10, modeMinutes: { full: 10, standard: 10, short: 5 }, context: "Der erste Sieg ist banal: aufstehen, fertig werden, nichts verhandeln.", steps: ["Duschen / waschen", "Zähne & Bad", "Bett machen", "Anziehen"] },
+      { id: "m-supply", emoji: "🐈", title: "Versorgung", minutes: 5, modeMinutes: { full: 5, standard: 5, short: 5 }, context: "Versorge zuerst das Notwendige. Danach ist der Kopf frei.", steps: ["Tabletten + Wasser", "Katze füttern", "Smoothie / Getränk vorbereiten"] },
+      { id: "m-prayer", emoji: "🤲", title: "Gebet & Ibāda", minutes: 25, modeMinutes: { full: 25, standard: 20, short: 10 }, context: "Ankommen, beten, gedenken. Kein Multitasking und kein Produktivitätsdruck.", steps: ["Gebet", "Dhikr / Qurʾān / Besinnung", "Duʿā"] },
+      { id: "m-move", emoji: "💪", title: "Aktivieren", minutes: 20, modeMinutes: { full: 20, standard: 10, short: 5 }, kind: "exercise", context: "Nicht nur abhaken: Körpertemperatur hoch, Kreislauf an, einmal echte Belastung.", steps: ["2 Min. Mobilität", "Kraft: Liegestütze / Kniebeugen / Zugbewegung", "Core oder kurze Kondition", "1 Min. ruhig auslaufen"] },
+      { id: "m-align", emoji: "🧭", title: "Ausrichtung", minutes: 15, modeMinutes: { full: 15, standard: 10, short: 5 }, kind: "alignment", context: "Rolle, Commitment, Visualisierung, Hindernis und eine konkrete Tageshandlung.", steps: [] },
+      { id: "m-read", emoji: "📖", title: "Lesen", minutes: 20, modeMinutes: { full: 20, standard: 15, short: 5 }, context: "Ein zusammenhängender Leseblock. Nicht scrollen, nicht nebenbei wechseln.", steps: ["Buch öffnen", "Fokussiert lesen", "Eine Stelle markieren oder einen Gedanken behalten"] },
+      { id: "m-english", emoji: "🇬🇧", title: "Englisch", minutes: 15, modeMinutes: { full: 15, standard: 15, short: 5 }, context: "Duolingo fokussiert. Kontinuität vor Perfektion.", steps: ["Duolingo öffnen", "Konzentriert lernen", "Ein neues Muster bewusst mitnehmen"] },
+      { id: "m-peak", emoji: "🧠", title: "Peak", minutes: 5, modeMinutes: { full: 5, standard: 0, short: 0 }, context: "Kurzer Bonusblock für Gehirntraining. Er darf entfallen, ohne den Morgen zu entwerten.", steps: ["Peak öffnen", "Tagestraining abschließen"] },
+      { id: "m-close", emoji: "🎒", title: "Aufbrechen", minutes: 5, modeMinutes: { full: 5, standard: 5, short: 5 }, context: "Schließe den Morgen sauber ab und gehe mit einer klaren Handlung in den Tag.", steps: ["Tasche / Dinge prüfen", "Lichter & Raumcheck", "Duʿā", "Losgehen / Tag beginnen"] }
     ]
   },
   evening: {
@@ -884,13 +891,14 @@ function dayPointTotal(data, date) {
 }
 
 const ROUTINE_MINUTE_CHOICES = Array.from({ length: 180 }, (_, index) => index + 1);
-const APP_VERSION = "7.0.0-beta.2";
+const APP_VERSION = "7.0.0-beta.3";
 const SCHEMA_VERSION = 8;
 const STORAGE_NAMESPACE = "roleplay-v25";
 const ROUTINES_STORAGE_KEY = `${STORAGE_NAMESPACE}-routines`;
 const ROUTINE_GUIDED_MIGRATION_KEY = `${STORAGE_NAMESPACE}-guided-morning-v1`;
+const ROUTINE_MORNING_EXPERIENCE_MIGRATION_KEY = `${STORAGE_NAMESPACE}-morning-experience-v2`;
 const ROUTINE_FILE_FORMAT = "ROLEPLAY_ROUTINE";
-const ROUTINE_FILE_VERSION = 1;
+const ROUTINE_FILE_VERSION = 2;
 const BACKUP_TIMESTAMP_KEY = `${STORAGE_NAMESPACE}-last-backup-at`;
 const ROUTINE_SESSION_STORAGE_KEY = `${STORAGE_NAMESPACE}-active-routine-session`;
 const ROLE_FOCUS_STORAGE_KEY = `${STORAGE_NAMESPACE}-role-focus`;
@@ -1147,6 +1155,8 @@ function emptyReview(date) {
     morningRoutineState: "", eveningRoutineState: "",
     morningRoutine: false, eveningRoutine: false,
     routineProgress: { morning: {}, evening: {} },
+    routineModes: {},
+    routineInputs: {},
     prayers: Object.fromEntries(PRAYERS.map(prayer => [prayer, ""])),
     sunnahPrayers: Object.fromEntries(SUNNAH_PRAYERS.map(prayer => [prayer, ""])),
     ramadanDays: previous?.ramadanDays !== undefined ? Number(previous.ramadanDays) : (productSettings ? -productSettings.fastingDays : -29),
@@ -1198,10 +1208,11 @@ function normalizeReview(raw, date, hasStoredValue) {
   merged.eveningRoutineState = normalizeRoutineState(eveningState);
   const normalizedSleep = raw?.sleepQualityScore ?? legacySleepScore(raw?.sleepQuality);
   merged.sleepQualityScore = normalizedSleep === "" || normalizedSleep === undefined || normalizedSleep === null ? "" : Number(normalizedSleep);
-  merged.routineProgress = {
-    morning: { ...(raw?.routineProgress?.morning || {}) },
-    evening: { ...(raw?.routineProgress?.evening || {}) }
-  };
+  merged.routineProgress = Object.fromEntries(Object.entries(raw?.routineProgress || {}).map(([key, value]) => [key, value && typeof value === "object" ? { ...value } : {}]));
+  merged.routineProgress.morning = { ...(raw?.routineProgress?.morning || merged.routineProgress.morning || {}) };
+  merged.routineProgress.evening = { ...(raw?.routineProgress?.evening || merged.routineProgress.evening || {}) };
+  merged.routineModes = raw?.routineModes && typeof raw.routineModes === "object" ? { ...raw.routineModes } : {};
+  merged.routineInputs = raw?.routineInputs && typeof raw.routineInputs === "object" ? JSON.parse(JSON.stringify(raw.routineInputs)) : {};
   merged.stateCheckins = Array.isArray(raw?.stateCheckins) ? raw.stateCheckins.map((entry, index) => {
     const time = /^\d{2}:\d{2}$/.test(entry.time || "") ? entry.time : "12:00";
     const inferredSlot = entry.slot || legacySlotForTime(time);
@@ -3427,6 +3438,55 @@ function openCalendar() {
   $("calendarDialog").showModal();
 }
 
+function normalizeRoutineModes(value) {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set();
+  return value.map((mode, index) => {
+    const rawKey = String(mode?.key || `mode-${index + 1}`).trim().toLowerCase();
+    const key = /^[a-z0-9_-]{1,40}$/.test(rawKey) && !seen.has(rawKey) ? rawKey : `mode-${index + 1}`;
+    seen.add(key);
+    return {
+      key,
+      label: String(mode?.label || key).trim().slice(0, 40),
+      description: String(mode?.description || "").trim().slice(0, 120),
+      accent: String(mode?.accent || "").trim().slice(0, 40)
+    };
+  }).slice(0, 6);
+}
+
+function normalizeRoutineModeMinutes(value, modes = []) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const allowed = new Set(modes.map(mode => mode.key));
+  return Object.fromEntries(Object.entries(value).filter(([key]) => !allowed.size || allowed.has(key)).map(([key, minutes]) => {
+    const number = Number(minutes);
+    return [key, Number.isFinite(number) ? clamp(number, 0, 180) : 0];
+  }));
+}
+
+function routineModesFor(routine) {
+  const modes = normalizeRoutineModes(routine?.modes);
+  return modes.length ? modes : [{ key: "default", label: "Start", description: "", accent: `${routineMinutes(routine)} Min.` }];
+}
+
+function routineModeKey(routine, requested) {
+  const modes = routineModesFor(routine);
+  const preferred = String(requested || routine?.defaultMode || modes[0]?.key || "default");
+  return modes.some(mode => mode.key === preferred) ? preferred : modes[0].key;
+}
+
+function routineItemMinutesForMode(item, modeKey) {
+  if (modeKey && modeKey !== "default" && item?.modeMinutes && Object.prototype.hasOwnProperty.call(item.modeMinutes, modeKey)) {
+    return Math.max(0, Number(item.modeMinutes[modeKey] || 0));
+  }
+  return Math.max(0, Number(item?.minutes || 0));
+}
+
+function routineItemsForMode(routine, modeKey) {
+  const resolvedMode = routineModeKey(routine, modeKey);
+  return (routine?.items || []).map(item => ({ ...item, minutes: routineItemMinutesForMode(item, resolvedMode), steps: Array.isArray(item.steps) ? [...item.steps] : [] }))
+    .filter(item => Number(item.minutes) > 0);
+}
+
 function normalizeRoutines(value) {
   const defaults = JSON.parse(JSON.stringify(DEFAULT_ROUTINES));
   const incoming = value && typeof value === "object" ? value : {};
@@ -3449,12 +3509,16 @@ function normalizeRoutines(value) {
     merged.key = key;
     merged.theme = merged.theme || (key === "morning" ? "morning" : key === "evening" ? "evening" : "focus");
     merged.guidedBlocksVersion = Number(merged.guidedBlocksVersion || 0);
+    merged.modes = normalizeRoutineModes(merged.modes);
+    merged.defaultMode = merged.modes.some(mode => mode.key === merged.defaultMode) ? merged.defaultMode : (merged.modes[0]?.key || "default");
     merged.items = Array.isArray(merged.items) ? merged.items.map((item, idx) => ({
       id: item.id || `${key}-${Date.now()}-${idx}`,
       emoji: item.emoji || "✨",
       title: item.title || "Neuer Schritt",
       minutes: clamp(Number(item.minutes || 5), 1, 180),
       context: item.context || "",
+      kind: String(item.kind || "standard").slice(0, 40),
+      modeMinutes: normalizeRoutineModeMinutes(item.modeMinutes, merged.modes),
       steps: Array.isArray(item.steps) ? item.steps.map(step => String(step || "").trim()).filter(Boolean).slice(0, 20) : []
     })) : [];
     output[key] = merged;
@@ -3495,6 +3559,22 @@ function migrateGuidedMorningRoutine() {
   RPStorage.setItem(ROUTINE_GUIDED_MIGRATION_KEY, "done");
 }
 
+function migrateMorningExperienceV2() {
+  if (RPStorage.getItem(ROUTINE_MORNING_EXPERIENCE_MIGRATION_KEY) === "done") return;
+  if (productSettings?.personalTemplate === false || !routines?.morning) return;
+  const morning = routines.morning;
+  const knownPersonalIds = new Set(["m-ready", "m-supply", "m-prayer", "m-move", "m-read", "m-english", "m-peak", "m-close"]);
+  const recognizable = (morning.items || []).filter(item => knownPersonalIds.has(item.id)).length >= 5 || Number(morning.guidedBlocksVersion || 0) === 1;
+  if (recognizable && Number(morning.guidedBlocksVersion || 0) < 2) {
+    const upgraded = JSON.parse(JSON.stringify(DEFAULT_ROUTINES.morning));
+    upgraded.title = morning.title || upgraded.title;
+    upgraded.theme = morning.theme || upgraded.theme;
+    routines.morning = upgraded;
+    saveRoutines();
+  }
+  RPStorage.setItem(ROUTINE_MORNING_EXPERIENCE_MIGRATION_KEY, "done");
+}
+
 function routineFileKey(value, fallbackTitle = "Routine") {
   const raw = String(value || "").trim();
   if (raw && /^[a-z0-9äöüß][a-z0-9äöüß._-]{0,79}$/i.test(raw) && !["__proto__", "constructor", "prototype"].includes(raw)) return raw;
@@ -3510,6 +3590,8 @@ function normalizeImportedRoutine(raw, index = 0) {
   const key = routineFileKey(raw.key, title);
   const allowedThemes = new Set(["morning", "evening", "tag", "daemmerung", "zuhause", "focus"]);
   const theme = allowedThemes.has(raw.theme) ? raw.theme : (key === "morning" ? "morning" : key === "evening" ? "evening" : "focus");
+  const modes = normalizeRoutineModes(raw.modes);
+  const defaultMode = modes.some(mode => mode.key === raw.defaultMode) ? raw.defaultMode : (modes[0]?.key || "default");
   const seen = new Set();
   const items = raw.items.map((item, itemIndex) => {
     if (!item || typeof item !== "object" || Array.isArray(item)) throw new Error(`Block ${itemIndex + 1} in „${title}“ ist ungültig.`);
@@ -3529,10 +3611,12 @@ function normalizeImportedRoutine(raw, index = 0) {
       title: itemTitle,
       minutes: Number.isFinite(minutes) ? clamp(minutes, 1, 180) : 5,
       context,
+      kind: /^[a-z0-9_-]{1,40}$/i.test(String(item.kind || "")) ? String(item.kind) : "standard",
+      modeMinutes: normalizeRoutineModeMinutes(item.modeMinutes, modes),
       steps
     };
   });
-  return { key, title, description: String(raw.description || "Eigene Routine").trim().slice(0, 240) || "Eigene Routine", theme, guidedBlocksVersion: Number(raw.guidedBlocksVersion || (items.some(item => item.steps.length) ? 1 : 0)), autoNext: false, items };
+  return { key, title, description: String(raw.description || "Eigene Routine").trim().slice(0, 240) || "Eigene Routine", theme, guidedBlocksVersion: Number(raw.guidedBlocksVersion || (items.some(item => item.steps.length) ? 1 : 0)), defaultMode, modes, autoNext: false, items };
 }
 
 function routinePayloadForExport(key) {
@@ -3602,8 +3686,10 @@ function orderedRoutineKeys() {
   });
 }
 
-function routineMinutes(routine) {
-  return routine.items.reduce((sum, item) => sum + Number(item.minutes || 0), 0);
+function routineMinutes(routine, modeKey = null) {
+  if (!routine) return 0;
+  const items = modeKey ? routineItemsForMode(routine, modeKey) : (routine.items || []);
+  return Math.round(items.reduce((sum, item) => sum + Number(item.minutes || 0), 0) * 10) / 10;
 }
 
 function routineProgress(key) {
@@ -3629,12 +3715,23 @@ function renderRoutineLaunchpad() {
   const routine = routines[key];
   const progress = routineProgress(key);
   const map = currentData.routineProgress?.[key] || {};
-  const next = routine.items.find(item => !["done", "skipped"].includes(map[item.id])) || routine.items[0];
-  const remaining = routine.items.filter(item => !["done", "skipped"].includes(map[item.id])).reduce((sum, item) => sum + Number(item.minutes || 0), 0);
   const started = progress.resolved > 0;
-  root.className = `routine-launchpad ${routine.theme || "focus"}`;
-  root.innerHTML = `<span class="routine-launchpad-kicker">ROUTINE-MODUS</span><h2>${started ? "Weiter. Genau hier." : "Bereit? Dann los."}</h2><p><strong>${escapeHTML(next?.title || routine.title)}</strong> ist jetzt alles, was zählt. Danach führt dich ROLEPLAY zum nächsten Block.</p><div class="routine-launchpad-stats"><span>${progress.resolved}/${progress.total} Blöcke</span><span>noch ${remaining} Min.</span></div><button type="button" class="routine-launchpad-cta" data-launch-routine="${escapeHTML(key)}">${started ? "Fortsetzen" : "Routine starten"}<span>→</span></button>`;
-  root.querySelector("[data-launch-routine]")?.addEventListener("click", () => startRoutine(key));
+  const chosenMode = routineModeKey(routine, currentData.routineModes?.[key]);
+  const activeItems = routineItemsForMode(routine, chosenMode);
+  const next = activeItems.find(item => !["done", "skipped"].includes(map[item.id])) || activeItems[0] || routine.items[0];
+  const activeResolved = activeItems.filter(item => ["done", "skipped"].includes(map[item.id])).length;
+  const remaining = activeItems.filter(item => !["done", "skipped"].includes(map[item.id])).reduce((sum, item) => sum + Number(item.minutes || 0), 0);
+  const role = getRole(currentData.role);
+  root.className = `routine-launchpad ${routine.theme || "focus"} ${key === "morning" ? "is-morning-experience" : ""}`;
+
+  if (key === "morning" && !started && routineModesFor(routine).length > 1) {
+    const modes = routineModesFor(routine);
+    root.innerHTML = `<span class="routine-launchpad-kicker">DEIN MORGEN</span><h2>Zwei Stunden, die den Tag tragen.</h2><p>Erst ankommen, dann aktivieren, ausrichten und wachsen. <strong>Heute im Fokus: ${escapeHTML(role.emoji)} ${escapeHTML(roleDisplayName(role.name))}.</strong></p><div class="routine-mode-picker" role="group" aria-label="Umfang der Morgenroutine">${modes.map(mode => `<button type="button" class="routine-mode-option ${mode.key === routine.defaultMode ? "is-primary" : ""}" data-launch-routine="${escapeHTML(key)}" data-routine-mode="${escapeHTML(mode.key)}"><span><strong>${escapeHTML(mode.label)}</strong><small>${escapeHTML(mode.description)}</small></span><b>${escapeHTML(mode.accent || `${routineMinutes(routine, mode.key)} Min.`)}</b></button>`).join("")}</div><small class="routine-launchpad-foot">Alle Modi folgen derselben Choreografie. Du verkürzt den Morgen – nicht die Identität.</small>`;
+  } else {
+    const mode = routineModesFor(routine).find(entry => entry.key === chosenMode);
+    root.innerHTML = `<span class="routine-launchpad-kicker">ROUTINE-MODUS</span><h2>${started ? "Weiter. Genau hier." : "Bereit? Dann los."}</h2><p><strong>${escapeHTML(next?.title || routine.title)}</strong> ist jetzt alles, was zählt. Danach führt dich ROLEPLAY zum nächsten Block.</p><div class="routine-launchpad-stats"><span>${activeResolved}/${activeItems.length} Phasen</span><span>noch ${remaining} Min.</span>${mode && mode.key !== "default" ? `<span>${escapeHTML(mode.label)}</span>` : ""}</div><button type="button" class="routine-launchpad-cta" data-launch-routine="${escapeHTML(key)}" data-routine-mode="${escapeHTML(chosenMode)}">${started ? "Fortsetzen" : "Routine starten"}<span>→</span></button>`;
+  }
+  root.querySelectorAll("[data-launch-routine]").forEach(button => button.addEventListener("click", () => startRoutine(button.dataset.launchRoutine, button.dataset.routineMode)));
 }
 
 function renderRoutineCards() {
@@ -3644,10 +3741,13 @@ function renderRoutineCards() {
     const routine = routines[key];
     const progress = routineProgress(key);
     const progressMap = currentData.routineProgress?.[key] || {};
-    const remaining = routine.items
+    const selectedMode = routineModeKey(routine, currentData.routineModes?.[key]);
+    const activeItems = routineItemsForMode(routine, selectedMode);
+    const activeResolved = activeItems.filter(item => ["done", "skipped"].includes(progressMap[item.id])).length;
+    const remaining = activeItems
       .filter(item => !["done", "skipped"].includes(progressMap[item.id]))
       .reduce((sum, item) => sum + Number(item.minutes || 0), 0);
-    const percent = progress.total ? Math.round(progress.resolved / progress.total * 100) : 0;
+    const percent = activeItems.length ? Math.round(activeResolved / activeItems.length * 100) : 0;
     const started = progress.resolved > 0;
     const finished = progress.total > 0 && progress.resolved === progress.total;
 
@@ -3658,8 +3758,8 @@ function renderRoutineCards() {
       : finished
         ? "Abgeschlossen"
         : started
-          ? `${progress.resolved}/${progress.total} · noch ${remaining} Min.`
-          : `${routine.items.length} Schritte · ${routineMinutes(routine)} Min.`;
+          ? `${activeResolved}/${activeItems.length} · noch ${remaining} Min.`
+          : `${routine.items.length} Phasen · ${routineMinutes(routine, routineModeKey(routine))} Min.`;
 
     return `<button type="button" class="routine-hero ${routine.theme} ${finished ? "is-finished" : started ? "is-started" : ""}" data-open-routine="${key}">
       <span class="routine-thread" aria-hidden="true"></span>
@@ -3682,7 +3782,7 @@ function renderRoutineCards() {
   }));
   document.querySelectorAll("[data-start-routine]").forEach(button => button.addEventListener("click", event => {
     event.stopPropagation();
-    startRoutine(button.dataset.startRoutine);
+    startRoutine(button.dataset.startRoutine, currentData.routineModes?.[button.dataset.startRoutine]);
   }));
 }
 
@@ -3710,7 +3810,8 @@ function renderRoutineDetail(key) {
   const remainingMinutes = routine.items.filter(item => !["done", "skipped"].includes(progressMap[item.id])).reduce((sum, item) => sum + Number(item.minutes || 0), 0);
   $("routineDetailEyebrow").textContent = key === "morning" ? "MORGEN" : key === "evening" ? "ABEND" : "FOKUS";
   $("routineDetailTitle").textContent = routine.title;
-  $("routineDetailMeta").textContent = `${routine.items.length} Schritte · ${routineMinutes(routine)} Minuten`;
+  const modeSummary = routineModesFor(routine).filter(mode => mode.key !== "default").map(mode => `${mode.label} ${routineMinutes(routine, mode.key)} Min.`).join(" · ");
+  $("routineDetailMeta").textContent = modeSummary ? `${routine.items.length} Phasen · ${modeSummary}` : `${routine.items.length} Schritte · ${routineMinutes(routine)} Minuten`;
   $("routineDetailProgress").innerHTML = `<div class="routine-progress-head"><strong>${progress.done}/${progress.total} erledigt</strong><span>${progressPercent}%</span></div><div class="routine-progress-track"><i style="width:${progressPercent}%"></i></div><small>ca. ${completedMinutes} Min. erledigt · ${remainingMinutes} Min. offen</small>`;
   $("routineItemList").innerHTML = routine.items.map((item, index) => {
     const state = progressMap[item.id] || "";
@@ -3720,7 +3821,7 @@ function renderRoutineDetail(key) {
       <span class="routine-emoji-bubble">${escapeHTML(item.emoji)}</span>
       <div class="routine-item-copy">
         <strong>${escapeHTML(item.title)}</strong>
-        <small>${item.minutes} Min.${stateLabel}${item.steps?.length ? ` · ${item.steps.length} Feinschritte` : item.context ? " · Kontext" : ""}</small>
+        <small>${routine.modes?.length ? routine.modes.map(mode => `${mode.label} ${routineItemMinutesForMode(item, mode.key)} Min.`).filter(label => !label.endsWith(" 0 Min.")).join(" · ") : `${item.minutes} Min.`}${stateLabel}${item.kind === "alignment" ? " · geführt" : item.steps?.length ? ` · ${item.steps.length} Feinschritte` : item.context ? " · Kontext" : ""}</small>
         ${item.steps?.length ? `<div class="routine-item-steps">${item.steps.slice(0, 4).map(step => `<span>${escapeHTML(step)}</span>`).join("")}${item.steps.length > 4 ? `<span>+${item.steps.length - 4}</span>` : ""}</div>` : ""}
       </div>
       <div class="routine-sort-controls" aria-label="Reihenfolge ändern">
@@ -3930,7 +4031,11 @@ function saveRoutineItemFromForm(event) {
   setRoutineEmojiError(false);
   if (!title) return;
   const selectedMinutes = Number($("routineItemMinutes").value);
+  const list = routines[activeRoutineKey].items;
+  const index = list.findIndex(entry => entry.id === editingRoutineItemId);
+  const existing = index >= 0 ? list[index] : {};
   const item = {
+    ...existing,
     id: editingRoutineItemId || `${activeRoutineKey}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
     emoji,
     title,
@@ -3938,8 +4043,6 @@ function saveRoutineItemFromForm(event) {
     context: $("routineItemContext").value.trim(),
     steps: $("routineItemSteps") ? $("routineItemSteps").value.split(/\n/).map(step => step.trim()).filter(Boolean).slice(0, 20) : []
   };
-  const list = routines[activeRoutineKey].items;
-  const index = list.findIndex(entry => entry.id === editingRoutineItemId);
   if (index >= 0) list[index] = item; else list.push(item);
   saveRoutines();
   $("routineItemDialog").close();
@@ -3980,23 +4083,31 @@ function deleteRoutineItem() {
   if (routineSession) { renderRoutineSession(); renderSessionRoutineEditor(); }
 }
 
-function startRoutine(key) {
+function startRoutine(key, requestedMode = null) {
   const routine = routines[key];
-  if (!routine.items.length) return;
+  if (!routine?.items?.length) return;
   currentData.routineProgress[key] = currentData.routineProgress[key] || {};
+  currentData.routineModes = currentData.routineModes || {};
+  const modeKey = routineModeKey(routine, requestedMode || currentData.routineModes[key]);
+  const mode = routineModesFor(routine).find(entry => entry.key === modeKey) || routineModesFor(routine)[0];
+  const items = routineItemsForMode(routine, modeKey);
+  if (!items.length) return;
+  currentData.routineModes[key] = modeKey;
   const progress = currentData.routineProgress?.[key] || {};
-  let index = routine.items.findIndex(item => !["done", "skipped"].includes(progress[item.id]));
+  let index = items.findIndex(item => !["done", "skipped"].includes(progress[item.id]));
   if (index < 0) {
     if (!confirm("Diese Routine ist heute bereits abgeschlossen. Fortschritt zurücksetzen und erneut starten?")) return;
     currentData.routineProgress[key] = {};
     index = 0;
   }
-  const remaining = Math.round(routine.items[index].minutes * 60);
-  // Die Session arbeitet auf einer Kopie. Umsortieren während des Durchlaufs
-  // verändert damit ausschließlich diesen Durchlauf, nie das gespeicherte
-  // Routine-Template. Dauerhafte Änderungen laufen über "Routine bearbeiten".
-  routineSession = { key, index, remaining, running: true, endAt: Date.now() + remaining * 1000, interval: null, contextOpen: true, expiredNotified: false, microDone: {},
-    items: (routines[key]?.items || []).map(item => ({ ...item, steps: Array.isArray(item.steps) ? [...item.steps] : [] })) };
+  const remaining = Math.round(items[index].minutes * 60);
+  routineSession = {
+    key, modeKey, modeLabel: mode?.label || "", index, remaining, running: true,
+    endAt: Date.now() + remaining * 1000, interval: null, contextOpen: true,
+    expiredNotified: false, microDone: {}, guideSteps: {}, visualizationEndAt: null, visualizationDone: false,
+    items: items.map(item => ({ ...item, steps: Array.isArray(item.steps) ? [...item.steps] : [] }))
+  };
+  saveReview(true);
   persistRoutineSession();
   $("routineSessionDialog").showModal();
   renderRoutineSession();
@@ -4034,38 +4145,155 @@ function currentSessionItem() {
   return sessionItems()[routineSession.index];
 }
 
+function alignmentData(itemId = "m-align") {
+  currentData.routineInputs = currentData.routineInputs || {};
+  currentData.routineInputs[routineSession?.key || "morning"] = currentData.routineInputs[routineSession?.key || "morning"] || {};
+  const bucket = currentData.routineInputs[routineSession?.key || "morning"];
+  bucket[itemId] = bucket[itemId] && typeof bucket[itemId] === "object" ? bucket[itemId] : {};
+  return bucket[itemId];
+}
+
+function alignmentField(itemId, key, fallback = "") {
+  const data = alignmentData(itemId);
+  return String(data[key] ?? fallback ?? "");
+}
+
+function setAlignmentField(itemId, key, value) {
+  const data = alignmentData(itemId);
+  data[key] = String(value || "").slice(0, 1200);
+  saveReview(true);
+}
+
+function alignmentGuideStep(itemId) {
+  routineSession.guideSteps = routineSession.guideSteps || {};
+  return clamp(Number(routineSession.guideSteps[itemId] || 0), 0, 5);
+}
+
+function setAlignmentGuideStep(itemId, next) {
+  if (!routineSession) return;
+  routineSession.guideSteps = routineSession.guideSteps || {};
+  routineSession.guideSteps[itemId] = clamp(Number(next), 0, 5);
+  persistRoutineSession();
+  renderRoutineSession();
+}
+
+function alignmentRolePrompt() {
+  const role = getRole(currentData?.role || ROLES[0].name);
+  const defaults = {
+    "Ich-Person": "Ich schaffe Stabilität und Klarheit durch bewusstes Handeln.",
+    "Vitalist": "Ich schütze Energie, Gesundheit und Belastbarkeit durch konkrete Entscheidungen.",
+    "Absolvent": "Ich lerne kontinuierlich und bringe meine Ausbildung oder Weiterbildung sichtbar voran.",
+    "Unternehmer": "Ich verwandle Ideen in konkrete Ergebnisse und veröffentlichbare Produkte.",
+    "Muslim": "Ich richte mein Handeln bewusst an meinen religiösen Verpflichtungen und Werten aus.",
+    "Wirt": "Ich halte mein Zuhause geordnet, ruhig und funktional.",
+    "Familienmensch": "Ich bin für meine Familie präsent und verlässlich."
+  };
+  const goal = String(role.goal || defaults[role.name] || `Ich handle heute bewusst als ${roleDisplayName(role.name)}.`).trim();
+  return { role, goal };
+}
+
+function renderAlignmentExperience(item) {
+  const root = $("sessionGuidedExperience");
+  if (!root) return;
+  const step = alignmentGuideStep(item.id);
+  const { role, goal } = alignmentRolePrompt();
+  const data = alignmentData(item.id);
+  const roleName = roleDisplayName(role.name);
+  const dots = Array.from({ length: 6 }, (_, index) => `<i class="${index === step ? "is-active" : index < step ? "is-done" : ""}"></i>`).join("");
+  const action = escapeHTML(alignmentField(item.id, "action"));
+  const screens = [
+    `<span class="alignment-kicker">1 · ROLLE</span><div class="alignment-role-chip"><span>${escapeHTML(role.emoji)}</span><div><small>Heute im Fokus</small><strong>${escapeHTML(roleName)}</strong></div></div><p class="alignment-lead">${escapeHTML(goal || `Was ist heute für ${roleName} ein guter kleiner Schritt?`)}</p><label class="alignment-field"><span>Woran erkennst du heute Abend, dass du dieser Rolle gerecht geworden bist?</span><textarea data-alignment-field="evidence" rows="3" placeholder="Ein konkretes Verhalten reicht.">${escapeHTML(alignmentField(item.id, "evidence"))}</textarea></label>`,
+    `<span class="alignment-kicker">2 · COMMITMENT</span><h3>Nicht vorsagen. Festlegen.</h3><p class="alignment-lead">Eine gute Affirmation beschreibt keinen Wunschzustand, sondern deinen Standard und dein Verhalten.</p><div class="alignment-commitment-static"><small>Rollenstandard</small><strong>${escapeHTML(goal || `Ich handle heute bewusst als ${roleName}.`)}</strong></div><label class="alignment-field"><span>Mein Commitment für heute</span><textarea data-alignment-field="commitment" rows="3" placeholder="Heute werde ich … – auch wenn …">${escapeHTML(alignmentField(item.id, "commitment"))}</textarea></label>`,
+    `<span class="alignment-kicker">3 · VISUALISIERUNG</span><h3>Sieh die Handlung, nicht die Trophäe.</h3><p class="alignment-lead">Augen schließen. Stell dir den realen Ablauf vor: anfangen, Widerstand bemerken, trotzdem handeln, abschließen.</p><button type="button" class="visualization-button" data-start-visualization><span>◉</span><strong id="visualizationTimerDisplay">90 Sek. starten</strong></button><small class="alignment-help">Kein Wunschfilm. Eine mentale Probe des Verhaltens.</small>`,
+    `<span class="alignment-kicker">4 · HINDERNIS</span><h3>Plane den schwierigen Moment mit ein.</h3><label class="alignment-field"><span>Was könnte dich heute realistisch stoppen?</span><textarea data-alignment-field="obstacle" rows="2" placeholder="z. B. Müdigkeit nach der Arbeit">${escapeHTML(alignmentField(item.id, "obstacle"))}</textarea></label><label class="alignment-field"><span>Wenn das passiert, dann …</span><textarea data-alignment-field="ifThen" rows="2" placeholder="… beginne ich trotzdem für zehn Minuten.">${escapeHTML(alignmentField(item.id, "ifThen"))}</textarea></label>`,
+    `<span class="alignment-kicker">5 · JOURNAL</span><h3>Drei Sätze. Mehr braucht es nicht.</h3><label class="alignment-field compact"><span>Dafür bin ich heute dankbar</span><input data-alignment-field="gratitude" value="${escapeHTML(alignmentField(item.id, "gratitude"))}" placeholder="…"></label><label class="alignment-field compact"><span>Das Wichtigste heute</span><input data-alignment-field="priority" value="${escapeHTML(alignmentField(item.id, "priority"))}" placeholder="…"></label><label class="alignment-field compact"><span>Darauf möchte ich achten</span><input data-alignment-field="attention" value="${escapeHTML(alignmentField(item.id, "attention"))}" placeholder="…"></label>`,
+    `<span class="alignment-kicker">6 · ENTSCHEIDUNG</span><h3>Eine Handlung macht die Rolle sichtbar.</h3><label class="alignment-field"><span>Meine eine Handlung heute</span><textarea data-alignment-field="action" rows="3" placeholder="So konkret, dass du heute anfangen kannst.">${action}</textarea></label><label class="alignment-field compact"><span>Heute bewusst im Hintergrund</span><select data-alignment-field="backgroundRole"><option value="">Keine Auswahl nötig</option>${ROLES.filter(entry => !entry.archived && entry.name !== role.name).map(entry => `<option value="${escapeHTML(entry.name)}" ${data.backgroundRole === entry.name ? "selected" : ""}>${escapeHTML(entry.emoji)} ${escapeHTML(roleDisplayName(entry.name))}</option>`).join("")}</select></label><p class="alignment-finish-copy">Du musst heute nicht jede Rolle maximieren. Du musst wissen, welche Verantwortung jetzt trägt.</p>`
+  ];
+  root.hidden = false;
+  root.innerHTML = `<div class="alignment-progress">${dots}</div><div class="alignment-screen">${screens[step]}</div><div class="alignment-nav"><button type="button" class="alignment-nav-back" data-alignment-back ${step === 0 ? "disabled" : ""}>Zurück</button><button type="button" class="alignment-nav-next" data-alignment-next>${step === 5 ? "Ausrichtung steht" : "Weiter"}<span>→</span></button></div>`;
+  root.querySelectorAll("[data-alignment-field]").forEach(field => {
+    const save = () => setAlignmentField(item.id, field.dataset.alignmentField, field.value);
+    field.addEventListener("change", save);
+    field.addEventListener("input", () => {
+      clearTimeout(field._saveTimer);
+      field._saveTimer = setTimeout(save, 350);
+    });
+  });
+  root.querySelector("[data-alignment-back]")?.addEventListener("click", () => setAlignmentGuideStep(item.id, step - 1));
+  root.querySelector("[data-alignment-next]")?.addEventListener("click", () => {
+    if (step < 5) setAlignmentGuideStep(item.id, step + 1);
+    else {
+      const button = $("sessionComplete");
+      button?.classList.add("is-ready");
+      if (navigator.vibrate) navigator.vibrate(18);
+      root.querySelector("[data-alignment-next]").textContent = "✓ Bereit – Block abschließen";
+    }
+  });
+  root.querySelector("[data-start-visualization]")?.addEventListener("click", startAlignmentVisualization);
+  updateAlignmentVisualizationDisplay();
+}
+
+function startAlignmentVisualization() {
+  if (!routineSession) return;
+  routineSession.visualizationDone = false;
+  routineSession.visualizationEndAt = Date.now() + 90000;
+  persistRoutineSession();
+  updateAlignmentVisualizationDisplay();
+}
+
+function updateAlignmentVisualizationDisplay() {
+  const display = $("visualizationTimerDisplay");
+  if (!display || !routineSession) return;
+  if (!routineSession.visualizationEndAt) {
+    display.textContent = routineSession.visualizationDone ? "✓ Visualisierung abgeschlossen" : "90 Sek. starten";
+    return;
+  }
+  const seconds = Math.max(0, Math.ceil((Number(routineSession.visualizationEndAt) - Date.now()) / 1000));
+  display.textContent = seconds > 0 ? `${seconds} Sek.` : "✓ Visualisierung abgeschlossen";
+  if (seconds <= 0) {
+    routineSession.visualizationEndAt = null;
+    routineSession.visualizationDone = true;
+    persistRoutineSession();
+  }
+}
+
 function renderRoutineSession() {
   if (!routineSession) return;
   syncRoutineSessionClock();
   const routine = routines[routineSession.key];
   const item = currentSessionItem();
   if (!routine || !item) return;
-  $("routineSessionDialog").dataset.theme = routine.theme || "focus";
-  $("sessionRoutineName").textContent = routine.title;
-  const items = sessionItems();
-  $("sessionProgress").textContent = `Block ${routineSession.index + 1} von ${items.length} · jetzt nur das hier`;
-  // Die Session übernimmt das Kopfbild ihrer Routine als ruhige Atmosphäre.
   const dialogEl = $("routineSessionDialog");
+  $("sessionComplete")?.classList.remove("is-ready");
   dialogEl.dataset.theme = routine.theme || "focus";
-  // Fortschrittsring um den Timer: Anteil der bereits erledigten Schritte.
-  const resolved = items.filter(item => (currentData?.routineProgress?.[routineSession.key] || {})[item.id]).length;
+  dialogEl.classList.toggle("is-guided-alignment", item.kind === "alignment");
+  const morningPhase = (routineSession.index + 1) / Math.max(1, sessionItems().length);
+  dialogEl.style.setProperty("--morning-phase", String(morningPhase));
+  dialogEl.style.setProperty("--morning-phase-opacity", String(0.035 + morningPhase * 0.08));
+  $("sessionRoutineName").textContent = routineSession.modeLabel ? `${routine.title} · ${routineSession.modeLabel}` : routine.title;
+  const items = sessionItems();
+  $("sessionProgress").textContent = `Phase ${routineSession.index + 1} von ${items.length} · jetzt nur das hier`;
+  const resolved = items.filter(entry => (currentData?.routineProgress?.[routineSession.key] || {})[entry.id]).length;
   const ring = Math.round(resolved / Math.max(1, items.length) * 100);
   $("sessionTimerCircle").style.setProperty("--session-progress", `${ring}%`);
   $("sessionItemTitle").textContent = item.title;
   $("sessionItemEmoji").textContent = item.emoji;
   $("sessionTimer").textContent = formatTimer(routineSession.remaining);
   $("sessionPause").textContent = routineSession.running ? "Ⅱ" : "▶";
-  $("sessionContext").hidden = !item.context;
-  $("sessionContext").innerHTML = item.context ? linkifyText(item.context) : "";
+  $("sessionContext").hidden = !item.context || item.kind === "alignment";
+  $("sessionContext").innerHTML = item.context && item.kind !== "alignment" ? linkifyText(item.context) : "";
+  const guided = $("sessionGuidedExperience");
+  if (item.kind === "alignment") renderAlignmentExperience(item);
+  else if (guided) { guided.hidden = true; guided.innerHTML = ""; }
   const micro = $("sessionMicroSteps");
   if (micro) {
-    const steps = Array.isArray(item.steps) ? item.steps : [];
+    const steps = item.kind === "alignment" ? [] : (Array.isArray(item.steps) ? item.steps : []);
     const done = routineSession.microDone?.[item.id] || [];
     micro.hidden = !steps.length;
-    micro.innerHTML = steps.length ? `<div class="session-micro-head"><strong>In diesem Block</strong><span>Orientierung, kein Extra-Pflichtprogramm</span></div><div class="session-micro-list">${steps.map((step, idx) => `<button type="button" class="session-micro-step ${done[idx] ? "is-done" : ""}" data-session-micro-index="${idx}"><span class="session-micro-check">${done[idx] ? "✓" : ""}</span><span>${escapeHTML(step)}</span></button>`).join("")}</div>` : "";
+    micro.innerHTML = steps.length ? `<div class="session-micro-head"><strong>In dieser Phase</strong><span>Orientierung, kein Extra-Pflichtprogramm</span></div><div class="session-micro-list">${steps.map((step, idx) => `<button type="button" class="session-micro-step ${done[idx] ? "is-done" : ""}" data-session-micro-index="${idx}"><span class="session-micro-check">${done[idx] ? "✓" : ""}</span><span>${escapeHTML(step)}</span></button>`).join("")}</div>` : "";
   }
   const next = items[routineSession.index + 1];
-  $("sessionNext").textContent = next ? `Als Nächstes: ${next.title}` : "Letzter Schritt dieser Routine";
+  $("sessionNext").textContent = next ? `Als Nächstes: ${next.title}` : "Letzte Phase – danach beginnt dein Tag";
   const rest = sessionRemainingSummary();
   const restEl = $("sessionRemaining");
   if (restEl && rest) restEl.textContent = `Noch ${rest.minutes} Min. · ca. ${rest.endLabel} Uhr fertig`;
@@ -4132,6 +4360,7 @@ function updateRoutineSessionClockDisplay() {
   if (timer) timer.textContent = formatTimer(routineSession.remaining);
   const pause = $("sessionPause");
   if (pause) pause.textContent = routineSession.running ? "Ⅱ" : "▶";
+  updateAlignmentVisualizationDisplay();
 }
 
 function startSessionInterval() {
@@ -4172,7 +4401,7 @@ function restoreRoutineSession() {
     RPStorage.removeItem(ROUTINE_SESSION_STORAGE_KEY);
     return;
   }
-  routineSession = { ...stored, microDone: stored.microDone && typeof stored.microDone === "object" ? stored.microDone : {}, interval: null, remaining: Math.max(0, Number(stored.remaining || 0)), running: Boolean(stored.running), endAt: stored.endAt ? Number(stored.endAt) : null };
+  routineSession = { ...stored, microDone: stored.microDone && typeof stored.microDone === "object" ? stored.microDone : {}, guideSteps: stored.guideSteps && typeof stored.guideSteps === "object" ? stored.guideSteps : {}, interval: null, remaining: Math.max(0, Number(stored.remaining || 0)), running: Boolean(stored.running), endAt: stored.endAt ? Number(stored.endAt) : null, visualizationEndAt: stored.visualizationEndAt ? Number(stored.visualizationEndAt) : null };
   syncRoutineSessionClock();
   if (!$("routineSessionDialog").open) $("routineSessionDialog").showModal();
   renderRoutineSession();
@@ -4191,9 +4420,18 @@ function toggleSessionMicroStep(index) {
   renderRoutineSession();
 }
 
-function showRoutineCelebration(routine, allDone) {
+function showRoutineCelebration(routine, allDone, summary = {}) {
   if (navigator.vibrate) navigator.vibrate(allDone ? [35, 45, 55] : 30);
-  showProductMessage(allDone ? `✨ ${routine.title} geschafft. Stark – jetzt in den Tag.` : `${routine.title} bewusst beendet. Übersprungene Blöcke bleiben dokumentiert.`);
+  showProductMessage(allDone ? `✨ ${routine.title} geschafft. Jetzt in den Tag.` : `${routine.title} bewusst beendet. Übersprungene Phasen bleiben dokumentiert.`);
+  if (allDone && $("routineCompletionDialog")) {
+    const role = getRole(currentData?.role || ROLES[0].name);
+    const inputs = currentData?.routineInputs?.[routine.key]?.["m-align"] || {};
+    $("routineCompletionTitle").textContent = routine.key === "morning" ? "Bereit für den Tag." : `${routine.title} geschafft.`;
+    $("routineCompletionMeta").textContent = [summary.modeLabel, summary.plannedMinutes ? `${summary.plannedMinutes} Min. geplant` : "", `${summary.completed || routine.items.length} Phasen`].filter(Boolean).join(" · ");
+    $("routineCompletionRole").innerHTML = routine.key === "morning" ? `<span>${escapeHTML(role.emoji)}</span><div><small>Heute im Fokus</small><strong>${escapeHTML(roleDisplayName(role.name))}</strong></div>` : "";
+    $("routineCompletionAction").innerHTML = inputs.action ? `<small>Meine Handlung</small><strong>${escapeHTML(inputs.action)}</strong>` : `<small>Nächster Schritt</small><strong>Tag beginnen.</strong>`;
+    if (!$("routineCompletionDialog").open) $("routineCompletionDialog").showModal();
+  }
   if (!allDone || window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
   const burst = document.createElement("div");
   burst.className = "routine-celebration-burst";
@@ -4216,11 +4454,16 @@ function completeSessionItem(status) {
   const nextIndex = routineSession.index + 1;
   if (nextIndex >= items.length) {
     const allDone = items.every(entry => currentData.routineProgress[key][entry.id] === "done");
+    const activeIds = new Set(items.map(entry => entry.id));
+    (routine.items || []).forEach(entry => {
+      if (!activeIds.has(entry.id) && !currentData.routineProgress[key][entry.id]) currentData.routineProgress[key][entry.id] = "skipped";
+    });
     if (key === "morning") currentData.morningRoutineState = allDone ? "done" : "responsiblySkipped";
     else if (key === "evening") currentData.eveningRoutineState = allDone ? "done" : "responsiblySkipped";
+    const summary = { modeLabel: routineSession.modeLabel || "", plannedMinutes: routineMinutes(routine, routineSession.modeKey), completed: items.length };
     saveReview(true);
     closeRoutineSession();
-    showRoutineCelebration(routine, allDone);
+    showRoutineCelebration(routine, allDone, summary);
     return;
   }
   routineSession.index = nextIndex;
@@ -4515,7 +4758,7 @@ function bindEvents() {
   $("streakPrivacyDialog").addEventListener("cancel", event => { event.preventDefault(); $("streakPrivacyDialog").close(); });
   $("openRoutines").addEventListener("click", () => switchPage("routines"));
   $("backToRoutineOverview").addEventListener("click", closeRoutineDetail);
-  $("startRoutineDetail").addEventListener("click", () => startRoutine(activeRoutineKey));
+  $("startRoutineDetail").addEventListener("click", () => startRoutine(activeRoutineKey, currentData.routineModes?.[activeRoutineKey]));
   if ($("addRoutine")) $("addRoutine").addEventListener("click", () => openRoutineDialog());
   if ($("importRoutineFile")) $("importRoutineFile").addEventListener("click", () => $("routineFileInput").click());
   if ($("routineFileInput")) $("routineFileInput").addEventListener("change", async event => {
@@ -4564,6 +4807,8 @@ function bindEvents() {
   $("sessionRoutineEditor").addEventListener("click", event => {
     if (event.target === $("sessionRoutineEditor")) toggleSessionRoutineEditor(false);
   });
+  if ($("routineCompletionClose")) $("routineCompletionClose").addEventListener("click", () => $("routineCompletionDialog").close());
+  if ($("routineCompletionDialog")) $("routineCompletionDialog").addEventListener("cancel", event => { event.preventDefault(); $("routineCompletionDialog").close(); });
 
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible" && routineSession) { syncRoutineSessionClock(); renderRoutineSession(); }
@@ -4649,6 +4894,7 @@ function init() {
   if ($("appVersionLabel")) $("appVersionLabel").textContent = `ROLEPLAY ${APP_VERSION}`;
   routines = loadRoutines();
   migrateGuidedMorningRoutine();
+  migrateMorningExperienceV2();
   bindEvents();
   const lastBackupAt = RPStorage.getItem(BACKUP_TIMESTAMP_KEY);
   if (lastBackupAt) $("backupStatus").textContent = `Letzte Sicherungsanfrage: ${new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short" }).format(new Date(lastBackupAt))}`;

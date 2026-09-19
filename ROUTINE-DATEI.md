@@ -1,6 +1,6 @@
 # ROLEPLAY – Routine-Dateien
 
-Ab Version 7.0.0-beta.2 kann jede Routine als kleine JSON-Datei gespeichert und später wieder geladen werden.
+Ab Version 7.0.0-beta.3 kann eine Routine nicht nur aus Blöcken und Feinschritten bestehen, sondern auch mehrere Umfänge und geführte Spezialblöcke enthalten.
 
 ## Empfohlener Ablauf
 
@@ -13,29 +13,40 @@ Hat die Datei dieselbe `key`-Kennung, wird die bestehende Routine aktualisiert. 
 
 ## Struktur
 
-Jeder große `item` ist ein sichtbarer Routinenblock. `steps` sind kleine Orientierungspunkte innerhalb des Blocks. Sie lassen sich im Player abhaken, zählen aber nicht als eigene Routinenpunkte.
+Jeder große `item` ist eine sichtbare Phase. `steps` sind kleine Orientierungspunkte innerhalb der Phase und zählen nicht als zusätzliche Routinenpunkte.
+
+`modes` definiert verschiedene Umfänge einer Routine. Über `modeMinutes` kann eine Phase je Modus kürzer werden oder mit `0` vollständig entfallen. Die aktuelle Morgenroutine verwendet **Voll 120 Min.**, **Standard 90 Min.** und **Kurz 45 Min.**
+
+Ein `kind` kann eine besondere Darstellung aktivieren. `kind: "alignment"` öffnet in der aktuellen App den geführten Ausrichtungsblock mit Rolle, Commitment, Visualisierung, Hindernisplanung, kurzem Journal und Tageshandlung.
 
 ```json
 {
   "format": "ROLEPLAY_ROUTINE",
-  "version": 1,
+  "version": 2,
   "routine": {
     "key": "morning",
     "title": "Morgenroutine",
-    "description": "Ein Block nach dem anderen.",
     "theme": "morning",
+    "defaultMode": "full",
+    "modes": [
+      { "key": "full", "label": "Voll", "accent": "120 Min." },
+      { "key": "standard", "label": "Standard", "accent": "90 Min." },
+      { "key": "short", "label": "Kurz", "accent": "45 Min." }
+    ],
     "items": [
       {
-        "id": "m-read",
-        "emoji": "📖",
-        "title": "Lesen",
-        "minutes": 20,
-        "context": "Ein zusammenhängender Leseblock.",
-        "steps": ["Buch öffnen", "20 Minuten lesen"]
+        "id": "m-align",
+        "emoji": "🧭",
+        "title": "Ausrichtung",
+        "kind": "alignment",
+        "minutes": 15,
+        "modeMinutes": { "full": 15, "standard": 10, "short": 5 },
+        "context": "Rolle, Commitment, Visualisierung und Tageshandlung.",
+        "steps": []
       }
     ]
   }
 }
 ```
 
-Die mitgelieferte `routine-morgen-guided-v1.json` ist die aktuelle Morgenroutine und kann direkt als Ausgangspunkt verwendet werden.
+Die mitgelieferte `routine-morgen-experience-v2.json` ist die aktuelle Morgenroutine und kann direkt als Ausgangspunkt verwendet werden.
