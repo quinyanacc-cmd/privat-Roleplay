@@ -1,0 +1,109 @@
+{
+  "format": "ROLEPLAY_ROUTINE",
+  "version": 1,
+  "note": "Diese Datei kann bearbeitet und in ROLEPLAY unter Routinen > Routine-Datei wieder geladen werden.",
+  "routine": {
+    "key": "morning",
+    "title": "Morgenroutine",
+    "description": "Ein Block nach dem anderen. Ruhig starten, klar in den Tag.",
+    "theme": "morning",
+    "guidedBlocksVersion": 1,
+    "autoNext": false,
+    "items": [
+      {
+        "id": "m-ready",
+        "emoji": "🧼",
+        "title": "Fertigmachen",
+        "minutes": 15,
+        "context": "Nicht nachdenken, einfach den Körper und den Raum startklar machen.",
+        "steps": [
+          "Duschen / waschen",
+          "Zähne & Bad",
+          "Bett machen",
+          "Anziehen"
+        ]
+      },
+      {
+        "id": "m-supply",
+        "emoji": "🐈",
+        "title": "Versorgung",
+        "minutes": 5,
+        "context": "Alles versorgen, was du für einen stabilen Start brauchst.",
+        "steps": [
+          "Tabletten + Wasser",
+          "Katze füttern",
+          "Smoothie / Getränk einpacken"
+        ]
+      },
+      {
+        "id": "m-prayer",
+        "emoji": "🤲",
+        "title": "Gebet & Ibāda",
+        "minutes": 25,
+        "context": "Gebet, Dhikr und bewusste Hinwendung zu Allah. Kein Multitasking.",
+        "steps": [
+          "Gebet",
+          "Dhikr / kurze Besinnung"
+        ]
+      },
+      {
+        "id": "m-move",
+        "emoji": "💪",
+        "title": "Mobilisieren",
+        "minutes": 5,
+        "context": "Kurz den Kreislauf anschalten. Es geht um Aktivierung, nicht um ein volles Workout.",
+        "steps": [
+          "Liegestütze",
+          "Kurze Mobilisation"
+        ]
+      },
+      {
+        "id": "m-read",
+        "emoji": "📖",
+        "title": "Lesen",
+        "minutes": 20,
+        "context": "Ein zusammenhängender Leseblock ohne Nebenbei-Appwechsel.",
+        "steps": [
+          "Buch öffnen",
+          "20 Minuten lesen",
+          "Stelle markieren und Buch schließen"
+        ]
+      },
+      {
+        "id": "m-english",
+        "emoji": "🇬🇧",
+        "title": "Englisch",
+        "minutes": 15,
+        "context": "Duolingo fokussiert erledigen. Kontinuität vor Perfektion.",
+        "steps": [
+          "Duolingo öffnen",
+          "15 Minuten konzentriert lernen"
+        ]
+      },
+      {
+        "id": "m-peak",
+        "emoji": "🧠",
+        "title": "Peak",
+        "minutes": 10,
+        "context": "Kurzer, klar begrenzter Gehirntraining-Block.",
+        "steps": [
+          "Peak öffnen",
+          "Tagestraining abschließen"
+        ]
+      },
+      {
+        "id": "m-close",
+        "emoji": "🎒",
+        "title": "Abschluss + Duʿā",
+        "minutes": 5,
+        "context": "Den Morgen sauber abschließen und bewusst in den nächsten Abschnitt wechseln.",
+        "steps": [
+          "Tasche / Dinge prüfen",
+          "Lichter & Raumcheck",
+          "Duʿā",
+          "Losgehen / in den Tag wechseln"
+        ]
+      }
+    ]
+  }
+}

@@ -22,7 +22,7 @@ const PRAYER_COLOR_META = {
   "ʿIschāʾ": { a: "#2F7FE9", b: "#20D6CA" }
 };
 
-const ROLES = [
+let ROLES = [
   { name: "Ich-Person", emoji: "🫆", color: "#4AA8FF", text: "#174E7A" },
   { name: "Vitalist", emoji: "🧬", color: "#193C8C", text: "#FFFFFF" },
   { name: "Absolvent", emoji: "🎓", color: "#F07A32", text: "#6D2E09" },
@@ -402,7 +402,8 @@ function dayRoleKey(iso = selectedDate) {
 }
 
 function dayRoleConfig(iso = selectedDate) {
-  return ROLE_CONFIG[dayRoleKey(iso)] || ROLE_CONFIG.ich;
+  const role = getRole(iso === selectedDate && currentData?.role ? currentData.role : defaultRoleForDate(iso));
+  return { label: roleDisplayName(role.name), roleName: roleDisplayName(role.name) };
 }
 
 /* ==========================================================================
@@ -718,23 +719,19 @@ const DEFAULT_ROUTINES = {
   morning: {
     key: "morning",
     title: "Morgenroutine",
-    description: "Starte deinen Tag mit Klarheit und Fokus.",
+    description: "Ein Block nach dem anderen. Ruhig starten, klar in den Tag.",
     theme: "morning",
+    guidedBlocksVersion: 1,
     autoNext: false,
     items: [
-      { id: "m-candle", emoji: "🕯️", title: "Kerze", minutes: 1, context: "Alles Lob gebührt Allah, Der uns nach dem Tod wieder lebendig machte - und zu Ihm ist die Auferstehung." },
-      { id: "m-medicine-cat", emoji: "🔛", title: "Tabletten / Katze", minutes: 3, context: "Medikamente einnehmen, Wasser trinken und Zizo versorgen." },
-      { id: "m-ibada", emoji: "🧎🏻", title: "Ibāda", minutes: 25, context: "Gebet, Dhikr und eine bewusste Hinwendung zu Allah." },
-      { id: "m-sport", emoji: "🤸🏻", title: "Sport", minutes: 5, context: "Kurz aktiv werden. Entscheidend ist, überhaupt anzufangen." },
-      { id: "m-bed", emoji: "🛏️", title: "Fertigmachen + Bett", minutes: 15, context: "Waschen, anziehen, Bett machen und den Raum in Ordnung bringen." },
-      { id: "m-breakfast", emoji: "🥗", title: "Frühstücken", minutes: 2, context: "Frühstück vorbereiten oder bewusst einplanen." },
-      { id: "m-thumb-yoga", emoji: "🪷", title: "Daumen Yoga", minutes: 3, context: "Kurze Mobilisation der Hände und Finger." },
-      { id: "m-quizlet", emoji: "📋", title: "Quizlet", minutes: 5, context: "Wiederholung statt Perfektion." },
-      { id: "m-peak", emoji: "💡", title: "Peak", minutes: 15, context: "Kognitives Training konzentriert durchführen." },
-      { id: "m-english", emoji: "🔤", title: "Englisch", minutes: 25, context: "Eine klar definierte Lerneinheit abschließen." },
-      { id: "m-arabic", emoji: "📒", title: "Arabisch", minutes: 5, context: "Auch eine kurze Wiederholung zählt." },
-      { id: "m-writing", emoji: "📝", title: "Schreiben", minutes: 10, context: "Gedanken festhalten oder am Buch weiterarbeiten." },
-      { id: "m-finish", emoji: "🎒", title: "Fertigmachen", minutes: 5, context: "Alles Nötige einpacken und den nächsten Übergang vorbereiten." }
+      { id: "m-ready", emoji: "🧼", title: "Fertigmachen", minutes: 15, context: "Nicht nachdenken, einfach den Körper und den Raum startklar machen.", steps: ["Duschen / waschen", "Zähne & Bad", "Bett machen", "Anziehen"] },
+      { id: "m-supply", emoji: "🐈", title: "Versorgung", minutes: 5, context: "Alles versorgen, was du für einen stabilen Start brauchst.", steps: ["Tabletten + Wasser", "Katze füttern", "Smoothie / Getränk einpacken"] },
+      { id: "m-prayer", emoji: "🤲", title: "Gebet & Ibāda", minutes: 25, context: "Gebet, Dhikr und bewusste Hinwendung zu Allah. Kein Multitasking.", steps: ["Gebet", "Dhikr / kurze Besinnung"] },
+      { id: "m-move", emoji: "💪", title: "Mobilisieren", minutes: 5, context: "Kurz den Kreislauf anschalten. Es geht um Aktivierung, nicht um ein volles Workout.", steps: ["Liegestütze", "Kurze Mobilisation"] },
+      { id: "m-read", emoji: "📖", title: "Lesen", minutes: 20, context: "Ein zusammenhängender Leseblock ohne Nebenbei-Appwechsel.", steps: ["Buch öffnen", "20 Minuten lesen", "Stelle markieren und Buch schließen"] },
+      { id: "m-english", emoji: "🇬🇧", title: "Englisch", minutes: 15, context: "Duolingo fokussiert erledigen. Kontinuität vor Perfektion.", steps: ["Duolingo öffnen", "15 Minuten konzentriert lernen"] },
+      { id: "m-peak", emoji: "🧠", title: "Peak", minutes: 10, context: "Kurzer, klar begrenzter Gehirntraining-Block.", steps: ["Peak öffnen", "Tagestraining abschließen"] },
+      { id: "m-close", emoji: "🎒", title: "Abschluss + Duʿā", minutes: 5, context: "Den Morgen sauber abschließen und bewusst in den nächsten Abschnitt wechseln.", steps: ["Tasche / Dinge prüfen", "Lichter & Raumcheck", "Duʿā", "Losgehen / in den Tag wechseln"] }
     ]
   },
   evening: {
@@ -764,7 +761,7 @@ const DEFAULT_ROUTINES = {
    Jede Aktivität entsteht aus genau einer Vorlage. Titel, Rolle und Gewicht
    stehen ausschließlich hier – es gibt keine manuelle Punkteingabe.
    ========================================================================== */
-const ACTIVITY_TEMPLATES = [
+let ACTIVITY_TEMPLATES = [
   { key: "sma",     label: "SMA-Arbeitstag",   title: "SMA-Arbeitstag",   role: "Unternehmer",    weight: 0.2, isSma: true, dailyCap: 0.2 },
   { key: "book",    label: "Buchprojekt",      title: "Buchprojekt",      role: "Unternehmer",    weight: 1.5 },
   { key: "gym",     label: "Gym",              title: "Gym",              role: "Vitalist",       weight: 2.0 },
@@ -812,12 +809,12 @@ function normalizeActivity(item) {
     || activityTemplate("custom");
   const isSma = template.key === "sma";
   const storedWeight = Number(item?.weight);
-  const weight = template.key === "custom"
+  const weight = template.key === "custom" || template.key.startsWith("user-")
     ? (Number.isFinite(storedWeight) && storedWeight > 0 ? storedWeight : 1)
     : template.weight;
   return {
     title: isSma ? template.title : (title || template.title),
-    role: template.key === "custom" ? getRole(item?.role || "Ich-Person").name : template.role,
+    role: template.key === "custom" || template.key.startsWith("user-") ? getRole(item?.role || template.role || "Ich-Person").name : template.role,
     template: template.key,
     weight,
     isSma
@@ -887,10 +884,13 @@ function dayPointTotal(data, date) {
 }
 
 const ROUTINE_MINUTE_CHOICES = Array.from({ length: 180 }, (_, index) => index + 1);
-const APP_VERSION = "6.3.1";
-const SCHEMA_VERSION = 7;
+const APP_VERSION = "7.0.0-beta.2";
+const SCHEMA_VERSION = 8;
 const STORAGE_NAMESPACE = "roleplay-v25";
 const ROUTINES_STORAGE_KEY = `${STORAGE_NAMESPACE}-routines`;
+const ROUTINE_GUIDED_MIGRATION_KEY = `${STORAGE_NAMESPACE}-guided-morning-v1`;
+const ROUTINE_FILE_FORMAT = "ROLEPLAY_ROUTINE";
+const ROUTINE_FILE_VERSION = 1;
 const BACKUP_TIMESTAMP_KEY = `${STORAGE_NAMESPACE}-last-backup-at`;
 const ROUTINE_SESSION_STORAGE_KEY = `${STORAGE_NAMESPACE}-active-routine-session`;
 const ROLE_FOCUS_STORAGE_KEY = `${STORAGE_NAMESPACE}-role-focus`;
@@ -907,6 +907,8 @@ let activityDragIndex = null;
 let routineDragIndex = null;
 let routineSession = null;
 let autoSaveTimer = null;
+let dirtyReview = false;
+let pendingStreakPropagation = false;
 let streaksUnlocked = false;
 let roleFocus = null;
 
@@ -966,7 +968,7 @@ function getRole(name) {
 
 function roleDisplayName(name) {
   const role = getRole(name);
-  return role.name === "Ich-Person" ? "Ich" : role.name;
+  return role.label || (role.name === "Ich-Person" ? "Ich" : role.name);
 }
 
 /* Originale in voller Auflösung. Alle Dateien liegen neben index.html und
@@ -1034,6 +1036,9 @@ const ROLE_SPEECHES = {
 };
 
 function roleSpeechText(roleName, date = selectedDate) {
+  const role = getRole(roleName);
+  if (role.goal) return role.goal;
+  if (productSettings && !productSettings.personalTemplate) return `Was ist heute für ${roleDisplayName(roleName)} ein guter kleiner Schritt?`;
   const lines = ROLE_SPEECHES[roleName] || ROLE_SPEECHES["Ich-Person"];
   const seed = `${date}|${roleName}`;
   let hash = 0;
@@ -1072,16 +1077,16 @@ function normalizeRoleFocus(raw) {
 }
 
 function loadRoleFocus() {
-  const stored = normalizeRoleFocus(safeParse(localStorage.getItem(ROLE_FOCUS_STORAGE_KEY)));
+  const stored = normalizeRoleFocus(safeParse(RPStorage.getItem(ROLE_FOCUS_STORAGE_KEY)));
   // Ein abgelaufener Fokus endet von selbst und wird nicht weitergeschleppt.
   roleFocus = stored && stored.endDate && stored.endDate < todayISO() ? null : stored;
-  if (stored && !roleFocus) localStorage.removeItem(ROLE_FOCUS_STORAGE_KEY);
+  if (stored && !roleFocus) RPStorage.removeItem(ROLE_FOCUS_STORAGE_KEY);
   return roleFocus;
 }
 
 function saveRoleFocus() {
-  if (roleFocus) localStorage.setItem(ROLE_FOCUS_STORAGE_KEY, JSON.stringify(roleFocus));
-  else localStorage.removeItem(ROLE_FOCUS_STORAGE_KEY);
+  if (roleFocus) RPStorage.setItem(ROLE_FOCUS_STORAGE_KEY, JSON.stringify(roleFocus));
+  else RPStorage.removeItem(ROLE_FOCUS_STORAGE_KEY);
 }
 
 // Rollenname, wenn an diesem Datum ein Fokus gilt – sonst null.
@@ -1107,7 +1112,7 @@ function defaultRoleForDate(date) {
   const focus = roleFocusActiveOn(date);
   if (focus) return focus;
   const weekday = new Date(`${date}T12:00:00`).getDay();
-  const names = ["Familienmensch", "Ich-Person", "Vitalist", "Absolvent", "Unternehmer", "Muslim", "Wirt"];
+  const names = productSettings?.weekRoles || ["Familienmensch", "Ich-Person", "Vitalist", "Absolvent", "Unternehmer", "Muslim", "Wirt"];
   return names[weekday];
 }
 
@@ -1115,7 +1120,7 @@ function findPreviousReview(date) {
   let cursor = date;
   for (let i = 0; i < 3650; i += 1) {
     cursor = addDays(cursor, -1);
-    const rawText = localStorage.getItem(storageKey(cursor));
+    const rawText = RPStorage.getItem(storageKey(cursor));
     if (!rawText) continue;
     const data = safeParse(rawText);
     if (data) return { date: cursor, data };
@@ -1144,7 +1149,7 @@ function emptyReview(date) {
     routineProgress: { morning: {}, evening: {} },
     prayers: Object.fromEntries(PRAYERS.map(prayer => [prayer, ""])),
     sunnahPrayers: Object.fromEntries(SUNNAH_PRAYERS.map(prayer => [prayer, ""])),
-    ramadanDays: previous?.ramadanDays !== undefined ? Number(previous.ramadanDays) : -29,
+    ramadanDays: previous?.ramadanDays !== undefined ? Number(previous.ramadanDays) : (productSettings ? -productSettings.fastingDays : -29),
     fastingCompleted: false,
     sleepQualityScore: "",
     dreamCategory: "",
@@ -1306,7 +1311,7 @@ function normalizeReview(raw, date, hasStoredValue) {
   };
   merged.responsibility = Object.fromEntries(RESPONSIBILITY_KEYS.map(key => {
     const value = migratedResponsibility[key];
-    return [key, [0, 1, 2].includes(Number(value)) ? Number(value) : null];
+    return [key, value !== null && value !== undefined && value !== "" && [0, 1, 2].includes(Number(value)) ? Number(value) : null];
   }));
   merged.roleReflections = Object.fromEntries(ROLES.map(role => {
     const legacyValue = raw?.roleReflections?.[role.name] ?? (role.name === "Ich-Person" ? raw?.roleReflections?.Yannick : undefined);
@@ -1344,8 +1349,12 @@ function normalizeReview(raw, date, hasStoredValue) {
 }
 
 function loadReview(date) {
-  const rawText = localStorage.getItem(storageKey(date));
-  const raw = rawText ? safeParse(rawText, {}) : {};
+  const rawText = RPStorage.getItem(storageKey(date));
+  const raw = rawText ? safeParse(rawText) : {};
+  if (rawText) {
+    try { RPBackup.tree(raw); RPBackup.review(raw, date); }
+    catch (error) { RPStorage.report(new Error(`Der Eintrag vom ${date} ist beschädigt. Er wurde nicht verändert. Bitte erstelle eine Notsicherung.`)); throw error; }
+  }
   return normalizeReview(raw, date, Boolean(rawText));
 }
 
@@ -1366,13 +1375,23 @@ function collectForm() {
 }
 
 function scheduleAutoSave() {
+  dirtyReview = true;
   clearTimeout(autoSaveTimer);
   autoSaveTimer = setTimeout(() => saveReview(true), 550);
 }
 
 function saveReview(silent = false) {
+  if (!currentData) return true;
   collectForm();
-  localStorage.setItem(storageKey(selectedDate), JSON.stringify(currentData));
+  try {
+    if (pendingStreakPropagation) propagateStreaksForward(selectedDate, true);
+    else RPStorage.setItem(storageKey(selectedDate), JSON.stringify(currentData));
+  }
+  catch (_) { dirtyReview = true; return false; }
+  dirtyReview = false;
+  pendingStreakPropagation = false;
+  clearTimeout(autoSaveTimer); autoSaveTimer = null;
+  setSaveStatus("Gespeichert");
   renderStats();
   renderRoutineCards();
   if ($("analysisPage")?.classList.contains("active")) renderAnalysis();
@@ -1382,6 +1401,7 @@ function saveReview(silent = false) {
     button.textContent = "✓ Gespeichert";
     setTimeout(() => { button.textContent = original; }, 1100);
   }
+  return true;
 }
 
 function formatDate(iso) {
@@ -1397,6 +1417,7 @@ function formatShortDate(iso) {
 }
 
 function setDate(date) {
+  if (currentData && date !== selectedDate && dirtyReview && !saveReview(true)) return false;
   weekOffset = 0;
   slideOffset = 0;
   selectedDate = date;
@@ -1424,6 +1445,7 @@ function fillForm() {
   renderRolePickerOptions();
   $("dayRole").value = getRole(currentData.role).name;
   applyRolePickerStyle();
+  syncRoutineAvailability();
   renderWaterControl();
   updateRamadanDisplay();
   updateRoutineStateButtons();
@@ -1896,7 +1918,7 @@ function renderStateOverview() {
     const slot = checkinSlot(entry.slot);
     const sleep = entry.slot === "morning" && entry.sleepQualityScore !== "" && entry.sleepQualityScore !== undefined
       ? ` · ${SLEEP_LABELS[Number(entry.sleepQualityScore)] || "Schlaf erfasst"}` : "";
-    const taqwaPart = entry.taqwa === null || entry.taqwa === undefined || entry.taqwa === ""
+    const taqwaPart = !religionEnabled() || entry.taqwa === null || entry.taqwa === undefined || entry.taqwa === ""
       ? "" : ` · ${entry.taqwa} % Gottesfurcht`;
     const details = `${entry.energy ?? "–"} % Energie · ${entry.mood ?? "–"} % Laune${taqwaPart}${sleep}`;
     return `<article class="state-timeline-item" style="--framework-color:${entryMode?.color || "var(--muted)"}">
@@ -2010,7 +2032,7 @@ function stateCheckinFromForm() {
   const morningSleep = $("stateSleepQuality").value;
   const energyRaw = $("stateEnergy").value;
   const moodRaw = $("stateMood").value;
-  const taqwaRaw = $("stateTaqwa") ? $("stateTaqwa").value : "";
+  const taqwaRaw = religionEnabled() && $("stateTaqwa") ? $("stateTaqwa").value : "";
   const existing = (currentData.stateCheckins || []).find(entry => entry.slot === slot);
   return {
     slot,
@@ -2104,7 +2126,7 @@ function renderRolePickerOptions() {
   if (!picker) return;
   const previous = picker.value;
   const focusRole = roleFocusIsActive() ? roleFocus.role : "";
-  const options = ROLES.map(role => {
+  const options = selectableRoles(currentData?.role).map(role => {
     const marker = role.name === focusRole ? " · Fokus" : "";
     return `<option value="${escapeHTML(role.name)}">${escapeHTML(role.emoji)} ${escapeHTML(roleDisplayName(role.name))}${marker}</option>`;
   }).join("");
@@ -2115,7 +2137,7 @@ function renderRolePickerOptions() {
 
 function fillRoleFocusForm() {
   const active = roleFocusIsActive();
-  $("roleFocusRole").innerHTML = ROLES
+  $("roleFocusRole").innerHTML = selectableRoles()
     .map(role => `<option value="${escapeHTML(role.name)}">${escapeHTML(role.emoji)} ${escapeHTML(roleDisplayName(role.name))}</option>`).join("");
   $("roleFocusRole").value = active ? roleFocus.role : getRole(currentData?.role || ROLES[0].name).name;
   $("roleFocusDuration").value = active ? roleFocus.mode : "today";
@@ -2123,7 +2145,7 @@ function fillRoleFocusForm() {
   $("roleFocusDateField").hidden = $("roleFocusDuration").value !== "until";
   $("endRoleFocus").hidden = !active;
   $("roleFocusStatus").textContent = active
-    ? `Aktiver Fokus: ${roleFocus.role} – ${roleFocusRangeLabel()}.`
+    ? `Aktiver Fokus: ${roleDisplayName(roleFocus.role)} – ${roleFocusRangeLabel()}.`
     : "Kein Fokus aktiv. Es gilt die normale Wochenrotation.";
 }
 
@@ -2177,7 +2199,7 @@ function applyRolePickerStyle() {
   picker.style.setProperty("--role-color", role.color);
   picker.style.setProperty("--role-soft", hexToRgba(role.color, .18));
   picker.style.setProperty("--role-text", role.text);
-  if ($("roleTagline")) $("roleTagline").textContent = ROLE_TAGLINES[role.name] || "Heute deine Rolle bewusst gestalten.";
+  if ($("roleTagline")) $("roleTagline").textContent = productSettings?.personalTemplate ? (ROLE_TAGLINES[role.name] || "Heute deine Rolle bewusst gestalten.") : "Ein Lebensbereich, dem du heute bewusst Raum gibst.";
   updateHeaderRoleUI(role);
   applyHeaderTheme(role);
 }
@@ -2352,19 +2374,22 @@ function openPrayerDialog(prayer, kind = "obligatory") {
 
 function propagateRamadanForward(fromDate) {
   let runningValue = Number(currentData.ramadanDays || 0);
+  const changes = [];
   for (let offset = 1; offset <= 3650; offset += 1) {
     const date = addDays(fromDate, offset);
-    const rawText = localStorage.getItem(storageKey(date));
+    const rawText = RPStorage.getItem(storageKey(date));
     if (!rawText) continue;
     const raw = safeParse(rawText);
     if (!raw) continue;
     if (raw.fastingCompleted) runningValue += 1;
     raw.ramadanDays = runningValue;
-    localStorage.setItem(storageKey(date), JSON.stringify(raw));
+    changes.push({ key: storageKey(date), value: JSON.stringify(raw) });
   }
+  RPStorage.transaction(changes);
 }
 
-function propagateStreaksForward(fromDate) {
+function streakForwardChanges(fromDate, includeCurrent = false) {
+  const changes = includeCurrent ? [{ key: storageKey(fromDate), value: JSON.stringify(currentData) }] : [];
   let running = Object.fromEntries(STREAKS.map(streak => {
     const state = currentData.streaks?.[streak.key] || { days: 0, broken: false, todayStatus: "" };
     return [streak.key, { days: Number(state.days || 0), broken: Boolean(state.broken) }];
@@ -2372,7 +2397,7 @@ function propagateStreaksForward(fromDate) {
 
   for (let offset = 1; offset <= 3650; offset += 1) {
     const date = addDays(fromDate, offset);
-    const rawText = localStorage.getItem(storageKey(date));
+    const rawText = RPStorage.getItem(storageKey(date));
     if (!rawText) continue;
     const raw = safeParse(rawText);
     if (!raw) continue;
@@ -2387,8 +2412,20 @@ function propagateStreaksForward(fromDate) {
       raw.streaks[streak.key] = next;
       running[streak.key] = next;
     });
-    localStorage.setItem(storageKey(date), JSON.stringify(raw));
+    changes.push({ key: storageKey(date), value: JSON.stringify(raw) });
   }
+  return changes;
+}
+
+function propagateStreaksForward(fromDate, includeCurrent = false) {
+  RPStorage.transaction(streakForwardChanges(fromDate, includeCurrent));
+}
+
+function saveStreakChange() {
+  pendingStreakPropagation = true;
+  const saved = saveReview(true);
+  renderStreaks();
+  return saved;
 }
 
 function updateRamadanDisplay() {
@@ -2422,7 +2459,7 @@ function renderActivities() {
     }
     return `<div class="activity-row tracking-activity" data-activity-index="${index}" style="--activity-color:${role.color};--activity-soft:${hexToRgba(role.color,.10)};--activity-glow:${hexToRgba(role.color,.18)}">
       <div class="activity-main">
-        <div class="activity-copy"><strong>${escapeHTML(activity.title)}</strong><small>${escapeHTML(role.emoji)} ${escapeHTML(role.name)} · ${escapeHTML(points)}</small></div>
+        <div class="activity-copy"><strong>${escapeHTML(activity.title)}</strong><small>${escapeHTML(role.emoji)} ${escapeHTML(roleDisplayName(role.name))} · ${escapeHTML(points)}</small></div>
       </div>
       <div class="activity-sort-actions" aria-label="Aktivität sortieren">
         <button type="button" data-move-activity="-1" data-activity-index="${index}" ${index === 0 ? "disabled" : ""} aria-label="Nach oben">↑</button>
@@ -2466,10 +2503,10 @@ function applyActivityTemplate() {
   if (hint) {
     const cap = activityDailyCap(template.key);
     hint.textContent = cap !== null
-      ? `${template.role} · ${formatPoints(cap)} ${cap === 1 ? "Punkt" : "Punkte"} je Kalendertag, unabhängig von der Anzahl der Einträge.`
+      ? `${roleDisplayName(template.role)} · ${formatPoints(cap)} ${cap === 1 ? "Punkt" : "Punkte"} je Kalendertag, unabhängig von der Anzahl der Einträge.`
       : isCustom
         ? `Frei wählbar · ${formatPoints(template.weight)} Punkt`
-        : `${template.role} · ${formatPoints(template.weight)} ${template.weight === 1 ? "Punkt" : "Punkte"}`;
+        : `${roleDisplayName(template.role)} · ${formatPoints(template.weight)} ${template.weight === 1 ? "Punkt" : "Punkte"}`;
   }
 }
 
@@ -2520,14 +2557,14 @@ function renderStreaks() {
     state.days = Math.max(0, Number(input.value || 0));
     state.broken = false;
     if (state.todayStatus === "lapse") state.todayStatus = "";
-    saveReview(true); propagateStreaksForward(selectedDate); renderStreaks();
+    saveStreakChange();
   }));
   document.querySelectorAll("[data-streak-daily]").forEach(button => button.addEventListener("click", () => {
     const state = currentData.streaks[button.dataset.streakKey];
     state.todayStatus = state.todayStatus === "lapse" ? "" : "lapse";
     state.broken = state.todayStatus === "lapse";
     if (state.broken) state.days = 0;
-    saveReview(true); propagateStreaksForward(selectedDate); renderStreaks(); renderStats();
+    saveStreakChange();
   }));
 }
 
@@ -2544,14 +2581,14 @@ let slideOffset = 0;
 let weekMode = "calendar";
 
 function loadWeekMode() {
-  const stored = localStorage.getItem(WEEK_MODE_STORAGE_KEY);
+  const stored = RPStorage.getItem(WEEK_MODE_STORAGE_KEY);
   weekMode = stored === "sliding" ? "sliding" : "calendar";
   return weekMode;
 }
 
 function setWeekMode(mode) {
   weekMode = mode === "sliding" ? "sliding" : "calendar";
-  localStorage.setItem(WEEK_MODE_STORAGE_KEY, weekMode);
+  RPStorage.setItem(WEEK_MODE_STORAGE_KEY, weekMode);
   weekOffset = 0;
   slideOffset = 0;
   renderStats();
@@ -2709,7 +2746,7 @@ function buildWeeklyTrendChart(labels, series, options = {}) {
 
   return `<div class="trend-panel">
     <div class="trend-legend">${legend}</div>
-    <svg class="trend-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="Verlauf von Energie, Laune und Gottesfurcht">
+    <svg class="trend-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${religionEnabled() ? "Verlauf von Energie, Laune und Gottesfurcht" : "Verlauf von Energie und Laune"}">
       ${todayBand}
       <g class="trend-grid">${grid}</g>
       ${paths}
@@ -2749,7 +2786,7 @@ function buildPrayerWeekPanel(labels, counts) {
 function renderStats() {
   if (!currentData) return;
   const dates = rangeDates();
-  const reviews = dates.map(date => ({ date, data: loadReview(date), stored: Boolean(localStorage.getItem(storageKey(date))) }));
+  const reviews = dates.map(date => ({ date, data: loadReview(date), stored: Boolean(RPStorage.getItem(storageKey(date))) }));
   const labels = dates.map(date => new Intl.DateTimeFormat("de-DE", { weekday: "short" }).format(new Date(`${date}T12:00:00`)).replace(".", ""));
   const energy = reviews.map(item => item.stored ? dailyAverageEnergy(item.data) : null);
   const mood = reviews.map(item => item.stored ? dailyAverageMood(item.data) : null);
@@ -2782,7 +2819,7 @@ function renderStats() {
     ${buildWeeklyTrendChart(labels, [
       { label: "Energie", className: "energy", values: energy },
       { label: "Laune", className: "mood", values: mood },
-      { label: "Gottesfurcht", className: "taqwa", values: taqwa }
+      ...(religionEnabled() ? [{ label: "Gottesfurcht", className: "taqwa", values: taqwa }] : [])
     ], { todayIndex: dates.indexOf(today) })}
     ${buildPrayerWeekPanel(labels, prayerCounts)}
     ${buildRoutineWeekPanel(labels, routineStates)}`;
@@ -2842,7 +2879,7 @@ function shiftAnalysisMonth(delta) {
 // Nur tatsächlich gespeicherte Tage zählen. Leere Tage bleiben leer.
 function storedReviews(dates) {
   return dates
-    .filter(date => Boolean(localStorage.getItem(storageKey(date))))
+    .filter(date => Boolean(RPStorage.getItem(storageKey(date))))
     .map(date => ({ date, data: loadReview(date) }));
 }
 
@@ -2909,11 +2946,11 @@ function monthImpulseList(stats, month) {
     return impulses;
   }
   impulses.push(`An ${stats.entryDays} von ${dayCount} Tagen hast du etwas festgehalten – ${stats.checkins} ${stats.checkins === 1 ? "Check-in ist" : "Check-ins sind"} darin enthalten.`);
-  if (stats.prayerCount) {
+  if (religionEnabled() && stats.prayerCount) {
     const average = (stats.prayerCount / stats.entryDays).toFixed(1).replace(".", ",");
     impulses.push(`${stats.prayerCount} Pflichtgebete erfasst, im Schnitt ${average} von ${PRAYERS.length} je Eintragstag.`);
   }
-  if (stats.taqwa !== null) {
+  if (religionEnabled() && stats.taqwa !== null) {
     impulses.push(stats.taqwa >= 60
       ? `Die Gottesfurcht liegt im Schnitt bei ${stats.taqwa} % – eine tragende Ausrichtung über den Monat.`
       : `Die Gottesfurcht liegt im Schnitt bei ${stats.taqwa} %. Ein fester Ankerpunkt am Tag kann sie sichtbar halten.`);
@@ -2926,7 +2963,7 @@ function monthImpulseList(stats, month) {
   if (stats.smaDays) {
     impulses.push(`${stats.smaDays} ${stats.smaDays === 1 ? "SMA-Arbeitstag" : "SMA-Arbeitstage"} · ${formatPoints(stats.smaPoints)} ${stats.smaPoints === 1 ? "Punkt" : "Punkte"}.`);
   }
-  if (stats.fastingDays) {
+  if (religionEnabled() && stats.fastingDays) {
     impulses.push(stats.fastingDays === 1
       ? "Ein Fastentag ist in diesem Monat erfasst."
       : `${stats.fastingDays} Fastentage sind in diesem Monat erfasst.`);
@@ -2956,16 +2993,17 @@ function renderMonthReview() {
     ${statRowHTML("Check-ins", `${stats.checkins}`, trendText(stats.checkins, past.checkins || null, ""))}
     ${statRowHTML("Energie", value(stats.energy), trendText(stats.energy, past.energy))}
     ${statRowHTML("Laune", value(stats.mood), trendText(stats.mood, past.mood))}
-    ${statRowHTML("Gottesfurcht", value(stats.taqwa), trendText(stats.taqwa, past.taqwa))}
-    ${statRowHTML("Pflichtgebete", stats.prayerPossible ? `${stats.prayerCount} von ${stats.prayerPossible}` : "–")}
+    ${religionEnabled() ? statRowHTML("Gottesfurcht", value(stats.taqwa), trendText(stats.taqwa, past.taqwa)) : ""}
+    ${religionEnabled() ? statRowHTML("Pflichtgebete", stats.prayerPossible ? `${stats.prayerCount} von ${stats.prayerPossible}` : "–") : ""}
     ${statRowHTML("Routinen", stats.routinePossible ? `${stats.routineCount} von ${stats.routinePossible}` : "–")}
-    ${statRowHTML("Fastentage", `${stats.fastingDays}`)}`;
+    ${religionEnabled() ? statRowHTML("Fastentage", `${stats.fastingDays}`) : ""}`;
 
   impulses.innerHTML = `<h3 class="month-impulse-title">Rückblick &amp; Impulse</h3>
     <ul class="impulse-list">${monthImpulseList(stats, analysisMonth).map(text => `<li>${escapeHTML(text)}</li>`).join("")}</ul>`;
 }
 
 function exportMonthReport() {
+  if (!saveReview(true)) return;
   const stats = periodStats(monthDates(analysisMonth));
   const past = periodStats(monthDates(previousMonth(analysisMonth)));
   const split = roleSplitData(monthDates(analysisMonth));
@@ -2977,18 +3015,14 @@ function exportMonthReport() {
     `Check-ins: ${stats.checkins}`,
     `Energie: ${value(stats.energy)}${trendText(stats.energy, past.energy) ? ` (${trendText(stats.energy, past.energy)})` : ""}`,
     `Laune: ${value(stats.mood)}${trendText(stats.mood, past.mood) ? ` (${trendText(stats.mood, past.mood)})` : ""}`,
-    `Gottesfurcht: ${value(stats.taqwa)}${trendText(stats.taqwa, past.taqwa) ? ` (${trendText(stats.taqwa, past.taqwa)})` : ""}`,
-    `Pflichtgebete: ${stats.prayerCount} von ${stats.prayerPossible}`,
+    ...(religionEnabled() ? [`Gottesfurcht: ${value(stats.taqwa)}${trendText(stats.taqwa, past.taqwa) ? ` (${trendText(stats.taqwa, past.taqwa)})` : ""}`, `Pflichtgebete: ${stats.prayerCount} von ${stats.prayerPossible}`] : []),
     `Routinen: ${stats.routineCount} von ${stats.routinePossible}`,
-    `Fastentage: ${stats.fastingDays}`,
+    ...(religionEnabled() ? [`Fastentage: ${stats.fastingDays}`] : []),
     `SMA-Arbeitstage: ${stats.smaDays} · ${formatPoints(stats.smaPoints)} Punkte`,
     "",
     "",
     "Rollenpräsenz",
-    ...ROLES.map(role => {
-      const entry = split.roles.find(item => item.role === role.name);
-      return `  ${role.name}: ${formatPoints(entry.points)} Präsenzpunkte · ${entry.rows.length} ${entry.rows.length === 1 ? "Aktivität" : "Aktivitäten"}`;
-    }),
+    ...split.roles.map(entry => `  ${roleDisplayName(entry.role)}: ${formatPoints(entry.points)} Präsenzpunkte · ${entry.rows.length} ${entry.rows.length === 1 ? "Aktivität" : "Aktivitäten"}`),
     "",
     "Rückblick & Impulse",
     ...monthImpulseList(stats, analysisMonth).map(text => `  - ${text}`)
@@ -3016,7 +3050,7 @@ function roleSplitData(dates) {
       rowsByRole[row.role].push(row);
     });
   });
-  const roles = ROLES.map(role => {
+  const roles = ROLES.filter(role => !role.archived || rowsByRole[role.name]?.length).map(role => {
     const rows = [...(rowsByRole[role.name] || [])].sort((a, b) => a.date.localeCompare(b.date));
     return {
       role: role.name,
@@ -3040,9 +3074,9 @@ function roleSplitImpulseList(split) {
   }
   impulses.push(`Du hast ${split.activityCount} ${split.activityCount === 1 ? "Aktivität" : "Aktivitäten"} festgehalten; daraus ergeben sich ${formatPoints(split.total)} ${split.total === 1 ? "Präsenzpunkt" : "Präsenzpunkte"} auf ${split.represented} ${split.represented === 1 ? "Rolle" : "Rollen"}.`);
   if (split.leader) {
-    impulses.push(`Schwerpunkt der Rollenpräsenz war ${split.leader.role} mit ${formatPoints(split.leader.points)} Punkten.`);
+    impulses.push(`Schwerpunkt der Rollenpräsenz war ${roleDisplayName(split.leader.role)} mit ${formatPoints(split.leader.points)} Punkten.`);
   }
-  const open = split.roles.filter(item => item.points === 0).map(item => item.role);
+  const open = split.roles.filter(item => item.points === 0).map(item => roleDisplayName(item.role));
   // Während eines aktiven Fokus wird keine andere Rolle als offen ausgewiesen.
   if (open.length && !roleFocusIsActive()) {
     impulses.push(open.length === 1
@@ -3050,7 +3084,7 @@ function roleSplitImpulseList(split) {
       : `Nicht erfasst: ${open.join(", ")}. Eine einzelne Aktivität reicht, um eine davon aufzunehmen.`);
   }
   if (roleFocusIsActive()) {
-    impulses.push(`Der Rollenfokus liegt derzeit auf ${roleFocus.role} – ${roleFocusRangeLabel()}.`);
+    impulses.push(`Der Rollenfokus liegt derzeit auf ${roleDisplayName(roleFocus.role)} – ${roleFocusRangeLabel()}.`);
   }
   return impulses;
 }
@@ -3074,12 +3108,12 @@ function rolePresenceDistributionHTML(split) {
     const role = getRole(item.role);
     const share = Math.round(item.points / split.total * 100);
     return `<span class="role-presence-segment" style="--role-color:${role.color};--share:${item.points / split.total * 100}%"
-      title="${escapeHTML(role.name)} ${share} %"></span>`;
+      title="${escapeHTML(roleDisplayName(role.name))} ${share} %"></span>`;
   }).join("");
   const legend = split.roles.filter(item => item.points > 0).map(item => {
     const role = getRole(item.role);
     const share = Math.round(item.points / split.total * 100);
-    return `<span class="role-presence-key"><i style="--role-color:${role.color}"></i>${escapeHTML(role.emoji)} ${escapeHTML(role.name)} <b>${share} %</b></span>`;
+    return `<span class="role-presence-key"><i style="--role-color:${role.color}"></i>${escapeHTML(role.emoji)} ${escapeHTML(roleDisplayName(role.name))} <b>${share} %</b></span>`;
   }).join("");
   return `<div class="role-presence-share" role="img"
       aria-label="Anteile der Rollen an der erfassten Präsenz">${segments}</div>
@@ -3117,7 +3151,7 @@ function renderRoleSplit() {
         <span>Präsenzpunkte</span><strong>${formatPoints(split.total)}</strong>
       </div>
       <div class="role-presence-metric">
-        <span>Sichtbare Rollen</span><strong>${split.represented} von ${ROLES.length}</strong>
+        <span>Sichtbare Rollen</span><strong>${split.represented} von ${split.roles.length}</strong>
       </div>`;
   }
 
@@ -3133,9 +3167,9 @@ function renderRoleSplit() {
       : "keine Aktivität erfasst";
     return `<button type="button" class="role-split-row${item.points === 0 ? " is-open" : ""}" data-role-detail="${escapeHTML(item.role)}"
       style="--role-color:${role.color};--role-soft:${hexToRgba(role.color, .16)}"
-      aria-label="${escapeHTML(role.name)}: ${formatPoints(item.points)} Präsenzpunkte, ${escapeHTML(count)}, ${escapeHTML(status)}. Details öffnen.">
+      aria-label="${escapeHTML(roleDisplayName(role.name))}: ${formatPoints(item.points)} Präsenzpunkte, ${escapeHTML(count)}, ${escapeHTML(status)}. Details öffnen.">
       <span class="role-split-head">
-        <span class="role-split-name">${escapeHTML(role.emoji)} ${escapeHTML(role.name)}</span>
+        <span class="role-split-name">${escapeHTML(role.emoji)} ${escapeHTML(roleDisplayName(role.name))}</span>
         <b>${formatPoints(item.points)}</b>
       </span>
       <span class="role-split-bar"><i style="--fill:${Math.round(item.points / max * 100)}%"></i></span>
@@ -3157,7 +3191,7 @@ function openRoleDetailDialog(roleName) {
   if (!dialog) return;
   const split = roleSplitData(roleSplitDates());
   const entry = split.roles.find(item => item.role === roleName);
-  $("roleDetailTitle").textContent = `${getRole(roleName).emoji} ${roleName}`;
+  $("roleDetailTitle").textContent = `${getRole(roleName).emoji} ${roleDisplayName(roleName)}`;
 
   const byDate = new Map();
   (entry?.rows || []).forEach(row => {
@@ -3183,15 +3217,15 @@ function openRoleDetailDialog(roleName) {
 }
 
 function roleSplitInfoHTML() {
-  const rows = ACTIVITY_TEMPLATES.map(template => {
-    const role = template.key === "custom" ? "frei wählbar" : template.role;
+  const rows = availableActivityTemplates().map(template => {
+    const role = template.key === "custom" ? "frei wählbar" : roleDisplayName(template.role);
     const cap = activityDailyCap(template.key);
     const points = cap === null
       ? `${formatPoints(template.weight)}`
       : `${formatPoints(cap)} je Kalendertag`;
     return `<div class="info-row"><span>${escapeHTML(template.label)}</span><small>${escapeHTML(role)}</small><b>${escapeHTML(points)}</b></div>`;
   }).join("");
-  const capped = ACTIVITY_TEMPLATES.filter(template => activityDailyCap(template.key) !== null)
+  const capped = availableActivityTemplates().filter(template => activityDailyCap(template.key) !== null)
     .map(template => `${template.label} (${formatPoints(activityDailyCap(template.key))})`).join(", ");
   return `<p>Diese Auswertung zeigt, welchen Rollen du durch bewusst erfasste Aktivitäten Raum gegeben hast. Die Punkte gewichten die Aussagekraft einer Aktivität. Sie messen weder Zeitaufwand noch deinen persönlichen Wert oder die vollständige Erfüllung einer Rolle.</p>
     <p>Deshalb kann ein SMA-Arbeitstag trotz großem Zeitaufwand mit ${formatPoints(activityDailyCap("sma"))} gewichtet sein, während eine bewusst prägende Ankeraktivität wie Jumʿa mit ${formatPoints(activityTemplate("jumua").weight)} zählt.</p>
@@ -3211,12 +3245,11 @@ function renderAnalysis() {
 
 function getAllReviews() {
   const reviews = [];
-  for (let index = 0; index < localStorage.length; index += 1) {
-    const key = localStorage.key(index);
+  for (let index = 0; index < RPStorage.length; index += 1) {
+    const key = RPStorage.key(index);
     if (!key?.startsWith(`${STORAGE_NAMESPACE}-review-`)) continue;
     const date = key.replace(`${STORAGE_NAMESPACE}-review-`, "");
-    const raw = safeParse(localStorage.getItem(key));
-    if (raw) reviews.push({ date, data: normalizeReview(raw, date, true) });
+    reviews.push({ date, data: loadReview(date) });
   }
   return reviews.sort((a, b) => a.date.localeCompare(b.date));
 }
@@ -3227,6 +3260,9 @@ function downloadTextFile(filename, content, mimeType) {
 }
 
 function downloadBlob(filename, blob) {
+  if (globalThis.roleplayNativeExport) {
+    return globalThis.roleplayNativeExport(filename, blob).catch(error => showProductMessage(`Datei konnte nicht geteilt werden: ${error.message}`, true));
+  }
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
@@ -3247,21 +3283,21 @@ function backupPayload() {
     routines,
     settings: {
       roleFocus: roleFocus || null,
-      weekMode
+      weekMode,
+      product: productSettings
     }
   };
 }
 
 function exportBackup() {
-  saveReview(true);
+  if (!saveReview(true)) return;
   const payload = backupPayload();
   downloadTextFile(`roleplay-backup-${todayISO()}.json`, JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
-  localStorage.setItem(BACKUP_TIMESTAMP_KEY, new Date().toISOString());
-  $("backupStatus").textContent = `Backup erstellt: ${payload.reviews.length} Tagesreviews und ${Object.keys(routines || {}).length} Routinen.`;
+  RPStorage.setItem(BACKUP_TIMESTAMP_KEY, new Date().toISOString());
+  $("backupStatus").textContent = `Sicherung angefordert: ${payload.reviews.length} Tagesreviews und ${Object.keys(routines || {}).length} Routinen. Prüfe bitte, ob die Datei gespeichert wurde.`;
 }
 
-/* Vor jedem Import wird der aktuelle Bestand automatisch als Datei
-   heruntergeladen. Ein Import kann dadurch nie zu Datenverlust führen. */
+/* Optionaler Dateiexport. Die sichere Übernahme selbst nutzt ein lokales Journal. */
 function downloadSafetyBackup() {
   const payload = backupPayload();
   payload.safetyBackup = true;
@@ -3270,41 +3306,54 @@ function downloadSafetyBackup() {
   return payload.reviews.length;
 }
 
-function importBackup(file) {
-  const reader = new FileReader();
-  reader.onload = () => {
-    const payload = safeParse(reader.result);
-    const validReviews = Array.isArray(payload?.reviews) ? payload.reviews.filter(item => /^\d{4}-\d{2}-\d{2}$/.test(item?.date) && item?.data) : [];
-    if (!validReviews.length) { alert("Diese Datei enthält keine gültigen Roleplay-Tagesreviews."); return; }
-    if (!confirm(`${validReviews.length} Tagesreviews importieren? Vorhandene Einträge mit demselben Datum werden ersetzt.\n\nZuvor wird automatisch eine Sicherung des aktuellen Bestands heruntergeladen.`)) return;
-    saveReview(true);
-    const secured = downloadSafetyBackup();
-    // Ältere Backups werden unverändert übernommen; fehlende neue Felder
-    // ergänzt die Normalisierung beim Laden, ohne Werte zu erfinden.
-    validReviews.forEach(item => localStorage.setItem(storageKey(item.date), JSON.stringify(item.data)));
-    if (payload.routines) {
-      routines = normalizeRoutines(payload.routines);
-      saveRoutines();
+async function importBackup(file) {
+  try {
+    if (file.size > 10 * 1024 * 1024) throw new Error("Die Sicherung ist größer als 10 MB. Bitte wende dich mit dieser Datei an den Support.");
+    const payload = RPBackup.payload(JSON.parse(await file.text()));
+    const settings = prepareImportedSettings(payload);
+    const count = payload.reviews.length;
+    if (!confirm(`${count} Tagesreviews und die enthaltenen Einstellungen importieren? Gleiche Datumsangaben werden ersetzt. Andere Tage bleiben erhalten. Die Änderung wird vollständig übernommen oder zurückgenommen.`)) return false;
+    const changes = payload.reviews.map(item => ({ key: storageKey(item.date), value: JSON.stringify(item.data) }));
+    if (payload.routines != null) changes.push({ key: ROUTINES_STORAGE_KEY, value: JSON.stringify(payload.routines) });
+    if (settings) changes.push({ key: PRODUCT_SETTINGS_KEY, value: JSON.stringify(settings) });
+    if (payload.settings && Object.prototype.hasOwnProperty.call(payload.settings, "roleFocus")) {
+      const focus = payload.settings.roleFocus;
+      if (focus !== null && (!RPBackup.object(focus) || !settings.roles.some(role => role.name === focus.role) || !ROLE_FOCUS_MODES.includes(focus.mode) || !RPBackup.date(focus.startDate) || (focus.endDate && (!RPBackup.date(focus.endDate) || focus.endDate < focus.startDate)) || (focus.mode !== "manual" && !focus.endDate))) throw new Error("Der Rollenfokus in dieser Sicherung ist ungültig.");
+      changes.push({ key: ROLE_FOCUS_STORAGE_KEY, value: focus ? JSON.stringify(focus) : null });
     }
-    const importedFocus = normalizeRoleFocus(payload?.settings?.roleFocus);
-    if (importedFocus) { roleFocus = importedFocus; saveRoleFocus(); }
-    if (payload?.settings?.weekMode) setWeekMode(payload.settings.weekMode);
-    loadRoleFocus();
-    localStorage.setItem("roleplay-last-import-at", new Date().toISOString());
-    setDate(selectedDate);
-    renderAnalysis();
-    $("backupStatus").textContent = `${validReviews.length} Tagesreviews importiert. Sicherung mit ${secured} Tagesreviews wurde zuvor heruntergeladen.`;
-    alert("Backup wurde erfolgreich importiert.");
-  };
-  reader.readAsText(file);
+    if (payload.settings?.weekMode) {
+      if (!["calendar", "sliding"].includes(payload.settings.weekMode)) throw new Error("Die Wochenansicht in dieser Sicherung ist ungültig.");
+      changes.push({ key: WEEK_MODE_STORAGE_KEY, value: payload.settings.weekMode });
+    }
+    if (currentData && dirtyReview && !changes.some(item => item.key === storageKey(selectedDate))) {
+      collectForm();
+      RPBackup.review(currentData, selectedDate);
+      const pending = pendingStreakPropagation ? streakForwardChanges(selectedDate, true) : [{ key: storageKey(selectedDate), value: JSON.stringify(currentData) }];
+      for (const entry of pending) if (!changes.some(item => item.key === entry.key)) changes.push(entry);
+    }
+    changes.push({ key: "roleplay-last-import-at", value: new Date().toISOString() });
+    RPStorage.transaction(changes);
+    dirtyReview = false; pendingStreakPropagation = false; clearTimeout(autoSaveTimer); autoSaveTimer = null;
+    if ($("storageError")) $("storageError").hidden = true;
+    productSettings = loadProductSettings(); applyProductSettings();
+    routines = loadRoutines(); loadRoleFocus(); loadWeekMode(); initOptions();
+    currentData = null; setDate(selectedDate); renderAnalysis();
+    $("backupStatus").textContent = `${count} Tagesreviews importiert. Bitte speichere jetzt eine aktuelle Sicherung als Datei.`;
+    return true;
+  } catch (error) {
+    showProductMessage(`Import nicht abgeschlossen: ${error.message}`, true);
+    return false;
+  }
 }
 
 function csvEscape(value) {
-  return `"${String(value ?? "").replace(/"/g, '""')}"`;
+  const text = String(value ?? "");
+  const safe = /^[\s]*[=+@-]/.test(text) ? "'" + text : text;
+  return `"${safe.replace(/"/g, '""')}"`;
 }
 
 function exportCsv() {
-  saveReview(true);
+  if (!saveReview(true)) return;
   const headers = [
     "Datum", "Tagesrolle", "Frühstück_Kategorie", "Frühstück", "Mittag_Kategorie", "Mittagessen", "Abend_Kategorie", "Abendessen", "Snack_Kategorie", "Snack", "Wasser_ml", "Schritte",
     "Morgenroutine", "Abendroutine", ...PRAYERS, ...SUNNAH_PRAYERS.map(prayer => `Sunnah_${prayer}`),
@@ -3316,11 +3365,11 @@ function exportCsv() {
   ];
   const lines = [headers.map(csvEscape).join(";")];
   getAllReviews().forEach(({ date, data }) => {
-    const activities = (data.activities || []).map(activity => `${activity.title} | ${activity.role}`).join(" / ");
+    const activities = (data.activities || []).map(activity => `${activity.title} | ${roleDisplayName(activity.role)}`).join(" / ");
     const latest = latestStateCheckin(data);
     const mode = modeForCheckin(latest, data);
     const row = [
-      date, data.role,
+      date, roleDisplayName(data.role),
       mealCategoryLabel(data.mealCategories?.breakfast || ""), data.breakfast,
       mealCategoryLabel(data.mealCategories?.lunch || ""), data.lunch,
       mealCategoryLabel(data.mealCategories?.dinner || ""), data.dinner,
@@ -3337,7 +3386,7 @@ function exportCsv() {
     lines.push(row.map(csvEscape).join(";"));
   });
   downloadTextFile(`roleplay-export-${todayISO()}.csv`, `﻿${lines.join("\r\n")}`, "text/csv;charset=utf-8");
-  $("backupStatus").textContent = "CSV-Export mit Check-ins, Gebeten und Reflexion wurde erstellt.";
+  $("backupStatus").textContent = "CSV-Export deiner Einträge wurde angefordert. Bitte speichere die Datei.";
 }
 
 function hexToRgba(hex, alpha) {
@@ -3347,7 +3396,7 @@ function hexToRgba(hex, alpha) {
 }
 
 function rawReviewForCalendar(date) {
-  const rawText = localStorage.getItem(storageKey(date));
+  const rawText = RPStorage.getItem(storageKey(date));
   if (!rawText) return null;
   return safeParse(rawText, {});
 }
@@ -3399,12 +3448,14 @@ function normalizeRoutines(value) {
     const merged = { ...base, ...(incoming[key] || {}) };
     merged.key = key;
     merged.theme = merged.theme || (key === "morning" ? "morning" : key === "evening" ? "evening" : "focus");
+    merged.guidedBlocksVersion = Number(merged.guidedBlocksVersion || 0);
     merged.items = Array.isArray(merged.items) ? merged.items.map((item, idx) => ({
       id: item.id || `${key}-${Date.now()}-${idx}`,
       emoji: item.emoji || "✨",
       title: item.title || "Neuer Schritt",
       minutes: clamp(Number(item.minutes || 5), 1, 180),
-      context: item.context || ""
+      context: item.context || "",
+      steps: Array.isArray(item.steps) ? item.steps.map(step => String(step || "").trim()).filter(Boolean).slice(0, 20) : []
     })) : [];
     output[key] = merged;
   });
@@ -3412,12 +3463,136 @@ function normalizeRoutines(value) {
 }
 
 function loadRoutines() {
-  const stored = safeParse(localStorage.getItem(ROUTINES_STORAGE_KEY));
-  return normalizeRoutines(stored);
+  const text = RPStorage.getItem(ROUTINES_STORAGE_KEY);
+  const stored = text ? JSON.parse(text) : null;
+  if (stored) RPBackup.routines(stored);
+  if (!text && productSettings && !productSettings.personalTemplate) return neutralRoutines();
+  return stored && !Object.keys(stored).length ? {} : normalizeRoutines(stored);
 }
 
 function saveRoutines() {
-  localStorage.setItem(ROUTINES_STORAGE_KEY, JSON.stringify(routines));
+  RPStorage.setItem(ROUTINES_STORAGE_KEY, JSON.stringify(routines));
+}
+
+/* Einmalige Umstellung der persönlichen Morgenroutine auf geführte Blöcke.
+   Nur eindeutig erkennbare ältere persönliche Routinen werden migriert. */
+function migrateGuidedMorningRoutine() {
+  if (RPStorage.getItem(ROUTINE_GUIDED_MIGRATION_KEY) === "done") return;
+  if (productSettings?.personalTemplate === false || !routines?.morning) return;
+  if (routines.morning.guidedBlocksVersion >= 1) {
+    RPStorage.setItem(ROUTINE_GUIDED_MIGRATION_KEY, "done");
+    return;
+  }
+  const legacySignals = new Set(["Ibāda", "Ibadah", "Tabletten / Katze", "Peak", "Englisch", "Arabisch", "Quizlet", "Daumen Yoga", "Fertigmachen + Bett", "Fertigmachen", "Kerze", "Smoothie", "Duʿā"]);
+  const matches = (routines.morning.items || []).filter(item => legacySignals.has(String(item.title || ""))).length;
+  if (matches >= 3) {
+    const upgraded = JSON.parse(JSON.stringify(DEFAULT_ROUTINES.morning));
+    upgraded.title = routines.morning.title || upgraded.title;
+    upgraded.theme = routines.morning.theme || upgraded.theme;
+    routines.morning = upgraded;
+    saveRoutines();
+  }
+  RPStorage.setItem(ROUTINE_GUIDED_MIGRATION_KEY, "done");
+}
+
+function routineFileKey(value, fallbackTitle = "Routine") {
+  const raw = String(value || "").trim();
+  if (raw && /^[a-z0-9äöüß][a-z0-9äöüß._-]{0,79}$/i.test(raw) && !["__proto__", "constructor", "prototype"].includes(raw)) return raw;
+  const base = String(fallbackTitle || "Routine").toLowerCase().replace(/[^a-z0-9äöüß]+/gi, "-").replace(/^-+|-+$/g, "").slice(0, 64) || "routine";
+  return base;
+}
+
+function normalizeImportedRoutine(raw, index = 0) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("Eine Routine in der Datei ist ungültig.");
+  const title = String(raw.title || "").trim();
+  if (!title || title.length > 80) throw new Error("Jede importierte Routine braucht einen Titel mit höchstens 80 Zeichen.");
+  if (!Array.isArray(raw.items) || raw.items.length < 1 || raw.items.length > 100) throw new Error(`„${title}“ braucht zwischen 1 und 100 Blöcke.`);
+  const key = routineFileKey(raw.key, title);
+  const allowedThemes = new Set(["morning", "evening", "tag", "daemmerung", "zuhause", "focus"]);
+  const theme = allowedThemes.has(raw.theme) ? raw.theme : (key === "morning" ? "morning" : key === "evening" ? "evening" : "focus");
+  const seen = new Set();
+  const items = raw.items.map((item, itemIndex) => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) throw new Error(`Block ${itemIndex + 1} in „${title}“ ist ungültig.`);
+    const itemTitle = String(item.title || "").trim();
+    if (!itemTitle || itemTitle.length > 100) throw new Error(`Block ${itemIndex + 1} in „${title}“ braucht einen kurzen Titel.`);
+    let id = String(item.id || "").trim();
+    if (!id || !/^[a-z0-9äöüß][a-z0-9äöüß._-]{0,99}$/i.test(id) || seen.has(id)) id = `${key}-${itemIndex + 1}-${itemTitle.toLowerCase().replace(/[^a-z0-9]+/gi, "-").replace(/^-+|-+$/g, "").slice(0, 28) || "block"}`;
+    while (seen.has(id)) id += "-x";
+    seen.add(id);
+    const minutes = Number(item.minutes);
+    const context = String(item.context || "").trim();
+    const steps = Array.isArray(item.steps) ? item.steps.map(step => String(step || "").trim()).filter(Boolean).slice(0, 20) : [];
+    if (context.length > 3000 || steps.some(step => step.length > 180)) throw new Error(`Ein Hinweis oder Feinschritt in „${title}“ ist zu lang.`);
+    return {
+      id,
+      emoji: String(item.emoji || "✨").trim().slice(0, 16) || "✨",
+      title: itemTitle,
+      minutes: Number.isFinite(minutes) ? clamp(minutes, 1, 180) : 5,
+      context,
+      steps
+    };
+  });
+  return { key, title, description: String(raw.description || "Eigene Routine").trim().slice(0, 240) || "Eigene Routine", theme, guidedBlocksVersion: Number(raw.guidedBlocksVersion || (items.some(item => item.steps.length) ? 1 : 0)), autoNext: false, items };
+}
+
+function routinePayloadForExport(key) {
+  const routine = routines?.[key];
+  if (!routine) throw new Error("Routine nicht gefunden.");
+  return { format: ROUTINE_FILE_FORMAT, version: ROUTINE_FILE_VERSION, exportedAt: new Date().toISOString(), routine };
+}
+
+function exportRoutineFile(key) {
+  try {
+    const payload = routinePayloadForExport(key);
+    const safe = (routines[key].title || key).toLowerCase().replace(/[^a-z0-9äöüß]+/gi, "-").replace(/^-+|-+$/g, "") || "routine";
+    downloadTextFile(`roleplay-routine-${safe}.json`, JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
+    showProductMessage("Routine-Datei erstellt. Du kannst sie später bearbeiten lassen und wieder hier laden.");
+  } catch (error) { showProductMessage(error.message, true); }
+}
+
+function routinesFromFilePayload(payload) {
+  if (!payload || typeof payload !== "object") throw new Error("Die Datei enthält keine lesbare Routine.");
+  if (payload.format === ROUTINE_FILE_FORMAT && payload.routine) return [payload.routine];
+  if (payload.routine && typeof payload.routine === "object") return [payload.routine];
+  if (Array.isArray(payload.routines)) return payload.routines;
+  if (payload.routines && typeof payload.routines === "object") return Object.entries(payload.routines).map(([key, value]) => ({ ...value, key: value?.key || key }));
+  if (payload.title && Array.isArray(payload.items)) return [payload];
+  throw new Error("Kein unterstütztes Routine-Format gefunden.");
+}
+
+async function importRoutineFile(file) {
+  try {
+    if (!file || file.size > 1024 * 1024) throw new Error("Routine-Dateien dürfen höchstens 1 MB groß sein.");
+    let text = await file.text();
+    text = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+    const parsed = JSON.parse(text);
+    const imported = routinesFromFilePayload(parsed).map(normalizeImportedRoutine);
+    const keys = new Set();
+    imported.forEach(routine => {
+      if (keys.has(routine.key)) throw new Error(`Die Kennung „${routine.key}“ ist in der Datei doppelt.`);
+      keys.add(routine.key);
+    });
+    const updates = imported.filter(routine => routines[routine.key]);
+    const additions = imported.filter(routine => !routines[routine.key]);
+    const summary = [updates.length ? `${updates.length} aktualisieren` : "", additions.length ? `${additions.length} hinzufügen` : ""].filter(Boolean).join(" · ");
+    if (!confirm(`Routine-Datei übernehmen? ${summary}. Bestehende Routinen mit gleicher Kennung werden ersetzt; andere bleiben erhalten.`)) return false;
+    imported.forEach(routine => {
+      routines[routine.key] = routine;
+      if (currentData?.routineProgress?.[routine.key]) {
+        const valid = new Set(routine.items.map(item => item.id));
+        currentData.routineProgress[routine.key] = Object.fromEntries(Object.entries(currentData.routineProgress[routine.key]).filter(([id]) => valid.has(id)));
+      }
+    });
+    saveRoutines();
+    if (currentData) saveReview(true);
+    renderRoutineCards();
+    if (activeRoutineKey && routines[activeRoutineKey]) renderRoutineDetail(activeRoutineKey);
+    showProductMessage(`${imported.length === 1 ? "Routine" : "Routinen"} übernommen. Die neue Abfolge ist sofort aktiv.`);
+    return true;
+  } catch (error) {
+    showProductMessage(`Routine-Datei nicht übernommen: ${error.message}`, true);
+    return false;
+  }
 }
 
 function orderedRoutineKeys() {
@@ -3439,8 +3614,32 @@ function routineProgress(key) {
   return { done, resolved, total: items.length };
 }
 
+function renderRoutineLaunchpad() {
+  const root = $("routineLaunchpad");
+  if (!root || !routines || !currentData) return;
+  const keys = orderedRoutineKeys();
+  const hour = new Date().getHours();
+  const preferred = hour < 15 ? "morning" : "evening";
+  let key = keys.includes(preferred) && routineProgress(preferred).resolved < routineProgress(preferred).total ? preferred : keys.find(candidate => routineProgress(candidate).resolved < routineProgress(candidate).total);
+  if (!key) {
+    root.className = "routine-launchpad is-complete";
+    root.innerHTML = `<span class="routine-launchpad-kicker">HEUTE</span><h2>Alles im Kasten.</h2><p>Deine Routinen sind für heute abgeschlossen. Morgen beginnt wieder mit einem Block.</p><div class="routine-launchpad-stats"><span>✓ Routinen abgeschlossen</span></div>`;
+    return;
+  }
+  const routine = routines[key];
+  const progress = routineProgress(key);
+  const map = currentData.routineProgress?.[key] || {};
+  const next = routine.items.find(item => !["done", "skipped"].includes(map[item.id])) || routine.items[0];
+  const remaining = routine.items.filter(item => !["done", "skipped"].includes(map[item.id])).reduce((sum, item) => sum + Number(item.minutes || 0), 0);
+  const started = progress.resolved > 0;
+  root.className = `routine-launchpad ${routine.theme || "focus"}`;
+  root.innerHTML = `<span class="routine-launchpad-kicker">ROUTINE-MODUS</span><h2>${started ? "Weiter. Genau hier." : "Bereit? Dann los."}</h2><p><strong>${escapeHTML(next?.title || routine.title)}</strong> ist jetzt alles, was zählt. Danach führt dich ROLEPLAY zum nächsten Block.</p><div class="routine-launchpad-stats"><span>${progress.resolved}/${progress.total} Blöcke</span><span>noch ${remaining} Min.</span></div><button type="button" class="routine-launchpad-cta" data-launch-routine="${escapeHTML(key)}">${started ? "Fortsetzen" : "Routine starten"}<span>→</span></button>`;
+  root.querySelector("[data-launch-routine]")?.addEventListener("click", () => startRoutine(key));
+}
+
 function renderRoutineCards() {
   if (!routines || !currentData) return;
+  renderRoutineLaunchpad();
   $("routineCards").innerHTML = orderedRoutineKeys().map(key => {
     const routine = routines[key];
     const progress = routineProgress(key);
@@ -3521,7 +3720,8 @@ function renderRoutineDetail(key) {
       <span class="routine-emoji-bubble">${escapeHTML(item.emoji)}</span>
       <div class="routine-item-copy">
         <strong>${escapeHTML(item.title)}</strong>
-        <small>${item.minutes} Min.${stateLabel}${item.context ? " · Kontext" : ""}</small>
+        <small>${item.minutes} Min.${stateLabel}${item.steps?.length ? ` · ${item.steps.length} Feinschritte` : item.context ? " · Kontext" : ""}</small>
+        ${item.steps?.length ? `<div class="routine-item-steps">${item.steps.slice(0, 4).map(step => `<span>${escapeHTML(step)}</span>`).join("")}${item.steps.length > 4 ? `<span>+${item.steps.length - 4}</span>` : ""}</div>` : ""}
       </div>
       <div class="routine-sort-controls" aria-label="Reihenfolge ändern">
         <button type="button" data-move-routine-item="up" data-routine-control="${index}" aria-label="Nach oben" ${index === 0 ? "disabled" : ""}>↑</button>
@@ -3711,6 +3911,7 @@ function openRoutineItemDialog(itemId = null) {
   $("routineItemTitle").value = item?.title || "";
   fillRoutineMinuteOptions(item?.minutes ?? 5);
   $("routineItemContext").value = item?.context || "";
+  if ($("routineItemSteps")) $("routineItemSteps").value = (item?.steps || []).join("\n");
   $("deleteRoutineItem").hidden = !item;
   setRoutineEmojiError(false);
   $("routineItemDialog").showModal();
@@ -3734,7 +3935,8 @@ function saveRoutineItemFromForm(event) {
     emoji,
     title,
     minutes: Number.isFinite(selectedMinutes) && selectedMinutes > 0 ? clamp(selectedMinutes, 0.5, 180) : 5,
-    context: $("routineItemContext").value.trim()
+    context: $("routineItemContext").value.trim(),
+    steps: $("routineItemSteps") ? $("routineItemSteps").value.split(/\n/).map(step => step.trim()).filter(Boolean).slice(0, 20) : []
   };
   const list = routines[activeRoutineKey].items;
   const index = list.findIndex(entry => entry.id === editingRoutineItemId);
@@ -3793,8 +3995,8 @@ function startRoutine(key) {
   // Die Session arbeitet auf einer Kopie. Umsortieren während des Durchlaufs
   // verändert damit ausschließlich diesen Durchlauf, nie das gespeicherte
   // Routine-Template. Dauerhafte Änderungen laufen über "Routine bearbeiten".
-  routineSession = { key, index, remaining, running: true, endAt: Date.now() + remaining * 1000, interval: null, contextOpen: true, expiredNotified: false,
-    items: (routines[key]?.items || []).map(item => ({ ...item })) };
+  routineSession = { key, index, remaining, running: true, endAt: Date.now() + remaining * 1000, interval: null, contextOpen: true, expiredNotified: false, microDone: {},
+    items: (routines[key]?.items || []).map(item => ({ ...item, steps: Array.isArray(item.steps) ? [...item.steps] : [] })) };
   persistRoutineSession();
   $("routineSessionDialog").showModal();
   renderRoutineSession();
@@ -3841,7 +4043,7 @@ function renderRoutineSession() {
   $("routineSessionDialog").dataset.theme = routine.theme || "focus";
   $("sessionRoutineName").textContent = routine.title;
   const items = sessionItems();
-  $("sessionProgress").textContent = `Schritt ${routineSession.index + 1} von ${items.length}`;
+  $("sessionProgress").textContent = `Block ${routineSession.index + 1} von ${items.length} · jetzt nur das hier`;
   // Die Session übernimmt das Kopfbild ihrer Routine als ruhige Atmosphäre.
   const dialogEl = $("routineSessionDialog");
   dialogEl.dataset.theme = routine.theme || "focus";
@@ -3855,6 +4057,13 @@ function renderRoutineSession() {
   $("sessionPause").textContent = routineSession.running ? "Ⅱ" : "▶";
   $("sessionContext").hidden = !item.context;
   $("sessionContext").innerHTML = item.context ? linkifyText(item.context) : "";
+  const micro = $("sessionMicroSteps");
+  if (micro) {
+    const steps = Array.isArray(item.steps) ? item.steps : [];
+    const done = routineSession.microDone?.[item.id] || [];
+    micro.hidden = !steps.length;
+    micro.innerHTML = steps.length ? `<div class="session-micro-head"><strong>In diesem Block</strong><span>Orientierung, kein Extra-Pflichtprogramm</span></div><div class="session-micro-list">${steps.map((step, idx) => `<button type="button" class="session-micro-step ${done[idx] ? "is-done" : ""}" data-session-micro-index="${idx}"><span class="session-micro-check">${done[idx] ? "✓" : ""}</span><span>${escapeHTML(step)}</span></button>`).join("")}</div>` : "";
+  }
   const next = items[routineSession.index + 1];
   $("sessionNext").textContent = next ? `Als Nächstes: ${next.title}` : "Letzter Schritt dieser Routine";
   const rest = sessionRemainingSummary();
@@ -3894,11 +4103,11 @@ function playTimerDoneTone() {
 
 function persistRoutineSession() {
   if (!routineSession) {
-    localStorage.removeItem(ROUTINE_SESSION_STORAGE_KEY);
+    RPStorage.removeItem(ROUTINE_SESSION_STORAGE_KEY);
     return;
   }
   const { interval, ...serializable } = routineSession;
-  localStorage.setItem(ROUTINE_SESSION_STORAGE_KEY, JSON.stringify(serializable));
+  RPStorage.setItem(ROUTINE_SESSION_STORAGE_KEY, JSON.stringify(serializable));
 }
 
 function syncRoutineSessionClock() {
@@ -3958,16 +4167,40 @@ function adjustRoutineSessionMinutes(deltaMinutes) {
 }
 
 function restoreRoutineSession() {
-  const stored = safeParse(localStorage.getItem(ROUTINE_SESSION_STORAGE_KEY));
+  const stored = safeParse(RPStorage.getItem(ROUTINE_SESSION_STORAGE_KEY));
   if (!stored || !routines?.[stored.key] || !routines[stored.key].items?.[stored.index]) {
-    localStorage.removeItem(ROUTINE_SESSION_STORAGE_KEY);
+    RPStorage.removeItem(ROUTINE_SESSION_STORAGE_KEY);
     return;
   }
-  routineSession = { ...stored, interval: null, remaining: Math.max(0, Number(stored.remaining || 0)), running: Boolean(stored.running), endAt: stored.endAt ? Number(stored.endAt) : null };
+  routineSession = { ...stored, microDone: stored.microDone && typeof stored.microDone === "object" ? stored.microDone : {}, interval: null, remaining: Math.max(0, Number(stored.remaining || 0)), running: Boolean(stored.running), endAt: stored.endAt ? Number(stored.endAt) : null };
   syncRoutineSessionClock();
   if (!$("routineSessionDialog").open) $("routineSessionDialog").showModal();
   renderRoutineSession();
   startSessionInterval();
+}
+
+function toggleSessionMicroStep(index) {
+  if (!routineSession) return;
+  const item = currentSessionItem();
+  if (!item || !Array.isArray(item.steps) || !item.steps[index]) return;
+  routineSession.microDone = routineSession.microDone || {};
+  const done = Array.isArray(routineSession.microDone[item.id]) ? routineSession.microDone[item.id] : [];
+  done[index] = !done[index];
+  routineSession.microDone[item.id] = done;
+  persistRoutineSession();
+  renderRoutineSession();
+}
+
+function showRoutineCelebration(routine, allDone) {
+  if (navigator.vibrate) navigator.vibrate(allDone ? [35, 45, 55] : 30);
+  showProductMessage(allDone ? `✨ ${routine.title} geschafft. Stark – jetzt in den Tag.` : `${routine.title} bewusst beendet. Übersprungene Blöcke bleiben dokumentiert.`);
+  if (!allDone || window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+  const burst = document.createElement("div");
+  burst.className = "routine-celebration-burst";
+  burst.setAttribute("aria-hidden", "true");
+  burst.innerHTML = Array.from({ length: 18 }, (_, i) => `<i style="--i:${i}"></i>`).join("");
+  document.body.appendChild(burst);
+  setTimeout(() => burst.remove(), 1400);
 }
 
 function completeSessionItem(status) {
@@ -3987,7 +4220,7 @@ function completeSessionItem(status) {
     else if (key === "evening") currentData.eveningRoutineState = allDone ? "done" : "responsiblySkipped";
     saveReview(true);
     closeRoutineSession();
-    alert(allDone ? `${routine.title} abgeschlossen.` : `${routine.title} gewissenhaft beendet. Übersprungene Schritte bleiben dokumentiert.`);
+    showRoutineCelebration(routine, allDone);
     return;
   }
   routineSession.index = nextIndex;
@@ -4005,7 +4238,7 @@ function completeSessionItem(status) {
 function closeRoutineSession() {
   if (routineSession?.interval) clearInterval(routineSession.interval);
   routineSession = null;
-  localStorage.removeItem(ROUTINE_SESSION_STORAGE_KEY);
+  RPStorage.removeItem(ROUTINE_SESSION_STORAGE_KEY);
   if ($("routineSessionDialog").open) $("routineSessionDialog").close();
   const editor = $("sessionRoutineEditor");
   if (editor) { editor.hidden = true; editor.dataset.currentItemId = ""; }
@@ -4029,6 +4262,7 @@ function grantStreakAccess() {
 }
 
 function switchPage(page, options = {}) {
+  if (page === "settings") { openSettings(); return; }
   if (page === "streaks" && !streaksUnlocked && !options.skipGuard) {
     requestStreakAccess();
     return;
@@ -4038,6 +4272,7 @@ function switchPage(page, options = {}) {
   $("routinesPage").classList.toggle("active", page === "routines");
   $("analysisPage").classList.toggle("active", page === "analysis");
   $("streaksPage").classList.toggle("active", page === "streaks");
+  $("productToolbar").hidden = false;
   $("pageTitle").textContent = titles[page] || "Roleplay";
   $("appHeader").hidden = page !== "review";
   document.querySelectorAll(".nav-button").forEach(button => button.classList.toggle("active", button.dataset.page === page));
@@ -4067,11 +4302,11 @@ function mealCategoryOptionsHTML(currentValue = "") {
 }
 
 function initOptions() {
-  const roleOptions = ROLES.map(role => `<option value="${escapeHTML(role.name)}">${escapeHTML(role.emoji)} ${escapeHTML(roleDisplayName(role.name))}</option>`).join("");
+  const roleOptions = selectableRoles().map(role => `<option value="${escapeHTML(role.name)}">${escapeHTML(role.emoji)} ${escapeHTML(roleDisplayName(role.name))}</option>`).join("");
   renderRolePickerOptions();
   $("activityRole").innerHTML = roleOptions;
   if ($("activityTemplate")) {
-    $("activityTemplate").innerHTML = ACTIVITY_TEMPLATES
+    $("activityTemplate").innerHTML = availableActivityTemplates()
       .map(template => `<option value="${template.key}">${escapeHTML(template.label)}</option>`).join("");
   }
   $("stateSlot").innerHTML = CHECKIN_SLOTS.map(slot => `<option value="${slot.key}">${slot.icon} ${escapeHTML(slot.label)}</option>`).join("");
@@ -4178,6 +4413,7 @@ function bindEvents() {
     }
     currentData.role = $("dayRole").value;
     applyRolePickerStyle();
+    renderStateOverview();
     saveReview(true);
   });
   $("roleFocusForm").addEventListener("submit", saveRoleFocusFromForm);
@@ -4281,6 +4517,16 @@ function bindEvents() {
   $("backToRoutineOverview").addEventListener("click", closeRoutineDetail);
   $("startRoutineDetail").addEventListener("click", () => startRoutine(activeRoutineKey));
   if ($("addRoutine")) $("addRoutine").addEventListener("click", () => openRoutineDialog());
+  if ($("importRoutineFile")) $("importRoutineFile").addEventListener("click", () => $("routineFileInput").click());
+  if ($("routineFileInput")) $("routineFileInput").addEventListener("change", async event => {
+    const file = event.target.files?.[0];
+    if (file) await importRoutineFile(file);
+    event.target.value = "";
+  });
+  if ($("exportRoutineFile")) $("exportRoutineFile").addEventListener("click", () => {
+    const key = $("routineDetail")?.dataset.routineKey;
+    if (key) exportRoutineFile(key);
+  });
   if ($("deleteRoutine")) $("deleteRoutine").addEventListener("click", deleteRoutine);
   if ($("routineTheme")) $("routineTheme").addEventListener("change", updateRoutineThemePreview);
   if ($("editRoutineMeta")) $("editRoutineMeta").addEventListener("click", () => {
@@ -4311,17 +4557,22 @@ function bindEvents() {
   $("sessionPlus").addEventListener("click", () => adjustRoutineSessionMinutes(1));
   $("sessionEditRoutine").addEventListener("click", () => toggleSessionRoutineEditor());
   $("sessionEditorDone").addEventListener("click", () => toggleSessionRoutineEditor(false));
+  if ($("sessionMicroSteps")) $("sessionMicroSteps").addEventListener("click", event => {
+    const button = event.target.closest("[data-session-micro-index]");
+    if (button) toggleSessionMicroStep(Number(button.dataset.sessionMicroIndex));
+  });
   $("sessionRoutineEditor").addEventListener("click", event => {
     if (event.target === $("sessionRoutineEditor")) toggleSessionRoutineEditor(false);
   });
 
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible" && routineSession) { syncRoutineSessionClock(); renderRoutineSession(); }
+    if (document.visibilityState === "hidden" && dirtyReview) saveReview(true);
     persistRoutineSession();
   });
   window.addEventListener("focus", () => { if (routineSession) { syncRoutineSessionClock(); renderRoutineSession(); } });
   window.addEventListener("pageshow", () => { if (routineSession) { syncRoutineSessionClock(); renderRoutineSession(); } });
-  window.addEventListener("pagehide", persistRoutineSession);
+  window.addEventListener("pagehide", () => { if (dirtyReview) saveReview(true); persistRoutineSession(); });
 }
 
 /* ==========================================================================
@@ -4387,6 +4638,9 @@ function setupDialogs() {
 }
 
 function init() {
+  setupProductUI();
+  try { RPStorage.recover(); productSettings = loadProductSettings(); applyProductSettings(); }
+  catch (error) { showStorageError(error); return; }
   loadRoleFocus();
   loadWeekMode();
   analysisMonth = todayISO().slice(0, 7);
@@ -4394,13 +4648,15 @@ function init() {
   initOptions();
   if ($("appVersionLabel")) $("appVersionLabel").textContent = `ROLEPLAY ${APP_VERSION}`;
   routines = loadRoutines();
+  migrateGuidedMorningRoutine();
   bindEvents();
-  const lastBackupAt = localStorage.getItem(BACKUP_TIMESTAMP_KEY);
-  if (lastBackupAt) $("backupStatus").textContent = `Letztes Backup: ${new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short" }).format(new Date(lastBackupAt))}`;
+  const lastBackupAt = RPStorage.getItem(BACKUP_TIMESTAMP_KEY);
+  if (lastBackupAt) $("backupStatus").textContent = `Letzte Sicherungsanfrage: ${new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short" }).format(new Date(lastBackupAt))}`;
   setDate(todayISO());
   switchPage("review");
   restoreRoutineSession();
   registerServiceWorker();
+  finishProductInit();
 }
 
 /* Aktualisierung: Der neue Service Worker übernimmt sofort (skipWaiting und
@@ -4409,18 +4665,17 @@ function init() {
    Version zuverlässig, ohne beim ersten Installieren eine Schleife zu
    erzeugen. */
 function registerServiceWorker() {
-  if (!("serviceWorker" in navigator)) return;
-  const hadController = Boolean(navigator.serviceWorker.controller);
-  let reloading = false;
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (!hadController || reloading) return;
-    reloading = true;
-    window.location.reload();
-  });
-  navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+  if (!("serviceWorker" in navigator) || globalThis.Capacitor?.isNativePlatform?.()) return;
+  navigator.serviceWorker.register("./service-worker.js").then(registration => {
+    function ready() { if (registration.waiting) offerAppUpdate(registration); }
+    ready();
+    registration.addEventListener("updatefound", () => {
+      registration.installing?.addEventListener("statechange", ready);
+    });
+  }).catch(() => showProductMessage("Offline-Installation noch nicht verfügbar. Öffne ROLEPLAY später noch einmal mit Internetverbindung."));
 }
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", () => { try { init(); } catch (error) { showStorageError(error); } });
 
 /* Sunnah-Gebete: zyklischer Wechsel durch die vorhandenen Statuswerte.
    Die bestehende Datenstruktur bleibt unverändert – gespeichert werden

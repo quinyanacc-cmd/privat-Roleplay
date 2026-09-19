@@ -8,13 +8,19 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Roleplay">
-  <link rel="apple-touch-icon" href="logo.jpeg">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="product.css">
+  <meta name="description" content="Gestalte deinen Alltag mit eigenen Rollen, Routinen und einer täglichen Reflexion. Deine Einträge bleiben auf deinem Gerät.">
   <title>Roleplay</title>
 </head>
 <body>
   <div class="app-shell">
+    <div id="productToolbar" class="product-toolbar"><span id="saveStatus" role="status" aria-live="polite">Lokal auf deinem Gerät</span><div><button id="openHelp" type="button" aria-label="Hilfe öffnen">Hilfe</button><button id="openSettings" type="button">Rollen & Einstellungen</button></div></div>
+    <div id="productMessage" class="product-message" role="status" hidden></div>
+    <div id="storageError" class="storage-error" role="alert" hidden><strong>Deine Änderung braucht Aufmerksamkeit</strong><p id="storageErrorText"></p><button id="emergencyBackup" type="button">Notsicherung speichern</button><button id="recoveryImport" type="button">Gültige Sicherung importieren</button><input id="recoveryFile" type="file" accept=".json,application/json" hidden><button id="reloadApp" type="button">Neu laden</button></div>
+    <div id="updateBanner" class="product-message update-banner" role="status" hidden>Eine neue Version ist bereit. <button id="installUpdate" type="button">Speichern & aktualisieren</button></div>
     <h1 id="pageTitle" class="sr-only">Tagesreflexion</h1>
     <header class="app-header" id="appHeader">
       <div class="date-nav" id="dateNavigation">
@@ -51,7 +57,7 @@
           </details>
         </section>
 
-        <section class="card">
+        <section class="card religion-content">
           <h2>Islam</h2>
           <div id="prayerList" class="prayer-strip"></div>
           <details class="sunnah-prayer-details">
@@ -157,7 +163,7 @@
               <label class="sr-only" for="gratitude2">Dankbarkeit</label>
               <textarea id="gratitude2" rows="2"></textarea>
             </div>
-            <div class="field-group reflection-field">
+            <div class="field-group reflection-field religion-content">
               <label for="allahName">Welcher Name Allahs begleitet mich heute?</label>
               <select id="allahName" aria-label="Name Allahs auswählen"></select>
             </div>
@@ -192,6 +198,7 @@
 
         <section class="card">
           <h2>Export & Sicherung</h2>
+          <p id="backupReminder" class="backup-reminder" hidden>Bewahre deine Einträge auch als Datei auf. <button id="backupReminderButton" type="button">Jetzt sichern</button></p>
           <div class="export-buttons">
             <button id="exportBackup" class="small-button export-button" type="button">Backup speichern</button>
             <button id="importBackupButton" class="small-button export-button" type="button">Backup importieren</button>
@@ -206,7 +213,16 @@
 
       <section id="routinesPage" class="app-page" aria-label="Routinen">
         <div id="routineOverview" class="routine-overview">
+          <section id="routineLaunchpad" class="routine-launchpad" aria-live="polite"></section>
           <div id="routineCards" class="routine-cards"></div>
+          <section class="routine-file-tools" aria-label="Routinen verwalten">
+            <div>
+              <strong>Routine-Datei</strong>
+              <small>Eine exportierte Routine bearbeiten lassen und hier wieder laden. Gleiche Kennung = aktualisieren, neue Kennung = hinzufügen.</small>
+            </div>
+            <button id="importRoutineFile" class="secondary-button" type="button">Datei laden</button>
+            <input id="routineFileInput" type="file" accept=".json,application/json,.txt,text/plain" hidden>
+          </section>
           <button id="addRoutine" class="bottom-add-routine" type="button"><span class="gradient-plus">+</span><span>Routine hinzufügen</span></button>
         </div>
 
@@ -217,7 +233,10 @@
               <p id="routineDetailEyebrow" class="eyebrow"></p>
               <h2 id="routineDetailTitle"></h2>
               <p id="routineDetailMeta" class="section-hint"></p>
-              <button id="editRoutineMeta" class="text-button" type="button">Kopfbild &amp; Titel ändern</button>
+              <div class="routine-detail-file-actions">
+                <button id="editRoutineMeta" class="text-button" type="button">Kopfbild &amp; Titel ändern</button>
+                <button id="exportRoutineFile" class="text-button" type="button">Routine-Datei speichern</button>
+              </div>
             </div>
             <button id="startRoutineDetail" class="round-play-button" type="button" aria-label="Routine starten">▶</button>
           </div>
@@ -324,7 +343,7 @@
           <div class="state-range-legend"><small>gedrückt</small><small>sehr gut</small></div>
           <small class="state-range-meaning" id="stateMoodMeaning"></small>
         </div>
-        <div class="field-group state-taqwa-field compact-taqwa-field">
+        <div class="field-group state-taqwa-field compact-taqwa-field religion-content">
           <div class="label-value-row">
             <label for="stateTaqwa">Gottesfurcht</label>
             <strong id="stateTaqwaValue">60 %</strong>
@@ -377,7 +396,7 @@
       <label for="activityTemplate">Aktivitätsvorlage</label>
       <select id="activityTemplate"></select>
       <label for="activityTitle">Aktivität</label>
-      <input id="activityTitle" required placeholder="z. B. Arabisch lernen">
+      <input id="activityTitle" required placeholder="Zum Beispiel: Lesen oder Bewegung">
       <label for="activityRole">Rolle</label>
       <select id="activityRole"></select>
       <p id="activityWeightHint" class="activity-weight-hint"></p>
@@ -434,6 +453,13 @@
           <label for="routineItemContext">Kontext / Erinnerung</label>
           <textarea id="routineItemContext" rows="3" placeholder="Optionaler Hinweis, Dua, Gedanke oder konkrete Anweisung …"></textarea>
         </div>
+        <div class="field-group">
+          <label for="routineItemSteps">Feinschritte <span class="field-label-hint">(eine Zeile pro Schritt)</span></label>
+          <textarea id="routineItemSteps" rows="4" placeholder="Duschen / waschen
+Bett machen
+Anziehen"></textarea>
+          <small class="field-help">Diese Punkte führen dich im Block, zählen aber nicht als eigene Pflichtschritte.</small>
+        </div>
       </div>
       <div class="dialog-actions step-dialog-actions">
         <button id="deleteRoutineItem" type="button" class="ghost-button danger" hidden>Löschen</button>
@@ -460,6 +486,7 @@
         </div>
       </div>
       <div id="sessionContext" class="session-context" hidden></div>
+      <div id="sessionMicroSteps" class="session-microsteps" hidden></div>
       <div class="session-controls">
         <button id="sessionPause" class="session-secondary-control" type="button" aria-label="Pause">Ⅱ</button>
         <button id="sessionComplete" class="session-complete-control" type="button" aria-label="Schritt erledigt">✓</button>
@@ -541,6 +568,68 @@
     </div>
   </dialog>
 
+    <dialog id="onboardingDialog" class="form-dialog product-dialog onboarding-dialog" aria-labelledby="onboardingTitle">
+    <form id="onboardingForm">
+      <p class="product-eyebrow">DEIN ALLTAG. DEINE ROLLEN.</p>
+      <h2 id="onboardingTitle">Wie möchtest du starten?</h2>
+      <p>Eine Rolle beschreibt einen Lebensbereich, der dir wichtig ist. Wähle einen Startpunkt und passe ihn später an.</p>
+      <div class="template-choices">
+        <label><input type="radio" name="startTemplate" value="general" checked><span><strong>Alltag als Startpunkt</strong><small>Ich, Gesundheit, Lernen, Beruf, Zuhause und Beziehungen.</small></span></label>
+        <label><input type="radio" name="startTemplate" value="personal"><span><strong>ROLEPLAY mit Islam</strong><small>Die ursprünglichen sieben Rollen mit Gebeten und persönlichen Routinen als Vorlage.</small></span></label>
+        <label><input type="radio" name="startTemplate" value="empty"><span><strong>Mit einer eigenen Rolle</strong><small>Beginne klein und ergänze weitere Rollen, wenn du sie brauchst.</small></span></label>
+      </div>
+      <div id="firstRoleField" hidden><label>Meine erste Rolle<input id="firstRoleName" maxlength="48" placeholder="Zum Beispiel: Kreativer Mensch"></label><label>Was ist mir dabei wichtig?<textarea id="firstRoleGoal" maxlength="400" rows="2"></textarea></label></div>
+      <label class="toggle-line"><input id="setupReligion" type="checkbox"> Islamische Inhalte verwenden</label>
+      <p class="settings-hint">Deine Einträge bleiben auf diesem Gerät. Sichere sie regelmäßig als Datei, damit du sie bei einem Gerätewechsel wiederherstellen kannst.</p>
+      <p id="onboardingError" class="form-error" role="alert"></p>
+      <button type="submit" class="primary-button">Meine Rollen einrichten</button>
+      <button id="onboardingImport" type="button" class="text-button">Ich habe bereits eine Sicherung</button>
+      <input id="onboardingFile" type="file" accept=".json,application/json" hidden>
+    </form>
+  </dialog>
+
+  <dialog id="settingsDialog" class="form-dialog product-dialog" aria-labelledby="settingsTitle">
+    <div class="settings-heading"><div><p class="product-eyebrow">ROLEPLAY</p><h2 id="settingsTitle">Deine Rollen & Einstellungen</h2></div><button id="settingsClose" class="icon-button" type="button" aria-label="Einstellungen schließen">✕</button></div>
+    <div id="settingsTabs" class="settings-tabs" aria-label="Einstellungsbereiche">
+      <button type="button" data-settings-tab="roles" aria-pressed="true">Rollen</button><button type="button" data-settings-tab="daily" aria-pressed="false">Alltag</button><button type="button" data-settings-tab="data" aria-pressed="false">Daten</button><button type="button" data-settings-tab="help" aria-pressed="false">Hilfe</button>
+    </div>
+    <form id="settingsForm">
+      <section data-settings-panel="roles">
+        <p class="settings-hint">Gib deinen Rollen eigene Namen, Farben und Ziele. Archivierte Rollen bleiben in bisherigen Einträgen erhalten.</p>
+        <div id="settingsRoleList"></div><button id="addRoleButton" class="secondary-button" type="button">＋ Rolle hinzufügen</button>
+      </section>
+      <section data-settings-panel="daily" hidden>
+        <h3>Deine Woche</h3><p class="settings-hint">Diese Rolle wird für neue Tage vorgeschlagen. Im Tagesreview kannst du sie jederzeit wechseln.</p><div id="settingsWeekRoles" class="week-role-fields"></div>
+        <h3>Was möchtest du erfassen?</h3>
+        <label class="toggle-line"><input id="settingsReligion" type="checkbox"> Gebete, Fasten und Gottesfurcht anzeigen</label>
+        <label class="toggle-line"><input id="settingsStreaks" type="checkbox"> Persönliche Streaks anzeigen</label>
+        <label class="toggle-line"><input id="settingsPersonal" type="checkbox"> Ursprüngliche Aktivitätsvorlagen und persönliche Zielimpulse verwenden</label>
+        <label>Offene Fastentage beim Neustart<input id="settingsFastingDays" type="number" min="0" max="10000" step="1"></label><p class="settings-hint">Gilt, wenn noch kein vorheriger Tagesstand existiert. Deinen aktuellen Stand änderst du im Tagesreview.</p>
+        <h3>Eigene Aktivitätsvorlagen</h3><p class="settings-hint">Präsenzpunkte beschreiben die Verteilung deiner erfassten Aktivitäten. Sie bewerten weder deinen persönlichen Wert noch deine Produktivität.</p>
+        <div id="settingsTemplateList"></div>
+        <div class="new-template-fields"><label>Aktivität<input id="templateTitle" maxlength="80" placeholder="Zum Beispiel: Spazierengehen"></label><label>Rolle<select id="templateRole"></select></label><label>Präsenzpunkte<input id="templateWeight" type="number" min="0.1" max="10" step="0.1" value="1"></label></div><button id="addTemplateButton" class="secondary-button" type="button">Vorlage hinzufügen</button>
+      </section>
+      <section data-settings-panel="data" hidden>
+        <h3>Deine Daten gehören dir</h3><p>Einträge und Einstellungen werden lokal auf diesem Gerät gespeichert. Ein anderes Gerät oder eine andere App-Adresse hat einen eigenen Speicher.</p>
+        <div class="settings-actions"><button id="settingsExport" class="primary-button" type="button">Sicherung als Datei speichern</button><button id="settingsImport" class="secondary-button" type="button">Sicherung importieren</button></div><input id="settingsImportFile" type="file" accept=".json,application/json" hidden>
+        <p class="settings-hint">Backups enthalten persönliche Einträge und sind nicht verschlüsselt. Bewahre sie an einem geschützten Ort auf und prüfe nach dem Export, ob die Datei gespeichert wurde.</p>
+        <h3>Gerätewechsel</h3><ol><li>Hier eine Sicherung speichern.</li><li>Die Datei auf das neue Gerät übertragen.</li><li>ROLEPLAY dort öffnen und die Sicherung importieren.</li></ol>
+        <h3>Lokale Daten entfernen</h3><p>Die Löschung betrifft nur ROLEPLAY auf diesem Gerät. Bereits exportierte Dateien bleiben erhalten.</p><button id="deleteLocalData" class="danger-button" type="button">Alle lokalen ROLEPLAY-Daten löschen</button>
+      </section>
+      <section data-settings-panel="help" hidden>
+        <h3>Ein kleiner Anfang reicht</h3><ol><li>Wähle eine Rolle, die heute Raum bekommen soll.</li><li>Trage Energie und Laune in einer Tagesphase ein.</li><li>Halte eine Aktivität fest und schau im Wochenrückblick auf die Verteilung.</li></ol>
+        <details open><summary>Was bedeuten Rollenmodus und Punkte?</summary><p>Der Rollenmodus ist ein Vorschlag für Umfang und Tempo. Ohne Gottesfurcht fließen Laune mit 58 % und Energie mit 42 % ein. Mit erfasstem Gottesfurchtwert gilt die Gewichtung 36 % Laune, 32 % Energie und 32 % Gottesfurcht. Niedrige Energie oder Laune begrenzen höhere Modi.</p><p>Das ist eine von ROLEPLAY festgelegte Orientierung, keine medizinische Beurteilung. Du entscheidest, welcher Schritt heute passt.</p><p>Präsenzpunkte entstehen durch Aktivitäten. Eigene Aktivitäten zählen standardmäßig einen Punkt. Vorlagen können andere Werte haben; der genaue Wert steht bei der Auswahl und in der Rollenaufschlüsselung. Ein leerer Tag ist keine Bewertung deiner Person.</p></details>
+        <details><summary>Auf dem iPhone installieren</summary><p>Öffne ROLEPLAY in Safari, tippe auf „Teilen“ und wähle „Zum Home-Bildschirm“. Öffne die App einmal mit Internetverbindung, damit ihre Dateien für die Offline-Nutzung gespeichert werden können.</p></details>
+        <details><summary>Offline und Updates</summary><p>Einträge bleiben auf dem Gerät. Sobald eine neue Version bereitsteht, erscheint ein Hinweis. Speichere offene Eingaben und aktiviere das Update. Ein Backup ist besonders vor einem Wechsel der App-Adresse wichtig.</p></details>
+        <p><a href="privacy.html" target="_blank" rel="noopener">Datenschutz in der Testversion</a></p>
+        <h3>Rückmeldung zur Testversion</h3><label>Was ist passiert und was hast du erwartet?<textarea id="feedbackText" rows="4" maxlength="4000" placeholder="Bitte keine vertraulichen Tagebucheinträge einfügen."></textarea></label><button id="saveFeedback" type="button" class="secondary-button">Fehlerbericht als Datei speichern</button><p class="settings-hint">Die Datei wird nicht automatisch versendet. Gib sie an die Person weiter, von der du diese Testversion erhalten hast.</p><p id="settingsVersion" class="settings-hint"></p>
+      </section>
+      <p id="settingsError" class="form-error" role="alert"></p><button id="settingsSave" type="submit" class="primary-button settings-save">Änderungen speichern</button>
+    </form>
+  </dialog>
+
+  <script src="storage.js"></script>
   <script src="app.js"></script>
+  <script src="product.js"></script>
 </body>
 </html>
