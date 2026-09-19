@@ -1,13 +1,15 @@
-# ROLEPLAY – Routine-Dateien
+# ENSEMBLE – Routine-Dateien
 
-Ab Version 7.0.0-beta.3 kann eine Routine nicht nur aus Blöcken und Feinschritten bestehen, sondern auch mehrere Umfänge und geführte Spezialblöcke enthalten.
+Seit Version 7.0.0-beta.3 kann eine Routine nicht nur aus Blöcken und Feinschritten bestehen, sondern auch mehrere Umfänge und geführte Spezialblöcke enthalten.
 
 ## Empfohlener Ablauf
 
-1. In ROLEPLAY die gewünschte Routine öffnen.
+Routine-Dateien sind Teil von ENSEMBLE Plus.
+
+1. In ENSEMBLE die gewünschte Routine öffnen.
 2. **Routine-Datei speichern** wählen.
 3. Die JSON-Datei in einem Chat hochladen und die gewünschte Änderung beschreiben.
-4. Die bearbeitete JSON-Datei zurück in ROLEPLAY unter **Routinen → Routine-Datei → Datei laden** importieren.
+4. Die bearbeitete JSON-Datei zurück in ENSEMBLE unter **Routinen → Routine-Datei → Datei laden** importieren.
 
 Hat die Datei dieselbe `key`-Kennung, wird die bestehende Routine aktualisiert. Eine neue Kennung fügt eine weitere Routine hinzu. Andere Routinen bleiben unberührt.
 
@@ -18,6 +20,8 @@ Jeder große `item` ist eine sichtbare Phase. `steps` sind kleine Orientierungsp
 `modes` definiert verschiedene Umfänge einer Routine. Über `modeMinutes` kann eine Phase je Modus kürzer werden oder mit `0` vollständig entfallen. Die aktuelle Morgenroutine verwendet **Voll 120 Min.**, **Standard 90 Min.** und **Kurz 45 Min.**
 
 Ein `kind` kann eine besondere Darstellung aktivieren. `kind: "alignment"` öffnet in der aktuellen App den geführten Ausrichtungsblock mit Rolle, Commitment, Visualisierung, Hindernisplanung, kurzem Journal und Tageshandlung.
+
+Die technische Formatkennung bleibt `ROLEPLAY_ROUTINE`, damit bestehende Dateien weiter funktionieren.
 
 ```json
 {

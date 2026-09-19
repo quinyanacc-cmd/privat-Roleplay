@@ -1,4 +1,4 @@
-ROLEPLAY – Hinweise zu Software von Dritten
+ENSEMBLE – Hinweise zu Software von Dritten
 
 Die Weboberfläche nutzt keine externen Laufzeitbibliotheken. Das iOS-Projekt und seine native Exportbrücke verwenden die folgenden Capacitor-Pakete. Entwicklungswerkzeuge werden über npm installiert; ihre Lizenzdateien liegen nach npm ci in node_modules.
 

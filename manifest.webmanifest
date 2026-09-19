@@ -1,8 +1,9 @@
 {
   "id": "./",
-  "name": "ROLEPLAY",
-  "short_name": "ROLEPLAY",
-  "description": "Eigene Rollen, Routinen und Tagesreflexion. Lokal auf deinem Gerät.",
+  "name": "ENSEMBLE",
+  "short_name": "ENSEMBLE",
+  "description": "Ein System. Mehrere Rollen. Tagesreflexion, Routinen und Rollenauswertung – lokal auf deinem Gerät.",
+  "categories": ["lifestyle", "productivity", "health"],
   "lang": "de",
   "start_url": "./index.html",
   "scope": "./",

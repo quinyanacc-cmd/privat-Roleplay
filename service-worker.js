@@ -1,6 +1,6 @@
 const CACHE_PREFIX = `roleplay:${self.registration.scope}:`;
-const CACHE = `${CACHE_PREFIX}7.0.0-beta.3`;
-const ASSETS = ["./", "./index.html", "./style.css", "./product.css", "./storage.js", "./app.js", "./product.js", "./manifest.webmanifest", "./privacy.html", "./logo.jpeg", "./icon-192.png", "./icon-512.png", "./icon-maskable.png", "./evening-header.jpg", "./mascot-wirt.jpeg", "./mascot-unternehmer.jpeg", "./mascot-muslim.jpeg", "./morning-header.jpg", "./header-tag.jpg", "./mascot-familie.jpeg", "./mascot-absolvent.jpeg", "./header-zuhause.jpg", "./header-daemmerung.jpg", "./mascot-ich.jpeg", "./mascot-vitalist.jpeg"];
+const CACHE = `${CACHE_PREFIX}8.0.0-beta.1`;
+const ASSETS = ["./", "./index.html", "./style.css", "./product.css", "./storage.js", "./app.js", "./product.js", "./plus.js", "./manifest.webmanifest", "./privacy.html", "./impressum.html", "./icon-192.png", "./icon-512.png", "./icon-maskable.png", "./evening-header.jpg", "./mascot-wirt.jpeg", "./mascot-unternehmer.jpeg", "./mascot-muslim.jpeg", "./morning-header.jpg", "./header-tag.jpg", "./mascot-familie.jpeg", "./mascot-absolvent.jpeg", "./header-zuhause.jpg", "./header-daemmerung.jpg", "./mascot-ich.jpeg", "./mascot-vitalist.jpeg"];
 const ASSET_URLS = new Set(ASSETS.map(path => new URL(path, self.registration.scope).href));
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));

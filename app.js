@@ -32,12 +32,15 @@ let ROLES = [
   { name: "Familienmensch", emoji: "💌", color: "#72C472", text: "#205B29" }
 ];
 
-const STREAKS = [
+/* Eingebaute Streaks der persönlichen Vorlage. Die aktive Liste (STREAKS)
+   kommt aus den Produkteinstellungen und kann eigene Einträge enthalten. */
+const BUILTIN_STREAKS = [
   { key: "cannabisFree", label: "Cannabisfrei" },
   { key: "compulsionFree", label: "Begierde" },
   { key: "alcoholFree", label: "Alkoholfrei" },
   { key: "smokeFree", label: "Rauchfrei" }
 ];
+let STREAKS = BUILTIN_STREAKS.map(item => ({ ...item }));
 
 const EMOTION_GROUPS = [
   { label: "Sehr positiv", options: [
@@ -891,7 +894,12 @@ function dayPointTotal(data, date) {
 }
 
 const ROUTINE_MINUTE_CHOICES = Array.from({ length: 180 }, (_, index) => index + 1);
-const APP_VERSION = "7.0.0-beta.3";
+const APP_VERSION = "8.0.0-beta.1";
+/* Sichtbarer Markenname. Technische Kennungen (Speicher-Namespace, Backup-
+   und Routinen-Dateiformat) bleiben bewusst „roleplay“, damit bestehende
+   Daten und Sicherungen ohne Migration weiter funktionieren. */
+const BRAND_NAME = "ENSEMBLE";
+const BRAND_FILE_PREFIX = "ensemble";
 const SCHEMA_VERSION = 8;
 const STORAGE_NAMESPACE = "roleplay-v25";
 const ROUTINES_STORAGE_KEY = `${STORAGE_NAMESPACE}-routines`;
@@ -979,8 +987,8 @@ function roleDisplayName(name) {
   return role.label || (role.name === "Ich-Person" ? "Ich" : role.name);
 }
 
-/* Originale in voller Auflösung. Alle Dateien liegen neben index.html und
-   werden für die Offline-Nutzung vom Service Worker vorgeladen. */
+/* 680 × 680 px (dreifache Anzeigegröße). Alle Dateien liegen neben index.html
+   und werden für die Offline-Nutzung vom Service Worker vorgeladen. */
 const ROLE_MASCOT_IMAGES = {
   "Ich-Person": "mascot-ich.jpeg",
   "Vitalist": "mascot-vitalist.jpeg",
@@ -1015,10 +1023,10 @@ const ROLE_SPEECHES = {
   ],
   "Unternehmer": [
     "Ich verwandle Ideen Schritt für Schritt in reale Produkte … Inshallah",
-    "2026 bringe ich ROLEPLAY in eine veröffentlichte Realität … Inshallah",
+    "2026 bringe ich ENSEMBLE in eine veröffentlichte Realität … Inshallah",
     "Ich arbeite kontinuierlich an Buch und App … Inshallah",
     "Buch und App werden sichtbar weiterentwickelt … Inshallah",
-    "ROLEPLAY Wirklichkeit werden lassen … Inshallah"
+    "ENSEMBLE Wirklichkeit werden lassen … Inshallah"
   ],
   "Muslim": [
     "Ich nehme meine Verpflichtungen ernst und kehre zurück … Inshallah",
@@ -2989,6 +2997,10 @@ function renderMonthReview() {
   const summary = $("monthSummary");
   const impulses = $("monthImpulses");
   if (!summary || !impulses) return;
+  const locked = !hasPlus();
+  $("monthReviewCard")?.classList.toggle("is-plus-locked", locked);
+  if ($("monthPlusTeaser")) $("monthPlusTeaser").hidden = !locked;
+  if (locked) { summary.innerHTML = ""; impulses.innerHTML = ""; return; }
 
   const label = $("monthLabel");
   if (label) label.textContent = monthLabelText(analysisMonth);
@@ -3014,13 +3026,13 @@ function renderMonthReview() {
 }
 
 function exportMonthReport() {
-  if (!saveReview(true)) return;
+  if (!requirePlus("monthAnalysis") || !saveReview(true)) return;
   const stats = periodStats(monthDates(analysisMonth));
   const past = periodStats(monthDates(previousMonth(analysisMonth)));
   const split = roleSplitData(monthDates(analysisMonth));
   const value = (number, suffix = " %") => number === null ? "keine Angabe" : `${number}${suffix}`;
   const lines = [
-    `ROLEPLAY – Monatsrückblick ${monthLabelText(analysisMonth)}`,
+    `${BRAND_NAME} – Monatsrückblick ${monthLabelText(analysisMonth)}`,
     "",
     `Eintragstage: ${stats.entryDays}`,
     `Check-ins: ${stats.checkins}`,
@@ -3038,7 +3050,7 @@ function exportMonthReport() {
     "Rückblick & Impulse",
     ...monthImpulseList(stats, analysisMonth).map(text => `  - ${text}`)
   ];
-  downloadTextFile(`roleplay-monatsreport-${analysisMonth}.txt`, lines.join("\r\n"), "text/plain;charset=utf-8");
+  downloadTextFile(`${BRAND_FILE_PREFIX}-monatsreport-${analysisMonth}.txt`, lines.join("\r\n"), "text/plain;charset=utf-8");
   const impulses = $("monthImpulses");
   if (impulses) impulses.dataset.exported = "true";
 }
@@ -3136,6 +3148,7 @@ function renderRoleSplit() {
   const summary = $("roleSplitSummary");
   const impulses = $("roleSplitImpulses");
   if (!list || !summary || !impulses) return;
+  if (roleSplitRange === "month" && !hasPlus()) roleSplitRange = "week";
 
   document.querySelectorAll("[data-role-range]").forEach(button => {
     const selected = button.dataset.roleRange === roleSplitRange;
@@ -3295,7 +3308,8 @@ function backupPayload() {
     settings: {
       roleFocus: roleFocus || null,
       weekMode,
-      product: productSettings
+      product: productSettings,
+      plus: plusBackupData()
     }
   };
 }
@@ -3303,9 +3317,11 @@ function backupPayload() {
 function exportBackup() {
   if (!saveReview(true)) return;
   const payload = backupPayload();
-  downloadTextFile(`roleplay-backup-${todayISO()}.json`, JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
+  downloadTextFile(`${BRAND_FILE_PREFIX}-backup-${todayISO()}.json`, JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
   RPStorage.setItem(BACKUP_TIMESTAMP_KEY, new Date().toISOString());
   $("backupStatus").textContent = `Sicherung angefordert: ${payload.reviews.length} Tagesreviews und ${Object.keys(routines || {}).length} Routinen. Prüfe bitte, ob die Datei gespeichert wurde.`;
+  if ($("backupReminder")) $("backupReminder").hidden = true;
+  showProductMessage(`Sicherung erstellt: ${payload.reviews.length} Tage und ${Object.keys(routines || {}).length} Routinen. Prüfe, ob die Datei gespeichert wurde.`);
 }
 
 /* Optionaler Dateiexport. Die sichere Übernahme selbst nutzt ein lokales Journal. */
@@ -3313,7 +3329,7 @@ function downloadSafetyBackup() {
   const payload = backupPayload();
   payload.safetyBackup = true;
   const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-  downloadTextFile(`roleplay-sicherung-vor-import-${stamp}.json`, JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
+  downloadTextFile(`${BRAND_FILE_PREFIX}-sicherung-vor-import-${stamp}.json`, JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
   return payload.reviews.length;
 }
 
@@ -3342,11 +3358,13 @@ async function importBackup(file) {
       const pending = pendingStreakPropagation ? streakForwardChanges(selectedDate, true) : [{ key: storageKey(selectedDate), value: JSON.stringify(currentData) }];
       for (const entry of pending) if (!changes.some(item => item.key === entry.key)) changes.push(entry);
     }
+    const plusChange = plusImportChange(payload);
+    if (plusChange) changes.push(plusChange);
     changes.push({ key: "roleplay-last-import-at", value: new Date().toISOString() });
     RPStorage.transaction(changes);
     dirtyReview = false; pendingStreakPropagation = false; clearTimeout(autoSaveTimer); autoSaveTimer = null;
     if ($("storageError")) $("storageError").hidden = true;
-    productSettings = loadProductSettings(); applyProductSettings();
+    productSettings = loadProductSettings(); applyProductSettings(); reloadPlusState();
     routines = loadRoutines(); loadRoleFocus(); loadWeekMode(); initOptions();
     currentData = null; setDate(selectedDate); renderAnalysis();
     $("backupStatus").textContent = `${count} Tagesreviews importiert. Bitte speichere jetzt eine aktuelle Sicherung als Datei.`;
@@ -3396,7 +3414,7 @@ function exportCsv() {
     ];
     lines.push(row.map(csvEscape).join(";"));
   });
-  downloadTextFile(`roleplay-export-${todayISO()}.csv`, `﻿${lines.join("\r\n")}`, "text/csv;charset=utf-8");
+  downloadTextFile(`${BRAND_FILE_PREFIX}-export-${todayISO()}.csv`, `﻿${lines.join("\r\n")}`, "text/csv;charset=utf-8");
   $("backupStatus").textContent = "CSV-Export deiner Einträge wurde angefordert. Bitte speichere die Datei.";
 }
 
@@ -3629,7 +3647,7 @@ function exportRoutineFile(key) {
   try {
     const payload = routinePayloadForExport(key);
     const safe = (routines[key].title || key).toLowerCase().replace(/[^a-z0-9äöüß]+/gi, "-").replace(/^-+|-+$/g, "") || "routine";
-    downloadTextFile(`roleplay-routine-${safe}.json`, JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
+    downloadTextFile(`${BRAND_FILE_PREFIX}-routine-${safe}.json`, JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
     showProductMessage("Routine-Datei erstellt. Du kannst sie später bearbeiten lassen und wieder hier laden.");
   } catch (error) { showProductMessage(error.message, true); }
 }
@@ -3729,7 +3747,7 @@ function renderRoutineLaunchpad() {
     root.innerHTML = `<span class="routine-launchpad-kicker">DEIN MORGEN</span><h2>Zwei Stunden, die den Tag tragen.</h2><p>Erst ankommen, dann aktivieren, ausrichten und wachsen. <strong>Heute im Fokus: ${escapeHTML(role.emoji)} ${escapeHTML(roleDisplayName(role.name))}.</strong></p><div class="routine-mode-picker" role="group" aria-label="Umfang der Morgenroutine">${modes.map(mode => `<button type="button" class="routine-mode-option ${mode.key === routine.defaultMode ? "is-primary" : ""}" data-launch-routine="${escapeHTML(key)}" data-routine-mode="${escapeHTML(mode.key)}"><span><strong>${escapeHTML(mode.label)}</strong><small>${escapeHTML(mode.description)}</small></span><b>${escapeHTML(mode.accent || `${routineMinutes(routine, mode.key)} Min.`)}</b></button>`).join("")}</div><small class="routine-launchpad-foot">Alle Modi folgen derselben Choreografie. Du verkürzt den Morgen – nicht die Identität.</small>`;
   } else {
     const mode = routineModesFor(routine).find(entry => entry.key === chosenMode);
-    root.innerHTML = `<span class="routine-launchpad-kicker">ROUTINE-MODUS</span><h2>${started ? "Weiter. Genau hier." : "Bereit? Dann los."}</h2><p><strong>${escapeHTML(next?.title || routine.title)}</strong> ist jetzt alles, was zählt. Danach führt dich ROLEPLAY zum nächsten Block.</p><div class="routine-launchpad-stats"><span>${activeResolved}/${activeItems.length} Phasen</span><span>noch ${remaining} Min.</span>${mode && mode.key !== "default" ? `<span>${escapeHTML(mode.label)}</span>` : ""}</div><button type="button" class="routine-launchpad-cta" data-launch-routine="${escapeHTML(key)}" data-routine-mode="${escapeHTML(chosenMode)}">${started ? "Fortsetzen" : "Routine starten"}<span>→</span></button>`;
+    root.innerHTML = `<span class="routine-launchpad-kicker">ROUTINE-MODUS</span><h2>${started ? "Weiter. Genau hier." : "Bereit? Dann los."}</h2><p><strong>${escapeHTML(next?.title || routine.title)}</strong> ist jetzt alles, was zählt. Danach führt dich ${BRAND_NAME} zum nächsten Block.</p><div class="routine-launchpad-stats"><span>${activeResolved}/${activeItems.length} Phasen</span><span>noch ${remaining} Min.</span>${mode && mode.key !== "default" ? `<span>${escapeHTML(mode.label)}</span>` : ""}</div><button type="button" class="routine-launchpad-cta" data-launch-routine="${escapeHTML(key)}" data-routine-mode="${escapeHTML(chosenMode)}">${started ? "Fortsetzen" : "Routine starten"}<span>→</span></button>`;
   }
   root.querySelectorAll("[data-launch-routine]").forEach(button => button.addEventListener("click", () => startRoutine(button.dataset.launchRoutine, button.dataset.routineMode)));
 }
@@ -4516,7 +4534,7 @@ function switchPage(page, options = {}) {
   $("analysisPage").classList.toggle("active", page === "analysis");
   $("streaksPage").classList.toggle("active", page === "streaks");
   $("productToolbar").hidden = false;
-  $("pageTitle").textContent = titles[page] || "Roleplay";
+  $("pageTitle").textContent = titles[page] || BRAND_NAME;
   $("appHeader").hidden = page !== "review";
   document.querySelectorAll(".nav-button").forEach(button => button.classList.toggle("active", button.dataset.page === page));
   if (page === "routines") renderRoutineCards();
@@ -4651,6 +4669,7 @@ function bindEvents() {
   $("dayRole").addEventListener("change", () => {
     if ($("dayRole").value === ROLE_FOCUS_OPTION) {
       $("dayRole").value = getRole(currentData.role).name;
+      if (!roleFocusIsActive() && !requirePlus("roleFocus")) return;
       openRoleFocusDialog();
       return;
     }
@@ -4735,6 +4754,7 @@ function bindEvents() {
   if ($("monthForward")) $("monthForward").addEventListener("click", () => shiftAnalysisMonth(1));
   if ($("exportMonthReport")) $("exportMonthReport").addEventListener("click", exportMonthReport);
   document.querySelectorAll("[data-role-range]").forEach(button => button.addEventListener("click", () => {
+    if (button.dataset.roleRange === "month" && !requirePlus("monthAnalysis")) return;
     roleSplitRange = button.dataset.roleRange === "month" ? "month" : "week";
     renderRoleSplit();
   }));
@@ -4746,10 +4766,12 @@ function bindEvents() {
   if ($("closeRoleDetail")) $("closeRoleDetail").addEventListener("click", () => $("roleDetailDialog").close());
 
   $("exportBackup").addEventListener("click", exportBackup);
-  $("exportCsv").addEventListener("click", exportCsv);
+  $("exportCsv").addEventListener("click", () => { if (requirePlus("csvExport")) exportCsv(); });
   $("importBackupButton").addEventListener("click", () => $("importBackupInput").click());
   $("importBackupInput").addEventListener("change", event => {
-    const file = event.target.files?.[0]; if (file) importBackup(file); event.target.value = "";
+    const file = event.target.files?.[0];
+    if (file) importBackup(file).then(ok => { if (ok) afterBackupImport(); });
+    event.target.value = "";
   });
 
   document.querySelectorAll(".nav-button").forEach(button => button.addEventListener("click", () => switchPage(button.dataset.page)));
@@ -4759,8 +4781,8 @@ function bindEvents() {
   $("openRoutines").addEventListener("click", () => switchPage("routines"));
   $("backToRoutineOverview").addEventListener("click", closeRoutineDetail);
   $("startRoutineDetail").addEventListener("click", () => startRoutine(activeRoutineKey, currentData.routineModes?.[activeRoutineKey]));
-  if ($("addRoutine")) $("addRoutine").addEventListener("click", () => openRoutineDialog());
-  if ($("importRoutineFile")) $("importRoutineFile").addEventListener("click", () => $("routineFileInput").click());
+  if ($("addRoutine")) $("addRoutine").addEventListener("click", () => { if (canAddRoutine()) openRoutineDialog(); });
+  if ($("importRoutineFile")) $("importRoutineFile").addEventListener("click", () => { if (requirePlus("routineFiles")) $("routineFileInput").click(); });
   if ($("routineFileInput")) $("routineFileInput").addEventListener("change", async event => {
     const file = event.target.files?.[0];
     if (file) await importRoutineFile(file);
@@ -4768,7 +4790,7 @@ function bindEvents() {
   });
   if ($("exportRoutineFile")) $("exportRoutineFile").addEventListener("click", () => {
     const key = $("routineDetail")?.dataset.routineKey;
-    if (key) exportRoutineFile(key);
+    if (key && requirePlus("routineFiles")) exportRoutineFile(key);
   });
   if ($("deleteRoutine")) $("deleteRoutine").addEventListener("click", deleteRoutine);
   if ($("routineTheme")) $("routineTheme").addEventListener("change", updateRoutineThemePreview);
@@ -4884,14 +4906,14 @@ function setupDialogs() {
 
 function init() {
   setupProductUI();
-  try { RPStorage.recover(); productSettings = loadProductSettings(); applyProductSettings(); }
+  try { RPStorage.recover(); initPlus(); productSettings = loadProductSettings(); applyProductSettings(); }
   catch (error) { showStorageError(error); return; }
   loadRoleFocus();
   loadWeekMode();
   analysisMonth = todayISO().slice(0, 7);
   setupDialogs();
   initOptions();
-  if ($("appVersionLabel")) $("appVersionLabel").textContent = `ROLEPLAY ${APP_VERSION}`;
+  if ($("appVersionLabel")) $("appVersionLabel").textContent = `${BRAND_NAME} ${APP_VERSION}`;
   routines = loadRoutines();
   migrateGuidedMorningRoutine();
   migrateMorningExperienceV2();
@@ -4913,12 +4935,14 @@ function init() {
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator) || globalThis.Capacitor?.isNativePlatform?.()) return;
   navigator.serviceWorker.register("./service-worker.js").then(registration => {
-    function ready() { if (registration.waiting) offerAppUpdate(registration); }
+    // Beim allerersten Installieren gibt es noch keinen Controller – dann ist
+    // der wartende Worker kein Update, sondern die Erstinstallation.
+    function ready() { if (registration.waiting && navigator.serviceWorker.controller) offerAppUpdate(registration); }
     ready();
     registration.addEventListener("updatefound", () => {
       registration.installing?.addEventListener("statechange", ready);
     });
-  }).catch(() => showProductMessage("Offline-Installation noch nicht verfügbar. Öffne ROLEPLAY später noch einmal mit Internetverbindung."));
+  }).catch(() => showProductMessage(`Offline-Installation noch nicht verfügbar. Öffne ${BRAND_NAME} später noch einmal mit Internetverbindung.`));
 }
 
 document.addEventListener("DOMContentLoaded", () => { try { init(); } catch (error) { showStorageError(error); } });

@@ -18,8 +18,8 @@
     return report(wrapped);
   }
   function guard() {
-    if (stale) throw failure(new Error("ROLEPLAY wurde in einem anderen Fenster geändert. Sichere offene Eingaben über die Notsicherung und lade diese Ansicht neu."));
-    if (!committing && backend().getItem(JOURNAL)) throw failure(new Error("Eine unterbrochene Speicherung muss zuerst wiederhergestellt werden. Bitte lade ROLEPLAY neu."));
+    if (stale) throw failure(new Error("ENSEMBLE wurde in einem anderen Fenster geändert. Sichere offene Eingaben über die Notsicherung und lade diese Ansicht neu."));
+    if (!committing && backend().getItem(JOURNAL)) throw failure(new Error("Eine unterbrochene Speicherung muss zuerst wiederhergestellt werden. Bitte lade ENSEMBLE neu."));
   }
   function owned(key) { return typeof key === "string" && (key.startsWith(PREFIX) || key === "roleplay-last-import-at") && key !== JOURNAL; }
   function rollback(journal) {
@@ -71,7 +71,7 @@
         backend().removeItem(JOURNAL);
       } catch (e) {
         try { rollback(journal); }
-        catch (_) { throw failure(new Error("Die Speicherung wurde unterbrochen. Die Wiederherstellungsdaten sind noch vorhanden. Bitte lade ROLEPLAY neu und erstelle eine Notsicherung.")); }
+        catch (_) { throw failure(new Error("Die Speicherung wurde unterbrochen. Die Wiederherstellungsdaten sind noch vorhanden. Bitte lade ENSEMBLE neu und erstelle eine Notsicherung.")); }
         throw failure(e);
       } finally { committing = false; }
     },
@@ -90,7 +90,7 @@
   if (root.addEventListener) root.addEventListener("storage", event => {
     if (event.storageArea === backend() && (event.key === null || owned(event.key) || event.key === JOURNAL)) {
       stale = true;
-      report(new Error("Ein anderes Fenster hat deine ROLEPLAY-Daten geändert. Sichere offene Eingaben über die Notsicherung und lade diese Ansicht neu."));
+      report(new Error("Ein anderes Fenster hat deine ENSEMBLE-Daten geändert. Sichere offene Eingaben über die Notsicherung und lade diese Ansicht neu."));
     }
   });
 })(globalThis);
@@ -152,10 +152,10 @@
     }
   }
   function payload(value) {
-    assert(object(value), "Diese Datei ist keine gültige ROLEPLAY-Sicherung.");
+    assert(object(value), "Diese Datei ist keine gültige ENSEMBLE-Sicherung.");
     tree(value);
-    assert(value.app == null || String(value.app).toLowerCase() === "roleplay", "Diese Sicherung gehört zu einer anderen App.");
-    assert(value.schemaVersion == null || (Number.isInteger(value.schemaVersion) && value.schemaVersion >= 1 && value.schemaVersion <= 8), "Diese Sicherung benötigt eine neuere ROLEPLAY-Version.");
+    assert(value.app == null || ["roleplay", "ensemble"].includes(String(value.app).toLowerCase()), "Diese Sicherung gehört zu einer anderen App.");
+    assert(value.schemaVersion == null || (Number.isInteger(value.schemaVersion) && value.schemaVersion >= 1 && value.schemaVersion <= 8), "Diese Sicherung benötigt eine neuere ENSEMBLE-Version.");
     assert(Array.isArray(value.reviews) && value.reviews.length <= 20000, "Die Tagesreviews fehlen oder sind zu umfangreich.");
     const dates = new Set();
     for (const item of value.reviews) {

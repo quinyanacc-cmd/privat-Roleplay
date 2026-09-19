@@ -1,32 +1,44 @@
-# ROLEPLAY – deine neue Beta
+# ENSEMBLE 8.0.0-beta.1
 
-Diese ZIP enthält die Web-App 7.0.0-beta.3 direkt auf einer Ebene. Sie baut auf der bisherigen 7.0-Beta auf und überarbeitet insbesondere das Routinen-Erlebnis.
+Aus ROLEPLAY wird **ENSEMBLE** – und aus der persönlichen App ein Produkt, das auch andere nutzen können. Deine Daten, deine persönliche Vorlage und deine Routinen bleiben unverändert.
 
 ## Vor dem Aktualisieren
 
-Öffne deine bisherige App und wähle „Backup speichern“. Bewahre die JSON-Datei separat auf. Ein Quellcode-ZIP enthält deine persönlichen Einträge nicht.
+1. In der bisherigen App **Backup speichern** und die Datei separat aufbewahren.
+2. Diese ZIP entpacken und im bisherigen GitHub-Projekt alle Dateien ersetzen bzw. hinzufügen. Neu sind `plus.js` und `impressum.html`.
+3. Veröffentlichung abwarten, die App einmal vollständig schließen und neu öffnen. Unten auf der Tagesseite steht `ENSEMBLE 8.0.0-beta.1`. Browserdaten dabei nicht löschen.
+4. Prüfen, ob Tage, Routinen und Rollen da sind. Danach eine neue Sicherung speichern (Zahnrad → Daten).
 
-## Auf deinem bisherigen GitHub-Projekt verwenden
+Der Speicher heißt technisch weiterhin `roleplay-v25`, Sicherungen tragen weiter die Kennung `Roleplay`. Dadurch bleibt alles ohne Migration lesbar – auch alte Sicherungen.
 
-1. Diese ZIP entpacken.
-2. Im bisherigen Verzeichnis die gleichnamigen App-Dateien ersetzen und alle neuen Dateien hinzufügen. `index.html`, `app.js`, `style.css`, `storage.js`, `product.js`, `product.css`, Bilder und Symbole bleiben auf derselben Ebene.
-3. Falls GitHub Pages bereits eingerichtet ist, dessen Veröffentlichung abwarten.
-4. Die bisherige App-Adresse online öffnen. Bei einem Versionswechsel alle geöffneten ROLEPLAY-Fenster und die installierte PWA einmal schließen und anschließend neu öffnen. Am Seitenende steht `ROLEPLAY 7.0.0-beta.3`. Browserdaten dabei nicht löschen.
-5. Prüfen, ob deine Tage, Routinen und Rollen vorhanden sind. Danach eine neue Sicherung exportieren.
+## Was sich geändert hat
 
-Unter derselben Adresse und im selben Browser bleiben die Einträge im bisherigen lokalen Datenspeicher. Bei einem Wechsel von Adresse, Gerät oder in die native iPhone-App eine JSON-Sicherung importieren. Safari und native App übernehmen ihre Daten nicht automatisch voneinander.
+**Marke und Oberfläche**
+- Durchgängig ENSEMBLE: Titel, Startbildschirm-Name, Dateinamen (`ensemble-backup-…`), Texte.
+- Neue App-Leiste mit Logo, Plus, Hilfe und Einstellungen statt der losen Textknöpfe.
+- Hinweise erscheinen als kurze Einblendung über der Navigation statt als Textblock, der den Inhalt verschiebt.
+- Navigation mit Beschriftung: Heute · Routinen · Auswertung · Streaks.
+- Die Tagesseite ist rund 30 % kürzer: Der **Wochenrückblick** liegt jetzt in der Auswertung, **Sicherung & Export** in Einstellungen → Daten. Die Sicherungserinnerung erscheint nur noch, wenn sie fällig ist.
 
-## Beta 3 – Morning Experience
+**Erststart für neue Nutzer**
+- Geführtes Onboarding in vier Schritten: Willkommen → eigene Rollen wählen (auch eigene Namen) → Module → Start.
+- Module einzeln abschaltbar: Vitalität, Dankbarkeit, Streaks, Islamische Praxis.
+- Streaks sind frei definierbar (Einstellungen → Alltag). Deine vier bisherigen Streaks bleiben bestehen.
+- Neue Nutzer sehen keine persönlichen Inhalte (SMA, deine Routinen, deine Zielimpulse). Deine persönliche Vorlage bleibt für dich aktiv.
 
-- Die Morgenroutine ist jetzt als geführte Choreografie aufgebaut: **Bereit werden → Versorgung → Gebet & Ibāda → Aktivieren → Ausrichtung → Lesen → Englisch → Peak → Aufbrechen**.
-- Drei Umfänge sind integriert: **Voll 120 Min.**, **Standard 90 Min.** und **Kurz 45 Min.**. Sie folgen derselben Grundabfolge, statt drei unterschiedliche Routinen zu erzeugen.
-- „Aktivieren“ ist in der Vollversion ein echter 20-Minuten-Bewegungsblock statt nur eines symbolischen Mobilisationsschritts.
-- Der neue 15-Minuten-Block **Ausrichtung** führt Bildschirm für Bildschirm durch Tagesrolle, Commitment/Affirmation, 90-Sekunden-Prozessvisualisierung, Hindernis + Wenn-dann-Plan, Mini-Journal und eine konkrete Tageshandlung.
-- Die Ausrichtung verwendet das hinterlegte Ziel der aktiven Rolle. Ist noch kein eigenes Rollenziel eingetragen, verwendet ROLEPLAY einen neutralen Standard für die jeweilige Rolle.
-- Antworten aus der Ausrichtung werden für den jeweiligen Tag lokal gespeichert und erscheinen beim erneuten Öffnen wieder.
-- Am Ende eines vollständig absolvierten Durchlaufs erscheint eine eigene Abschlussansicht mit Tagesrolle und der festgelegten Handlung.
-- Routine-Dateien unterstützen jetzt `modes`, `modeMinutes` und Spezialblöcke über `kind`. Die aktuelle Vorlage liegt als `routine-morgen-experience-v2.json` bei.
+**ENSEMBLE Plus (Freemium)**
+- Kostenlos: Tagesreflexion, bis zu 5 Rollen, 2 Routinen inkl. Player, Wochenauswertung, Rollenpräsenz der Woche, Streaks, Sicherung und Import.
+- Plus: unbegrenzte Rollen und Routinen, Routine-Dateien, Monatsauswertung und Monatsreport, Rollenfokus, Excel/CSV-Export.
+- 14 Tage kostenloser Test ohne Zahlungsdaten; danach automatisch die kostenlose Version. Nichts wird gelöscht oder gesperrt.
+- **Du bist Gründer:** Wer beim Update bereits Daten hat, erhält Plus dauerhaft. Der Status wandert mit jeder Sicherung mit.
+- Freischaltung per Lizenzschlüssel, offline geprüft – kein Server, kein Konto.
+
+**Technik**
+- Fehler behoben: Beim allerersten Öffnen erschien fälschlich „Eine neue Version ist bereit“.
+- „Nachmittag“ bricht auf schmalen iPhones nicht mehr mitten im Wort um.
+- Maskottchen von 1254 auf 680 px verkleinert: ca. 800 KB weniger Offline-Speicher.
+- Neue Seiten: vollständige Datenschutzerklärung und Impressum (mit Platzhaltern, vor Veröffentlichung ausfüllen).
 
 ## Datensicherheit
 
-Die Speicherung bleibt lokal. Exportiere regelmäßig eine JSON-Sicherung; bei App-Löschung oder gelöschten Browserdaten kann der lokale Stand verloren gehen. Sicherungsdateien sind unverschlüsselt.
+Die Speicherung bleibt lokal. Exportiere regelmäßig eine Sicherung; bei App-Löschung oder gelöschten Browserdaten kann der lokale Stand verloren gehen. Sicherungsdateien sind unverschlüsselt.

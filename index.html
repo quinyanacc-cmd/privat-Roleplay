@@ -7,20 +7,30 @@
   <meta name="color-scheme" content="light">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Roleplay">
+  <meta name="apple-mobile-web-app-title" content="ENSEMBLE">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="product.css">
-  <meta name="description" content="Gestalte deinen Alltag mit eigenen Rollen, Routinen und einer täglichen Reflexion. Deine Einträge bleiben auf deinem Gerät.">
-  <title>Roleplay</title>
+  <meta name="description" content="ENSEMBLE hilft dir, alle Rollen deines Lebens bewusst zu steuern – mit Tagesreflexion, Routinen und Rollenauswertung. Deine Einträge bleiben auf deinem Gerät.">
+  <link rel="icon" href="icon-192.png">
+  <title>ENSEMBLE – Ein System. Mehrere Rollen.</title>
 </head>
 <body>
   <div class="app-shell">
-    <div id="productToolbar" class="product-toolbar"><span id="saveStatus" role="status" aria-live="polite">Lokal auf deinem Gerät</span><div><button id="openHelp" type="button" aria-label="Hilfe öffnen">Hilfe</button><button id="openSettings" type="button">Rollen & Einstellungen</button></div></div>
-    <div id="productMessage" class="product-message" role="status" hidden></div>
+    <div id="productToolbar" class="app-bar">
+      <div class="app-bar-brand">
+        <img src="icon-192.png" alt="" width="30" height="30" decoding="async">
+        <span><strong>ENSEMBLE</strong><small id="saveStatus" role="status" aria-live="polite">Lokal auf deinem Gerät</small></span>
+      </div>
+      <div class="app-bar-actions">
+        <button id="openPlus" class="plus-chip" type="button" aria-haspopup="dialog">Plus</button>
+        <button id="openHelp" class="app-bar-icon" type="button" aria-label="Hilfe öffnen"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><path d="M9.7 9.5a2.4 2.4 0 1 1 3.3 2.2c-.7.3-1 .8-1 1.5v.4"/><circle cx="12" cy="16.6" r=".4"/></svg></button>
+        <button id="openSettings" class="app-bar-icon" type="button" aria-label="Rollen und Einstellungen öffnen"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l2-1.5-2-3.4-2.3.9a7.6 7.6 0 0 0-2.6-1.5L14 2.6h-4l-.5 2.4a7.6 7.6 0 0 0-2.6 1.5l-2.3-.9-2 3.4 2 1.5a7.7 7.7 0 0 0 0 3l-2 1.5 2 3.4 2.3-.9a7.6 7.6 0 0 0 2.6 1.5l.5 2.4h4l.5-2.4a7.6 7.6 0 0 0 2.6-1.5l2.3.9 2-3.4Z"/></svg></button>
+      </div>
+    </div>
+
     <div id="storageError" class="storage-error" role="alert" hidden><strong>Deine Änderung braucht Aufmerksamkeit</strong><p id="storageErrorText"></p><button id="emergencyBackup" type="button">Notsicherung speichern</button><button id="recoveryImport" type="button">Gültige Sicherung importieren</button><input id="recoveryFile" type="file" accept=".json,application/json" hidden><button id="reloadApp" type="button">Neu laden</button></div>
-    <div id="updateBanner" class="product-message update-banner" role="status" hidden>Eine neue Version ist bereit. <button id="installUpdate" type="button">Speichern & aktualisieren</button></div>
     <h1 id="pageTitle" class="sr-only">Tagesreflexion</h1>
     <header class="app-header" id="appHeader">
       <div class="date-nav" id="dateNavigation">
@@ -40,13 +50,14 @@
           <select id="dayRole" class="header-role-input" aria-label="Aktive Tagesrolle wechseln"></select>
         </label>
         <p class="header-impulse" aria-live="polite"><span id="mascotQuote">Arabisch Schritt für Schritt erschließen … Inshallah</span></p>
-        <img id="roleMascotImage" class="role-mascot-image" src="mascot-ich.jpeg" width="1254" height="1254" decoding="async" fetchpriority="high" alt="" aria-hidden="true">
+        <img id="roleMascotImage" class="role-mascot-image" src="mascot-ich.jpeg" width="680" height="680" decoding="async" fetchpriority="high" alt="" aria-hidden="true">
       </div>
       <p id="roleTagline" class="sr-only"></p>
     </header>
 
     <main>
       <section id="reviewPage" class="app-page active" aria-label="Tagesreview">
+        <p id="backupReminder" class="inline-banner" hidden><span>Deine letzte Sicherung ist über eine Woche her.</span><button id="backupReminderButton" type="button">Jetzt sichern</button></p>
         <section class="card state-overview-card" aria-labelledby="stateOverviewTitle">
           <h2 id="stateOverviewTitle">Zustand &amp; Rollenmodus</h2>
           <div id="checkinSlots" class="checkin-slots" aria-label="Fünf Tages-Check-ins"></div>
@@ -106,7 +117,7 @@
           </div>
         </section>
 
-        <section class="card">
+        <section class="card" data-module="vitality">
           <h2>Vitalität</h2>
 
           <div class="meal-list">
@@ -152,7 +163,7 @@
           </div>
         </section>
 
-        <section class="card mindfulness-card">
+        <section class="card mindfulness-card" data-module="gratitude">
           <h2>Dankbarkeit</h2>
           <div class="reflection-stack">
             <div class="field-group reflection-field">
@@ -177,38 +188,7 @@
 
         <button id="saveButton" class="primary-button" type="button">Tagesreview speichern</button>
 
-        <details class="card stats-card week-course-card" open>
-          <summary class="lean-card-summary week-course-summary">
-            <h2>Wochenrückblick</h2>
-            <span id="weekLabel" class="week-label"></span>
-          </summary>
-          <div class="rp-segmented week-mode-switch" id="weekModeSwitch" role="group" aria-label="Zeitraum des Rückblicks">
-            <button type="button" class="rp-segment is-selected" data-week-mode="calendar" aria-pressed="true">Kalenderwoche</button>
-            <button type="button" class="rp-segment" data-week-mode="sliding" aria-pressed="false">Gleitende 7 Tage</button>
-          </div>
-          <div class="week-nav">
-            <button id="weekBack" class="icon-button" type="button" aria-label="Zurück">‹</button>
-            <span id="weekRange" class="week-nav-hint"></span>
-            <button id="weekForward" class="icon-button" type="button" aria-label="Vor">›</button>
-          </div>
-          <div id="statsSwipe" class="stats-swipe">
-            <div id="statsGrid" class="stats-grid"></div>
-          </div>
-        </details>
-
-        <section class="card">
-          <h2>Export & Sicherung</h2>
-          <p id="backupReminder" class="backup-reminder" hidden>Bewahre deine Einträge auch als Datei auf. <button id="backupReminderButton" type="button">Jetzt sichern</button></p>
-          <div class="export-buttons">
-            <button id="exportBackup" class="small-button export-button" type="button">Backup speichern</button>
-            <button id="importBackupButton" class="small-button export-button" type="button">Backup importieren</button>
-            <button id="exportCsv" class="small-button export-button" type="button">Excel / CSV exportieren</button>
-            <input id="importBackupInput" type="file" accept=".json,application/json" hidden>
-          </div>
-          <p id="backupStatus" class="backup-status">Noch kein Backup in dieser Sitzung erstellt.</p>
-        </section>
-
-        <p class="privacy-note">Alle Einträge werden ausschließlich lokal in diesem Browser gespeichert.<br><span id="appVersionLabel"></span></p>
+        <p class="privacy-note">Deine Einträge bleiben auf diesem Gerät.<br><span id="appVersionLabel"></span></p>
       </section>
 
       <section id="routinesPage" class="app-page" aria-label="Routinen">
@@ -248,6 +228,25 @@
       </section>
 
       <section id="analysisPage" class="app-page" aria-label="Auswertung">
+        <details class="card stats-card week-course-card" open>
+          <summary class="lean-card-summary week-course-summary">
+            <h2>Wochenrückblick</h2>
+            <span id="weekLabel" class="week-label"></span>
+          </summary>
+          <div class="rp-segmented week-mode-switch" id="weekModeSwitch" role="group" aria-label="Zeitraum des Rückblicks">
+            <button type="button" class="rp-segment is-selected" data-week-mode="calendar" aria-pressed="true">Kalenderwoche</button>
+            <button type="button" class="rp-segment" data-week-mode="sliding" aria-pressed="false">Gleitende 7 Tage</button>
+          </div>
+          <div class="week-nav">
+            <button id="weekBack" class="icon-button" type="button" aria-label="Zurück">‹</button>
+            <span id="weekRange" class="week-nav-hint"></span>
+            <button id="weekForward" class="icon-button" type="button" aria-label="Vor">›</button>
+          </div>
+          <div id="statsSwipe" class="stats-swipe">
+            <div id="statsGrid" class="stats-grid"></div>
+          </div>
+        </details>
+
         <section class="card role-presence-card" aria-labelledby="roleSplitTitle">
           <div class="section-title-row">
             <h2 id="roleSplitTitle">Rollenpräsenz</h2>
@@ -264,7 +263,7 @@
           <div id="roleSplitImpulses" class="month-impulses"></div>
         </section>
 
-        <section class="card" aria-labelledby="monthReviewTitle">
+        <section id="monthReviewCard" class="card" aria-labelledby="monthReviewTitle">
           <div class="section-title-row">
             <h2 id="monthReviewTitle">Monatsrückblick</h2>
           </div>
@@ -273,6 +272,7 @@
             <span id="monthLabel" class="week-nav-hint"></span>
             <button id="monthForward" class="icon-button" type="button" aria-label="Nächster Monat">›</button>
           </div>
+          <div id="monthPlusTeaser" class="plus-teaser" hidden><strong>Dein Monat auf einen Blick</strong><p>Monatsrückblick, Vergleich zum Vormonat und Monatsreport sind Teil von ENSEMBLE Plus.</p><button type="button" class="primary-button compact" data-open-plus="month">Plus ansehen</button></div>
           <div id="monthSummary" class="month-summary"></div>
           <div id="monthImpulses" class="month-impulses"></div>
           <div class="export-buttons">
@@ -287,19 +287,23 @@
     </main>
 
     <nav class="bottom-nav" aria-label="Hauptnavigation">
-      <button class="nav-button active" data-page="review" type="button" aria-label="Tagesreflexion" title="Tagesreflexion">
-        <span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4.6" y="3.4" width="14.8" height="17.2" rx="3.4"></rect><line x1="8.4" y1="8.6" x2="15.6" y2="8.6"></line><line x1="8.4" y1="12" x2="15.6" y2="12"></line><line x1="8.4" y1="15.4" x2="13" y2="15.4"></line></svg></span>
+      <button class="nav-button active" data-page="review" type="button" aria-label="Heute" title="Heute">
+        <span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4.6" y="3.4" width="14.8" height="17.2" rx="3.4"></rect><line x1="8.4" y1="8.6" x2="15.6" y2="8.6"></line><line x1="8.4" y1="12" x2="15.6" y2="12"></line><line x1="8.4" y1="15.4" x2="13" y2="15.4"></line></svg></span><span class="nav-label">Heute</span>
       </button>
       <button class="nav-button" data-page="routines" type="button" aria-label="Routinen" title="Routinen">
-        <span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 15.4a5 5 0 0 1 10 0"></path><line x1="3.4" y1="15.4" x2="20.6" y2="15.4"></line><line x1="12" y1="3.6" x2="12" y2="6.2"></line><line x1="5.4" y1="6.3" x2="7.2" y2="8.1"></line><line x1="18.6" y1="6.3" x2="16.8" y2="8.1"></line><line x1="6.4" y1="19.4" x2="17.6" y2="19.4"></line></svg></span>
+        <span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 15.4a5 5 0 0 1 10 0"></path><line x1="3.4" y1="15.4" x2="20.6" y2="15.4"></line><line x1="12" y1="3.6" x2="12" y2="6.2"></line><line x1="5.4" y1="6.3" x2="7.2" y2="8.1"></line><line x1="18.6" y1="6.3" x2="16.8" y2="8.1"></line><line x1="6.4" y1="19.4" x2="17.6" y2="19.4"></line></svg></span><span class="nav-label">Routinen</span>
       </button>
       <button class="nav-button" data-page="analysis" type="button" aria-label="Auswertung" title="Auswertung">
-        <span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="4.2" y1="19.4" x2="19.8" y2="19.4"></line><line x1="8" y1="19.4" x2="8" y2="12.6"></line><line x1="12" y1="19.4" x2="12" y2="7.4"></line><line x1="16" y1="19.4" x2="16" y2="15"></line></svg></span>
+        <span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="4.2" y1="19.4" x2="19.8" y2="19.4"></line><line x1="8" y1="19.4" x2="8" y2="12.6"></line><line x1="12" y1="19.4" x2="12" y2="7.4"></line><line x1="16" y1="19.4" x2="16" y2="15"></line></svg></span><span class="nav-label">Auswertung</span>
       </button>
       <button class="nav-button" data-page="streaks" type="button" aria-label="Streaks" title="Streaks">
-        <span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21.2a5.9 5.9 0 0 0 5.9-5.9c0-4-3-6.6-5.9-9.6-2.9 3-5.9 5.6-5.9 9.6A5.9 5.9 0 0 0 12 21.2Z"></path><path d="M12 21.2a2.6 2.6 0 0 0 2.6-2.6c0-1.7-1.3-2.8-2.6-4.2-1.3 1.4-2.6 2.5-2.6 4.2A2.6 2.6 0 0 0 12 21.2Z"></path></svg></span>
+        <span class="nav-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21.2a5.9 5.9 0 0 0 5.9-5.9c0-4-3-6.6-5.9-9.6-2.9 3-5.9 5.6-5.9 9.6A5.9 5.9 0 0 0 12 21.2Z"></path><path d="M12 21.2a2.6 2.6 0 0 0 2.6-2.6c0-1.7-1.3-2.8-2.6-4.2-1.3 1.4-2.6 2.5-2.6 4.2A2.6 2.6 0 0 0 12 21.2Z"></path></svg></span><span class="nav-label">Streaks</span>
       </button>
     </nav>
+    <div class="toast-region" aria-live="polite">
+      <div id="productMessage" class="toast" role="status" hidden></div>
+      <div id="updateBanner" class="toast update-banner" role="status" hidden><span>Eine neue Version ist bereit.</span><button id="installUpdate" type="button">Aktualisieren</button></div>
+    </div>
   </div>
 
   <dialog id="stateCheckinDialog" class="form-dialog state-checkin-dialog">
@@ -578,68 +582,190 @@ Anziehen"></textarea>
     </div>
   </dialog>
 
-    <dialog id="onboardingDialog" class="form-dialog product-dialog onboarding-dialog" aria-labelledby="onboardingTitle">
-    <form id="onboardingForm">
-      <p class="product-eyebrow">DEIN ALLTAG. DEINE ROLLEN.</p>
-      <h2 id="onboardingTitle">Wie möchtest du starten?</h2>
-      <p>Eine Rolle beschreibt einen Lebensbereich, der dir wichtig ist. Wähle einen Startpunkt und passe ihn später an.</p>
-      <div class="template-choices">
-        <label><input type="radio" name="startTemplate" value="general" checked><span><strong>Alltag als Startpunkt</strong><small>Ich, Gesundheit, Lernen, Beruf, Zuhause und Beziehungen.</small></span></label>
-        <label><input type="radio" name="startTemplate" value="personal"><span><strong>ROLEPLAY mit Islam</strong><small>Die ursprünglichen sieben Rollen mit Gebeten und persönlichen Routinen als Vorlage.</small></span></label>
-        <label><input type="radio" name="startTemplate" value="empty"><span><strong>Mit einer eigenen Rolle</strong><small>Beginne klein und ergänze weitere Rollen, wenn du sie brauchst.</small></span></label>
-      </div>
-      <div id="firstRoleField" hidden><label>Meine erste Rolle<input id="firstRoleName" maxlength="48" placeholder="Zum Beispiel: Kreativer Mensch"></label><label>Was ist mir dabei wichtig?<textarea id="firstRoleGoal" maxlength="400" rows="2"></textarea></label></div>
-      <label class="toggle-line"><input id="setupReligion" type="checkbox"> Islamische Inhalte verwenden</label>
-      <p class="settings-hint">Deine Einträge bleiben auf diesem Gerät. Sichere sie regelmäßig als Datei, damit du sie bei einem Gerätewechsel wiederherstellen kannst.</p>
-      <p id="onboardingError" class="form-error" role="alert"></p>
-      <button type="submit" class="primary-button">Meine Rollen einrichten</button>
-      <button id="onboardingImport" type="button" class="text-button">Ich habe bereits eine Sicherung</button>
-      <input id="onboardingFile" type="file" accept=".json,application/json" hidden>
+  <dialog id="onboardingDialog" class="form-dialog product-dialog onboarding-dialog" aria-labelledby="onboardingTitle">
+    <form id="onboardingForm" novalidate>
+      <div class="onboarding-progress" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+
+      <section class="onboarding-step" data-onboarding-step="1">
+        <img class="onboarding-logo" src="icon-192.png" alt="" width="72" height="72">
+        <p class="product-eyebrow">Willkommen bei</p>
+        <h2 id="onboardingTitle">ENSEMBLE</h2>
+        <p class="onboarding-claim">Ein System. Mehrere Rollen.</p>
+        <p>Du bist vieles gleichzeitig – für dich selbst, für deine Gesundheit, deine Arbeit und die Menschen um dich. ENSEMBLE hilft dir, jeder Rolle bewusst Raum zu geben.</p>
+        <ul class="value-list">
+          <li><strong>Tagesreflexion in zwei Minuten</strong><small>Energie und Laune festhalten, passenden Tagesmodus erhalten.</small></li>
+          <li><strong>Geführte Routinen</strong><small>Morgen und Abend Schritt für Schritt, mit Timer.</small></li>
+          <li><strong>Rollen im Gleichgewicht</strong><small>Sehen, welche Rolle Raum bekommt – und welche zu kurz kommt.</small></li>
+        </ul>
+        <p class="settings-hint">Keine Anmeldung, kein Tracking. Deine Einträge bleiben auf diesem Gerät.</p>
+        <div class="onboarding-actions">
+          <button type="button" class="primary-button" data-onboarding-next>Loslegen</button>
+          <button id="onboardingImport" type="button" class="text-button">Ich habe bereits eine Sicherung</button>
+          <input id="onboardingFile" type="file" accept=".json,application/json" hidden>
+        </div>
+      </section>
+
+      <section class="onboarding-step" data-onboarding-step="2" hidden>
+        <p class="product-eyebrow">Schritt 1 von 3</p>
+        <h2>Welche Rollen trägst du?</h2>
+        <p>Wähle die Lebensbereiche, die dir gerade wichtig sind. Drei bis fünf sind ein guter Anfang. Namen, Farben und Ziele passt du später jederzeit an.</p>
+        <div id="onboardingRoleChoices" class="role-choice-grid" role="group" aria-label="Rollen auswählen"></div>
+        <div class="custom-role-row">
+          <label class="sr-only" for="customRoleName">Eigene Rolle</label>
+          <input id="customRoleName" maxlength="48" placeholder="Eigene Rolle, z. B. Musikerin">
+          <button id="addCustomRole" type="button" class="secondary-button">Hinzufügen</button>
+        </div>
+        <p id="onboardingRoleError" class="form-error" role="alert"></p>
+        <div class="onboarding-actions two">
+          <button type="button" class="secondary-button" data-onboarding-back>Zurück</button>
+          <button type="button" class="primary-button" data-onboarding-next>Weiter</button>
+        </div>
+      </section>
+
+      <section class="onboarding-step" data-onboarding-step="3" hidden>
+        <p class="product-eyebrow">Schritt 2 von 3</p>
+        <h2>Was möchtest du begleiten?</h2>
+        <p>Die Tagesreflexion ist immer dabei. Alles andere ist optional und lässt sich später in den Einstellungen ändern.</p>
+        <div class="module-choices">
+          <label><input id="setupVitality" type="checkbox" checked><span><strong>Vitalität</strong><small>Mahlzeiten, Wasser und Schritte.</small></span></label>
+          <label><input id="setupGratitude" type="checkbox" checked><span><strong>Dankbarkeit</strong><small>Zwei kurze Einträge am Tag.</small></span></label>
+          <label><input id="setupRoutines" type="checkbox" checked><span><strong>Beispielroutinen</strong><small>Eine kurze Morgen- und Abendroutine als Ausgangspunkt.</small></span></label>
+          <label><input id="setupStreaks" type="checkbox"><span><strong>Streaks</strong><small>Gewohnheiten, die du hältst – etwa rauchfrei. Geschützt hinter einer Abfrage.</small></span></label>
+          <label><input id="setupReligion" type="checkbox"><span><strong>Islamische Praxis</strong><small>Gebete, Fastentage, Namen Allahs und ein Gottesfurcht-Regler.</small></span></label>
+        </div>
+        <div class="onboarding-actions two">
+          <button type="button" class="secondary-button" data-onboarding-back>Zurück</button>
+          <button type="button" class="primary-button" data-onboarding-next>Weiter</button>
+        </div>
+      </section>
+
+      <section class="onboarding-step" data-onboarding-step="4" hidden>
+        <p class="product-eyebrow">Schritt 3 von 3</p>
+        <h2>Bereit für deinen ersten Tag.</h2>
+        <p id="onboardingSummary" class="onboarding-summary"></p>
+        <div class="trust-box">
+          <strong>Deine Daten gehören dir</strong>
+          <p>Alles bleibt lokal auf diesem Gerät. Sichere deine Einträge ab und zu als Datei – ENSEMBLE erinnert dich daran. Sicherung und Export deiner Daten sind immer kostenlos.</p>
+        </div>
+        <label class="plus-trial-offer"><input id="setupTrial" type="checkbox" checked><span><strong>ENSEMBLE Plus 14 Tage kostenlos testen</strong><small>Alle Funktionen freigeschaltet. Endet automatisch – ohne Zahlungsdaten, ohne Abo.</small></span></label>
+        <p id="onboardingError" class="form-error" role="alert"></p>
+        <div class="onboarding-actions two">
+          <button type="button" class="secondary-button" data-onboarding-back>Zurück</button>
+          <button type="submit" class="primary-button">Starten</button>
+        </div>
+      </section>
     </form>
   </dialog>
 
+  <dialog id="plusDialog" class="form-dialog product-dialog plus-dialog" aria-labelledby="plusTitle">
+    <div class="settings-heading">
+      <div>
+        <p class="product-eyebrow">ENSEMBLE</p>
+        <h2 id="plusTitle"><span class="plus-wordmark">Plus</span></h2>
+      </div>
+      <button id="plusClose" class="icon-button" type="button" aria-label="Schließen">✕</button>
+    </div>
+    <p id="plusReason" class="plus-reason" hidden></p>
+    <div id="plusStatus" class="plus-status"></div>
+    <ul class="plus-features">
+      <li><strong>Alle Rollen</strong><small>Unbegrenzt viele aktive Rollen statt fünf.</small></li>
+      <li><strong>Eigene Routinen</strong><small>Beliebig viele Routinen, Routine-Dateien laden und teilen.</small></li>
+      <li><strong>Monatsauswertung</strong><small>Monatsrückblick, Rollenpräsenz im Monat und Monatsreport.</small></li>
+      <li><strong>Rollenfokus</strong><small>Eine Rolle für Tage oder Wochen in den Mittelpunkt stellen.</small></li>
+      <li><strong>Excel-Export</strong><small>Alle Einträge als CSV für eigene Auswertungen.</small></li>
+    </ul>
+    <p class="settings-hint">Deine Einträge bleiben immer zugänglich – auch ohne Plus. Sicherungen sind immer kostenlos.</p>
+    <div id="plusPlans" class="plus-plans"></div>
+    <div class="plus-actions">
+      <button id="startTrial" type="button" class="primary-button">14 Tage kostenlos testen</button>
+      <button id="buyPlus" type="button" class="primary-button">Plus freischalten</button>
+    </div>
+    <details id="licenseDetails" class="license-details">
+      <summary>Lizenzschlüssel eingeben</summary>
+      <label for="licenseInput">Lizenzschlüssel</label>
+      <textarea id="licenseInput" rows="3" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="ENS1-…"></textarea>
+      <button id="activateLicense" type="button" class="secondary-button">Aktivieren</button>
+      <p id="licenseMessage" class="settings-hint" role="status"></p>
+    </details>
+  </dialog>
+
   <dialog id="settingsDialog" class="form-dialog product-dialog" aria-labelledby="settingsTitle">
-    <div class="settings-heading"><div><p class="product-eyebrow">ROLEPLAY</p><h2 id="settingsTitle">Deine Rollen & Einstellungen</h2></div><button id="settingsClose" class="icon-button" type="button" aria-label="Einstellungen schließen">✕</button></div>
+    <div class="settings-heading"><div><p class="product-eyebrow">ENSEMBLE</p><h2 id="settingsTitle">Einstellungen</h2></div><button id="settingsClose" class="icon-button" type="button" aria-label="Einstellungen schließen">✕</button></div>
     <div id="settingsTabs" class="settings-tabs" aria-label="Einstellungsbereiche">
       <button type="button" data-settings-tab="roles" aria-pressed="true">Rollen</button><button type="button" data-settings-tab="daily" aria-pressed="false">Alltag</button><button type="button" data-settings-tab="data" aria-pressed="false">Daten</button><button type="button" data-settings-tab="help" aria-pressed="false">Hilfe</button>
     </div>
     <form id="settingsForm">
       <section data-settings-panel="roles">
-        <p class="settings-hint">Gib deinen Rollen eigene Namen, Farben und Ziele. Archivierte Rollen bleiben in bisherigen Einträgen erhalten.</p>
-        <div id="settingsRoleList"></div><button id="addRoleButton" class="secondary-button" type="button">＋ Rolle hinzufügen</button>
+        <p class="settings-hint">Gib deinen Rollen eigene Namen, Farben und Ziele. Das Ziel erscheint jeden Tag im Kopfbereich. Archivierte Rollen bleiben in bisherigen Einträgen erhalten.</p>
+        <div id="settingsRoleList"></div>
+        <button id="addRoleButton" class="secondary-button" type="button">＋ Rolle hinzufügen</button>
+        <p id="roleLimitHint" class="settings-hint" hidden></p>
       </section>
       <section data-settings-panel="daily" hidden>
-        <h3>Deine Woche</h3><p class="settings-hint">Diese Rolle wird für neue Tage vorgeschlagen. Im Tagesreview kannst du sie jederzeit wechseln.</p><div id="settingsWeekRoles" class="week-role-fields"></div>
-        <h3>Was möchtest du erfassen?</h3>
-        <label class="toggle-line"><input id="settingsReligion" type="checkbox"> Gebete, Fasten und Gottesfurcht anzeigen</label>
-        <label class="toggle-line"><input id="settingsStreaks" type="checkbox"> Persönliche Streaks anzeigen</label>
-        <label class="toggle-line"><input id="settingsPersonal" type="checkbox"> Ursprüngliche Aktivitätsvorlagen und persönliche Zielimpulse verwenden</label>
-        <label>Offene Fastentage beim Neustart<input id="settingsFastingDays" type="number" min="0" max="10000" step="1"></label><p class="settings-hint">Gilt, wenn noch kein vorheriger Tagesstand existiert. Deinen aktuellen Stand änderst du im Tagesreview.</p>
-        <h3>Eigene Aktivitätsvorlagen</h3><p class="settings-hint">Präsenzpunkte beschreiben die Verteilung deiner erfassten Aktivitäten. Sie bewerten weder deinen persönlichen Wert noch deine Produktivität.</p>
+        <h3>Deine Woche</h3>
+        <p class="settings-hint">Diese Rolle wird für neue Tage vorgeschlagen. Im Tagesreview kannst du sie jederzeit wechseln.</p>
+        <div id="settingsWeekRoles" class="week-role-fields"></div>
+        <h3>Module</h3>
+        <label class="toggle-line"><input id="settingsVitality" type="checkbox"> Vitalität: Mahlzeiten, Wasser und Schritte</label>
+        <label class="toggle-line"><input id="settingsGratitude" type="checkbox"> Dankbarkeit</label>
+        <label class="toggle-line"><input id="settingsStreaks" type="checkbox"> Streaks</label>
+        <label class="toggle-line"><input id="settingsReligion" type="checkbox"> Islamische Praxis: Gebete, Fasten und Gottesfurcht</label>
+        <label class="toggle-line" id="settingsPersonalLine"><input id="settingsPersonal" type="checkbox"> Persönliche Vorlage: ursprüngliche Aktivitäten und Zielimpulse</label>
+        <div id="settingsFastingField" class="religion-setting">
+          <label>Offene Fastentage beim Neustart<input id="settingsFastingDays" type="number" min="0" max="10000" step="1"></label>
+          <p class="settings-hint">Gilt, wenn noch kein vorheriger Tagesstand existiert. Deinen aktuellen Stand änderst du im Tagesreview.</p>
+        </div>
+        <div id="settingsStreakSection">
+          <h3>Deine Streaks</h3>
+          <p class="settings-hint">Gewohnheiten, die du Tag für Tag hältst. Entfernte Streaks bleiben in früheren Einträgen erhalten.</p>
+          <div id="settingsStreakList"></div>
+          <div class="custom-role-row"><label class="sr-only" for="newStreakLabel">Neuer Streak</label><input id="newStreakLabel" maxlength="40" placeholder="z. B. Zuckerfrei"><button id="addStreakButton" class="secondary-button" type="button">Hinzufügen</button></div>
+        </div>
+        <h3>Eigene Aktivitätsvorlagen</h3>
+        <p class="settings-hint">Präsenzpunkte beschreiben die Verteilung deiner erfassten Aktivitäten. Sie bewerten weder deinen persönlichen Wert noch deine Produktivität.</p>
         <div id="settingsTemplateList"></div>
-        <div class="new-template-fields"><label>Aktivität<input id="templateTitle" maxlength="80" placeholder="Zum Beispiel: Spazierengehen"></label><label>Rolle<select id="templateRole"></select></label><label>Präsenzpunkte<input id="templateWeight" type="number" min="0.1" max="10" step="0.1" value="1"></label></div><button id="addTemplateButton" class="secondary-button" type="button">Vorlage hinzufügen</button>
+        <div class="new-template-fields"><label>Aktivität<input id="templateTitle" maxlength="80" placeholder="Zum Beispiel: Spazierengehen"></label><label>Rolle<select id="templateRole"></select></label><label>Präsenzpunkte<input id="templateWeight" type="number" min="0.1" max="10" step="0.1" value="1"></label></div>
+        <button id="addTemplateButton" class="secondary-button" type="button">Vorlage hinzufügen</button>
       </section>
       <section data-settings-panel="data" hidden>
-        <h3>Deine Daten gehören dir</h3><p>Einträge und Einstellungen werden lokal auf diesem Gerät gespeichert. Ein anderes Gerät oder eine andere App-Adresse hat einen eigenen Speicher.</p>
-        <div class="settings-actions"><button id="settingsExport" class="primary-button" type="button">Sicherung als Datei speichern</button><button id="settingsImport" class="secondary-button" type="button">Sicherung importieren</button></div><input id="settingsImportFile" type="file" accept=".json,application/json" hidden>
-        <p class="settings-hint">Backups enthalten persönliche Einträge und sind nicht verschlüsselt. Bewahre sie an einem geschützten Ort auf und prüfe nach dem Export, ob die Datei gespeichert wurde.</p>
-        <h3>Gerätewechsel</h3><ol><li>Hier eine Sicherung speichern.</li><li>Die Datei auf das neue Gerät übertragen.</li><li>ROLEPLAY dort öffnen und die Sicherung importieren.</li></ol>
-        <h3>Lokale Daten entfernen</h3><p>Die Löschung betrifft nur ROLEPLAY auf diesem Gerät. Bereits exportierte Dateien bleiben erhalten.</p><button id="deleteLocalData" class="danger-button" type="button">Alle lokalen ROLEPLAY-Daten löschen</button>
+        <h3>Deine Daten gehören dir</h3>
+        <p>Einträge und Einstellungen werden lokal auf diesem Gerät gespeichert. Ein anderes Gerät oder eine andere App-Adresse hat einen eigenen Speicher.</p>
+        <div class="settings-actions">
+          <button id="exportBackup" class="primary-button" type="button">Sicherung als Datei speichern</button>
+          <button id="importBackupButton" class="secondary-button" type="button">Sicherung importieren</button>
+          <button id="exportCsv" class="secondary-button" type="button">Excel / CSV exportieren <span class="plus-tag">Plus</span></button>
+          <input id="importBackupInput" type="file" accept=".json,application/json" hidden>
+        </div>
+        <p id="backupStatus" class="settings-hint" role="status">Noch keine Sicherung in dieser Sitzung erstellt.</p>
+        <p class="settings-hint">Sicherungen enthalten persönliche Einträge und sind nicht verschlüsselt. Bewahre sie an einem geschützten Ort auf.</p>
+        <h3>Gerätewechsel</h3>
+        <ol><li>Hier eine Sicherung speichern.</li><li>Die Datei auf das neue Gerät übertragen.</li><li>ENSEMBLE dort öffnen und die Sicherung importieren.</li></ol>
+        <h3>Lokale Daten entfernen</h3>
+        <p>Die Löschung betrifft nur ENSEMBLE auf diesem Gerät. Bereits exportierte Dateien bleiben erhalten.</p>
+        <button id="deleteLocalData" class="danger-button" type="button">Alle lokalen Daten löschen</button>
       </section>
       <section data-settings-panel="help" hidden>
-        <h3>Ein kleiner Anfang reicht</h3><ol><li>Wähle eine Rolle, die heute Raum bekommen soll.</li><li>Trage Energie und Laune in einer Tagesphase ein.</li><li>Halte eine Aktivität fest und schau im Wochenrückblick auf die Verteilung.</li></ol>
-        <details open><summary>Was bedeuten Rollenmodus und Punkte?</summary><p>Der Rollenmodus ist ein Vorschlag für Umfang und Tempo. Ohne Gottesfurcht fließen Laune mit 58 % und Energie mit 42 % ein. Mit erfasstem Gottesfurchtwert gilt die Gewichtung 36 % Laune, 32 % Energie und 32 % Gottesfurcht. Niedrige Energie oder Laune begrenzen höhere Modi.</p><p>Das ist eine von ROLEPLAY festgelegte Orientierung, keine medizinische Beurteilung. Du entscheidest, welcher Schritt heute passt.</p><p>Präsenzpunkte entstehen durch Aktivitäten. Eigene Aktivitäten zählen standardmäßig einen Punkt. Vorlagen können andere Werte haben; der genaue Wert steht bei der Auswahl und in der Rollenaufschlüsselung. Ein leerer Tag ist keine Bewertung deiner Person.</p></details>
-        <details><summary>Auf dem iPhone installieren</summary><p>Öffne ROLEPLAY in Safari, tippe auf „Teilen“ und wähle „Zum Home-Bildschirm“. Öffne die App einmal mit Internetverbindung, damit ihre Dateien für die Offline-Nutzung gespeichert werden können.</p></details>
-        <details><summary>Offline und Updates</summary><p>Einträge bleiben auf dem Gerät. Sobald eine neue Version bereitsteht, erscheint ein Hinweis. Speichere offene Eingaben und aktiviere das Update. Ein Backup ist besonders vor einem Wechsel der App-Adresse wichtig.</p></details>
-        <p><a href="privacy.html" target="_blank" rel="noopener">Datenschutz in der Testversion</a></p>
-        <h3>Rückmeldung zur Testversion</h3><label>Was ist passiert und was hast du erwartet?<textarea id="feedbackText" rows="4" maxlength="4000" placeholder="Bitte keine vertraulichen Tagebucheinträge einfügen."></textarea></label><button id="saveFeedback" type="button" class="secondary-button">Fehlerbericht als Datei speichern</button><p class="settings-hint">Die Datei wird nicht automatisch versendet. Gib sie an die Person weiter, von der du diese Testversion erhalten hast.</p><p id="settingsVersion" class="settings-hint"></p>
+        <h3>Ein kleiner Anfang reicht</h3>
+        <ol><li>Wähle oben die Rolle, die heute Raum bekommen soll.</li><li>Tippe auf eine Tagesphase und halte Energie und Laune fest.</li><li>Erfasse eine Aktivität und schau in der Auswertung auf die Verteilung deiner Rollen.</li></ol>
+        <details open><summary>Was bedeuten Rollenmodus und Punkte?</summary><p>Der Rollenmodus ist ein Vorschlag für Umfang und Tempo. Ohne Gottesfurcht fließen Laune mit 58 % und Energie mit 42 % ein. Mit erfasstem Gottesfurchtwert gilt die Gewichtung 36 % Laune, 32 % Energie und 32 % Gottesfurcht. Niedrige Energie oder Laune begrenzen höhere Modi.</p><p>Das ist eine Orientierung, keine medizinische Beurteilung. Du entscheidest, welcher Schritt heute passt.</p><p>Präsenzpunkte entstehen durch Aktivitäten. Eigene Aktivitäten zählen standardmäßig einen Punkt. Vorlagen können andere Werte haben; der genaue Wert steht bei der Auswahl und in der Rollenaufschlüsselung. Ein leerer Tag ist keine Bewertung deiner Person.</p></details>
+        <details><summary>Auf dem iPhone installieren</summary><p>Öffne ENSEMBLE in Safari, tippe auf „Teilen“ und wähle „Zum Home-Bildschirm“. Öffne die App einmal mit Internetverbindung, damit ihre Dateien für die Offline-Nutzung gespeichert werden.</p></details>
+        <details><summary>Offline und Updates</summary><p>Einträge bleiben auf dem Gerät. Sobald eine neue Version bereitsteht, erscheint unten ein Hinweis. Speichere offene Eingaben und tippe auf „Aktualisieren“.</p></details>
+        <details><summary>ENSEMBLE Plus</summary><p>Die Tagesreflexion, Routinen, Wochenauswertung und Sicherungen sind kostenlos. Plus erweitert ENSEMBLE um unbegrenzte Rollen und Routinen, die Monatsauswertung, den Rollenfokus und den Excel-Export. <button type="button" class="text-button" data-open-plus="help">Plus ansehen</button></p></details>
+        <h3>Rückmeldung</h3>
+        <label>Was ist passiert und was hast du erwartet?<textarea id="feedbackText" rows="4" maxlength="4000" placeholder="Bitte keine vertraulichen Tagebucheinträge einfügen."></textarea></label>
+        <button id="saveFeedback" type="button" class="secondary-button">Rückmeldung als Datei speichern</button>
+        <p class="settings-hint">Die Datei wird nicht automatisch versendet. Du entscheidest, an wen du sie weitergibst.</p>
+        <p class="legal-links"><a href="privacy.html" target="_blank" rel="noopener">Datenschutz</a> · <a href="impressum.html" target="_blank" rel="noopener">Impressum</a></p>
+        <p id="settingsVersion" class="settings-hint"></p>
       </section>
-      <p id="settingsError" class="form-error" role="alert"></p><button id="settingsSave" type="submit" class="primary-button settings-save">Änderungen speichern</button>
+      <p id="settingsError" class="form-error" role="alert"></p>
+      <button id="settingsSave" type="submit" class="primary-button settings-save">Änderungen speichern</button>
     </form>
   </dialog>
 
   <script src="storage.js"></script>
   <script src="app.js"></script>
   <script src="product.js"></script>
+  <script src="plus.js"></script>
 </body>
 </html>
